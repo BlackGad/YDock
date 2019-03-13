@@ -21,7 +21,7 @@ namespace YDock.Model
 
         #region Constructors
 
-        public BaseLayoutGroup()
+        protected BaseLayoutGroup()
         {
             _children.CollectionChanged += OnChildrenCollectionChanged;
         }
@@ -131,7 +131,7 @@ namespace YDock.Model
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public virtual void ShowWithActive(IDockElement element, bool toActice = true)
+        public virtual void ShowWithActive(IDockElement element, bool activate = true)
         {
             if (element != null && !element.CanSelect)
             {

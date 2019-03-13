@@ -64,19 +64,19 @@ namespace YDock.Model
                 }
                 else
                 {
-                    (_view as TabControl).SelectedIndex = Children_CanSelect.Count() > 0 ? 0 : -1;
+                    (_view as TabControl).SelectedIndex = Children_CanSelect.Any() ? 0 : -1;
                 }
 
-                if (Children_CanSelect.Count() == 0)
+                if (!Children_CanSelect.Any())
                 {
                     _DetachFromParent();
                 }
             }
         }
 
-        public override void ShowWithActive(IDockElement element, bool toActice = true)
+        public override void ShowWithActive(IDockElement element, bool activate = true)
         {
-            base.ShowWithActive(element, toActice);
+            base.ShowWithActive(element, activate);
             if (_view != null)
             {
                 (_view as TabControl).SelectedIndex = IndexOf(element);
@@ -133,7 +133,7 @@ namespace YDock.Model
                 }
 
                 //如果Children_CanSelect数量为0，且Container不是LayoutDocumentGroup，则尝试将view从界面移除
-                if (Children_CanSelect.Count() == 0) //如果Children_CanSelect数量为0
+                if (!Children_CanSelect.Any()) //如果Children_CanSelect数量为0
                 {
                     _DetachFromParent();
                 }
@@ -157,7 +157,7 @@ namespace YDock.Model
             BaseLayoutGroup group;
             var dockManager = _dockManager;
             var children = _children.ToList();
-            var ele = children.First();
+            var element = children.First();
             //hide all first
             foreach (var child in children)
             {
@@ -172,13 +172,13 @@ namespace YDock.Model
                     group.Attach(child);
                 }
 
-                ctrl = new LayoutDocumentGroupControl(group) { DesiredHeight = ele.DesiredHeight, DesiredWidth = ele.DesiredWidth };
+                ctrl = new LayoutDocumentGroupControl(group) { DesiredHeight = element.DesiredHeight, DesiredWidth = element.DesiredWidth };
                 wnd = new DocumentGroupWindow(dockManager)
                 {
-                    Height = ele.DesiredHeight,
-                    Width = ele.DesiredWidth,
-                    Left = ele.FloatLeft,
-                    Top = ele.FloatTop
+                    Height = element.DesiredHeight,
+                    Width = element.DesiredWidth,
+                    Left = element.FloatLeft,
+                    Top = element.FloatTop
                 };
             }
             else
@@ -189,13 +189,13 @@ namespace YDock.Model
                     group.Attach(child);
                 }
 
-                ctrl = new AnchorSideGroupControl(group) { DesiredHeight = ele.DesiredHeight, DesiredWidth = ele.DesiredWidth };
+                ctrl = new AnchorSideGroupControl(group) { DesiredHeight = element.DesiredHeight, DesiredWidth = element.DesiredWidth };
                 wnd = new AnchorGroupWindow(dockManager)
                 {
-                    Height = ele.DesiredHeight,
-                    Width = ele.DesiredWidth,
-                    Left = ele.FloatLeft,
-                    Top = ele.FloatTop
+                    Height = element.DesiredHeight,
+                    Width = element.DesiredWidth,
+                    Left = element.FloatLeft,
+                    Top = element.FloatTop
                 };
             }
 

@@ -41,8 +41,7 @@ namespace YDock.View
 
             return VisualStateManager.GetVisualStateGroups(root)
                                      .OfType<VisualStateGroup>()
-                                     .Where(group => string.CompareOrdinal(groupName, group.Name) == 0)
-                                     .FirstOrDefault();
+                                     .FirstOrDefault(group => string.CompareOrdinal(groupName, group.Name) == 0);
         }
 
         #endregion

@@ -97,7 +97,7 @@
     <Compile Include="Enum\DragMode.cs" />
     <Compile Include="Enum\DropMode.cs" />
     <Compile Include="Global\Extension\ResourceExtension.cs" />
-    <Compile Include="Interface\IAttcah.cs" />
+    <Compile Include="Interface\IAttach.cs" />
     <Compile Include="Interface\IDockControl.cs" />
     <Compile Include="Interface\IDockDocSource.cs" />
     <Compile Include="Interface\IDockElement.cs" />

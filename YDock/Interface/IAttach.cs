@@ -2,7 +2,7 @@
 
 namespace YDock.Interface
 {
-    public interface IAttcah
+    public interface IAttach
     {
         #region Members
 

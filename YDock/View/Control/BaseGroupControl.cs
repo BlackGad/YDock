@@ -47,7 +47,7 @@ namespace YDock.View
         {
             Model = model;
             SetBinding(ItemsSourceProperty, new Binding("Model.Children_CanSelect") { Source = this });
-            if (model.Children.Count() > 0)
+            if (model.Children.Any())
             {
                 DesiredWidth = model.Children.First().DesiredWidth;
                 DesiredHeight = model.Children.First().DesiredHeight;
@@ -301,12 +301,12 @@ namespace YDock.View
             get { return _desiredWidth; }
             set
             {
-                if (_desiredWidth != value)
+                if (Math.Abs(_desiredWidth - value) > double.Epsilon)
                 {
                     _desiredWidth = value;
                     if (_model != null)
                     {
-                        foreach (ILayoutSize item in _model.Children)
+                        foreach (var item in _model.Children)
                         {
                             item.DesiredWidth = value;
                         }
@@ -320,12 +320,12 @@ namespace YDock.View
             get { return _desiredHeight; }
             set
             {
-                if (_desiredHeight != value)
+                if (Math.Abs(_desiredHeight - value) > double.Epsilon)
                 {
                     _desiredHeight = value;
                     if (_model != null)
                     {
-                        foreach (ILayoutSize item in _model.Children)
+                        foreach (var item in _model.Children)
                         {
                             item.DesiredHeight = value;
                         }
@@ -344,7 +344,7 @@ namespace YDock.View
                     _floatLeft = value;
                     if (_model != null)
                     {
-                        foreach (ILayoutSize item in _model.Children)
+                        foreach (var item in _model.Children)
                         {
                             item.FloatLeft = value;
                         }
@@ -363,7 +363,7 @@ namespace YDock.View
                     _floatTop = value;
                     if (_model != null)
                     {
-                        foreach (ILayoutSize item in _model.Children)
+                        foreach (var item in _model.Children)
                         {
                             item.FloatTop = value;
                         }
@@ -499,15 +499,15 @@ namespace YDock.View
 
         public XElement GenerateLayout()
         {
-            var ele = new XElement("Group");
-            ele.SetAttributeValue("IsDocument", Mode == DragMode.Document);
-            ele.SetAttributeValue("Side", _model.Side);
+            var element = new XElement("Group");
+            element.SetAttributeValue("IsDocument", Mode == DragMode.Document);
+            element.SetAttributeValue("Side", _model.Side);
             foreach (var item in _model.Children.Reverse().Where(child => child.CanSelect))
             {
-                ele.Add(new XElement("Item", item.ID));
+                element.Add(new XElement("Item", item.ID));
             }
 
-            return ele;
+            return element;
         }
 
         public void HitTest(Point mouseP, ActiveRectDropVisual activeRect)
@@ -523,9 +523,9 @@ namespace YDock.View
 
         public int IndexOf()
         {
-            if (DockViewParent is LayoutGroupPanel)
+            if (DockViewParent is LayoutGroupPanel panel)
             {
-                return (DockViewParent as LayoutGroupPanel).Children.IndexOf(this);
+                return panel.Children.IndexOf(this);
             }
 
             return -1;

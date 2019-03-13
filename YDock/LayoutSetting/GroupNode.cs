@@ -45,11 +45,11 @@ namespace YDock.LayoutSetting
             get { return _children; }
         }
 
-        public void Load(XElement ele)
+        public void Load(XElement element)
         {
-            IsDocument = bool.Parse(ele.Attribute("IsDocument").Value);
-            Side = (DockSide)System.Enum.Parse(typeof(DockSide), ele.Attribute("Side").Value);
-            foreach (var item in ele.Elements())
+            IsDocument = bool.Parse(element.Attribute("IsDocument").Value);
+            Side = (DockSide)System.Enum.Parse(typeof(DockSide), element.Attribute("Side").Value);
+            foreach (var item in element.Elements())
             {
                 var itemNode = new ItemNode(this);
                 itemNode.Load(item);
@@ -78,23 +78,23 @@ namespace YDock.LayoutSetting
             var relative = default(IDockControl);
             foreach (var child in _children)
             {
-                var ele = dockManager.GetDockControl(child.ID);
+                var element = dockManager.GetDockControl(child.ID);
                 if (relative == null)
                 {
-                    relative = ele;
+                    relative = element;
                     if (!isFloat)
                     {
-                        ele.ProtoType.ToDockSide(Side);
-                        ele.ToDock(false);
+                        element.ProtoType.ToDockSide(Side);
+                        element.ToDock(false);
                     }
                     else
                     {
-                        ele.ToFloat(false);
+                        element.ToFloat(false);
                     }
                 }
                 else
                 {
-                    dockManager.AttachTo(ele, relative, AttachMode.Center);
+                    dockManager.AttachTo(element, relative, AttachMode.Center);
                 }
             }
 
@@ -106,11 +106,11 @@ namespace YDock.LayoutSetting
             var relative = default(IDockControl);
             foreach (var child in _children)
             {
-                var ele = dockManager.GetDockControl(child.ID);
-                dockManager.AttachTo(ele, target, dir == Direction.Horizontal ? AttachMode.Right : AttachMode.Bottom);
+                var element = dockManager.GetDockControl(child.ID);
+                dockManager.AttachTo(element, target, dir == Direction.Horizontal ? AttachMode.Right : AttachMode.Bottom);
                 if (relative == null)
                 {
-                    relative = ele;
+                    relative = element;
                 }
             }
 
@@ -122,21 +122,21 @@ namespace YDock.LayoutSetting
             var relative = default(IDockControl);
             foreach (var child in _children)
             {
-                var ele = dockManager.GetDockControl(child.ID);
-                if (ele != null)
+                var element = dockManager.GetDockControl(child.ID);
+                if (element != null)
                 {
                     if (!isFloat)
                     {
-                        ele.ToDockAsDocument(false);
+                        element.ToDockAsDocument(false);
                     }
                     else
                     {
-                        ele.ToFloat(false);
+                        element.ToFloat(false);
                     }
 
                     if (relative == null)
                     {
-                        relative = ele;
+                        relative = element;
                     }
                 }
             }
@@ -149,17 +149,17 @@ namespace YDock.LayoutSetting
             var relative = default(IDockControl);
             foreach (var child in _children)
             {
-                var ele = dockManager.GetDockControl(child.ID);
-                if (ele != null)
+                var element = dockManager.GetDockControl(child.ID);
+                if (element != null)
                 {
                     if (relative == null)
                     {
-                        dockManager.AttachTo(ele, target, _parent.Direction == Direction.Horizontal ? AttachMode.Right_WithSplit : AttachMode.Bottom_WithSplit);
-                        relative = ele;
+                        dockManager.AttachTo(element, target, _parent.Direction == Direction.Horizontal ? AttachMode.Right_WithSplit : AttachMode.Bottom_WithSplit);
+                        relative = element;
                     }
                     else
                     {
-                        dockManager.AttachTo(ele, relative, AttachMode.Center);
+                        dockManager.AttachTo(element, relative, AttachMode.Center);
                     }
                 }
             }

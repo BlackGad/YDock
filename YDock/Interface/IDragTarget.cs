@@ -3,7 +3,7 @@ using YDock.Enum;
 
 namespace YDock.Interface
 {
-    public interface IDragTarget : IAttcah
+    public interface IDragTarget : IAttach
     {
         #region Properties
 

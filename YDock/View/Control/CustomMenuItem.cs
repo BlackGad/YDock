@@ -20,10 +20,10 @@ namespace YDock.View
         protected override void OnClick()
         {
             base.OnClick();
-            var ele = DataContext as IDockElement;
-            if (ele.Container is ILayoutGroup)
+            var element = DataContext as IDockElement;
+            if (element.Container is ILayoutGroup)
             {
-                ele.Container.ShowWithActive(ele);
+                element.Container.ShowWithActive(element);
             }
         }
 

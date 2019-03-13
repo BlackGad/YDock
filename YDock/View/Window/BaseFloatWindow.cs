@@ -227,17 +227,17 @@ namespace YDock.View
 
         public XElement GenerateLayout()
         {
-            var ele = new XElement("FloatWindow");
+            var element = new XElement("FloatWindow");
             if (Child is BaseGroupControl)
             {
-                ele.Add((Child as BaseGroupControl).GenerateLayout());
+                element.Add((Child as BaseGroupControl).GenerateLayout());
             }
             else if (Child is LayoutGroupPanel)
             {
-                ele.Add((Child as LayoutGroupPanel).GenerateLayout());
+                element.Add((Child as LayoutGroupPanel).GenerateLayout());
             }
 
-            return ele;
+            return element;
         }
 
         public void HitTest(Point p)

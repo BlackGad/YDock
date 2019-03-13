@@ -7,7 +7,7 @@ namespace YDock.Interface
     {
         #region Members
 
-        void Load(XElement ele);
+        void Load(XElement element);
         XElement Save();
         void ToDockSide(DockSide side, bool isActive = false);
 

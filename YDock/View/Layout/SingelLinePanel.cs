@@ -11,7 +11,7 @@ namespace YDock.View
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(ele => ele.Visibility != Visibility.Collapsed);
+            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(element => element.Visibility != Visibility.Collapsed);
 
             var height = 0.0;
             var width = 0.0;
@@ -22,7 +22,7 @@ namespace YDock.View
                 height = Math.Max(height, child.DesiredSize.Height);
             }
 
-            if (visibleChildren.Count() > 0)
+            if (visibleChildren.Any())
                 //不计算最后一个元素的右边距
             {
                 width -= visibleChildren.Last().Margin.Right;
@@ -33,7 +33,7 @@ namespace YDock.View
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(ele => ele.Visibility != Visibility.Collapsed);
+            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(element => element.Visibility != Visibility.Collapsed);
 
             var offset = 0.0;
             foreach (var child in visibleChildren)

@@ -259,7 +259,7 @@ namespace YDock
         private void _InitDragItem()
         {
             LayoutGroup group;
-            IDockElement ele;
+            IDockElement element;
             var mouseP = DockHelper.GetMousePosition(DockManager);
             switch (_dragItem.DockMode)
             {
@@ -305,31 +305,31 @@ namespace YDock
                     }
                     else if (_dragItem.RelativeObj is IDockElement)
                     {
-                        ele = _dragItem.RelativeObj as IDockElement;
+                        element = _dragItem.RelativeObj as IDockElement;
 
                         #region AttachObj
 
-                        var _parent = (ele.Container as LayoutGroup).View as BaseGroupControl;
-                        var _index = ele.Container.IndexOf(ele);
+                        var _parent = (element.Container as LayoutGroup).View as BaseGroupControl;
+                        var _index = element.Container.IndexOf(element);
 
                         #endregion
 
-                        if (ele.IsDocument)
+                        if (element.IsDocument)
                         {
                             group = new LayoutDocumentGroup(DockMode.Float, DockManager);
                         }
                         else
                         {
-                            group = new LayoutGroup(ele.Side, DockMode.Float, DockManager);
+                            group = new LayoutGroup(element.Side, DockMode.Float, DockManager);
                             group.AttachObj = new AttachObject(group, _parent, _index);
                         }
 
                         //先从逻辑父级中移除
-                        ele.Container.Detach(ele);
+                        element.Container.Detach(element);
                         //再加入新的逻辑父级
-                        group.Attach(ele);
+                        group.Attach(element);
                         //创建新的浮动窗口，并初始化位置
-                        if (ele.IsDocument)
+                        if (element.IsDocument)
                         {
                             _dragWnd = new DocumentGroupWindow(DockManager);
                             _dragWnd.AttachChild(new LayoutDocumentGroupControl(group), AttachMode.None, 0);
@@ -363,11 +363,11 @@ namespace YDock
                     break;
                 case DockMode.DockBar:
                     //这里表示从自动隐藏窗口进行的拖动，因此这里移除自动隐藏窗口
-                    ele = _dragItem.RelativeObj as IDockElement;
-                    ele.Container.Detach(ele);
+                    element = _dragItem.RelativeObj as IDockElement;
+                    element.Container.Detach(element);
                     //创建新的浮动窗口，并初始化位置
-                    group = new LayoutGroup(ele.Side, DockMode.Float, DockManager);
-                    group.Attach(ele);
+                    group = new LayoutGroup(element.Side, DockMode.Float, DockManager);
+                    group.Attach(element);
                     _dragWnd = new AnchorGroupWindow(DockManager)
                     {
                         Left = mouseP.X - _dragItem.ClickPos.X - 1,
@@ -379,8 +379,8 @@ namespace YDock
                 case DockMode.Float:
                     if (_dragItem.RelativeObj is IDockElement)
                     {
-                        ele = _dragItem.RelativeObj as IDockElement;
-                        var ctrl = ele.Container.View as BaseGroupControl;
+                        element = _dragItem.RelativeObj as IDockElement;
+                        var ctrl = element.Container.View as BaseGroupControl;
                         if (ctrl.Items.Count == 1 && ctrl.Parent is BaseFloatWindow)
                         {
                             _dragWnd = ctrl.Parent as BaseFloatWindow;
@@ -397,28 +397,28 @@ namespace YDock
                         {
                             #region AttachObj
 
-                            var _parent = (ele.Container as LayoutGroup).View as BaseGroupControl;
-                            var _index = ele.Container.IndexOf(ele);
+                            var _parent = (element.Container as LayoutGroup).View as BaseGroupControl;
+                            var _index = element.Container.IndexOf(element);
 
                             #endregion
 
-                            if (ele.IsDocument)
+                            if (element.IsDocument)
                             {
                                 group = new LayoutDocumentGroup(DockMode.Float, DockManager);
                             }
                             else
                             {
-                                group = new LayoutGroup(ele.Side, DockMode.Float, DockManager);
+                                group = new LayoutGroup(element.Side, DockMode.Float, DockManager);
                                 group.AttachObj = new AttachObject(group, _parent, _index);
                             }
 
                             //先从逻辑父级中移除
-                            ele.Container.Detach(ele);
+                            element.Container.Detach(element);
                             //再加入新的逻辑父级
-                            group.Attach(ele);
+                            group.Attach(element);
                             //创建新的浮动窗口，并初始化位置
                             //这里可知引起drag的时DragTabItem故这里创建临时的DragTabWindow
-                            if (ele.IsDocument)
+                            if (element.IsDocument)
                             {
                                 _dragWnd = new DocumentGroupWindow(DockManager);
                                 _dragWnd.AttachChild(new LayoutDocumentGroupControl(group), AttachMode.None, 0);

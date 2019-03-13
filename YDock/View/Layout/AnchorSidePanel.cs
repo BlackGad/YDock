@@ -19,7 +19,7 @@ namespace YDock.View
         /// <returns></returns>
         protected override Size MeasureOverride(Size availableSize)
         {
-            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(ele => ele.Visibility != Visibility.Collapsed).ToList();
+            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(element => element.Visibility != Visibility.Collapsed).ToList();
 
             var height = 0.0;
             var width = 0.0;
@@ -126,7 +126,7 @@ namespace YDock.View
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(ele => ele.Visibility != Visibility.Collapsed);
+            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(element => element.Visibility != Visibility.Collapsed);
 
             var wholeLength = visibleChildren.Sum(a => a.DesiredSize.Width);
             double delta = 0;

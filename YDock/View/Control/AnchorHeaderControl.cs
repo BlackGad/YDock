@@ -64,26 +64,26 @@ namespace YDock.View
                 if ((e.GetPosition(this) - _mouseDown).Length > Math.Max(SystemParameters.MinimumHorizontalDragDistance, SystemParameters.MinimumVerticalDragDistance))
                 {
                     ReleaseMouseCapture();
-                    var ele = DataContext as IDockElement;
-                    if (!ele.DockManager.DragManager.IsDragging)
+                    var element = DataContext as IDockElement;
+                    if (!element.DockManager.DragManager.IsDragging)
                     {
-                        if (ele.Mode == DockMode.DockBar)
+                        if (element.Mode == DockMode.DockBar)
                         {
-                            ele.DockManager.DragManager.IntoDragAction(new DragItem(ele,
-                                                                                    ele.Mode,
+                            element.DockManager.DragManager.IntoDragAction(new DragItem(element,
+                                                                                    element.Mode,
                                                                                     DragMode.Anchor,
                                                                                     _mouseDown,
                                                                                     Rect.Empty,
-                                                                                    new Size(ele.DesiredWidth, ele.DesiredHeight)));
+                                                                                    new Size(element.DesiredWidth, element.DesiredHeight)));
                         }
                         else
                         {
-                            ele.DockManager.DragManager.IntoDragAction(new DragItem(ele.Container,
-                                                                                    ele.Mode,
+                            element.DockManager.DragManager.IntoDragAction(new DragItem(element.Container,
+                                                                                    element.Mode,
                                                                                     DragMode.Anchor,
                                                                                     _mouseDown,
                                                                                     Rect.Empty,
-                                                                                    new Size(ele.DesiredWidth, ele.DesiredHeight)));
+                                                                                    new Size(element.DesiredWidth, element.DesiredHeight)));
                         }
                     }
                 }
@@ -139,15 +139,15 @@ namespace YDock.View
 
         private void OnCommandExecute(object sender, ExecutedRoutedEventArgs e)
         {
-            var ele = DataContext as DockElement;
+            var element = DataContext as DockElement;
             if (e.Command == GlobalCommands.HideStatusCommand)
             {
-                ele?.Hide();
+                element?.Hide();
             }
 
             if (e.Command == GlobalCommands.SwitchAutoHideStatusCommand)
             {
-                ele?.SwitchAutoHideStatus();
+                element?.SwitchAutoHideStatus();
             }
         }
 
@@ -167,8 +167,8 @@ namespace YDock.View
 
         private void _ApplyMenu()
         {
-            var ele = DataContext as DockElement;
-            menu = new DockMenu(ele);
+            var element = DataContext as DockElement;
+            menu = new DockMenu(element);
             menu.PlacementTarget = ctb;
             menu.Placement = PlacementMode.Bottom;
             ctb.ContextMenu = menu;

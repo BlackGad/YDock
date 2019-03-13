@@ -623,40 +623,40 @@ namespace YDock.View
 
         public XElement GenerateLayout()
         {
-            var ele = new XElement("Panel");
-            ele.SetAttributeValue("IsDocument", IsDocumentPanel);
-            ele.SetAttributeValue("Side", _side);
-            ele.SetAttributeValue("Direction", Direction);
+            var element = new XElement("Panel");
+            element.SetAttributeValue("IsDocument", IsDocumentPanel);
+            element.SetAttributeValue("Side", _side);
+            element.SetAttributeValue("Direction", Direction);
             foreach (var child in Children)
             {
                 if (child is BaseGroupControl)
                 {
-                    ele.Add((child as BaseGroupControl).GenerateLayout());
+                    element.Add((child as BaseGroupControl).GenerateLayout());
                 }
                 else if (child is LayoutGroupPanel)
                 {
-                    ele.Add((child as LayoutGroupPanel).GenerateLayout());
+                    element.Add((child as LayoutGroupPanel).GenerateLayout());
                 }
             }
 
-            return ele;
+            return element;
         }
 
         protected void _AttachSubPanel(LayoutGroupPanel subpanel, int index)
         {
             var children = new List<UIElement>();
-            foreach (UIElement ele in subpanel.Children)
+            foreach (UIElement element in subpanel.Children)
             {
-                children.Add(ele);
+                children.Add(element);
             }
 
             children.Reverse();
             subpanel.Children.Clear();
-            foreach (var ele in children)
+            foreach (var element in children)
             {
-                if (ele is IDockView)
+                if (element is IDockView)
                 {
-                    _AttachChild(ele as IDockView, index);
+                    _AttachChild(element as IDockView, index);
                 }
             }
         }

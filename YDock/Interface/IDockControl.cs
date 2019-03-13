@@ -11,8 +11,8 @@
         #region Members
 
         void Close();
-        void SetActive(bool _isActive = true);
-        void Show(bool toActice = true);
+        void SetActive(bool isActive = true);
+        void Show(bool activate = true);
 
         #endregion
     }

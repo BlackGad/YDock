@@ -154,10 +154,9 @@ namespace YDock.View
 
         private void _InitMenuItem()
         {
-            var item = default(MenuItem);
             for (var i = 0; i < 5; i++)
             {
-                item = new MenuItem();
+                var item = new MenuItem();
                 switch (i)
                 {
                     case 0:

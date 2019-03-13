@@ -287,8 +287,8 @@ namespace YDock.View
 
         private void OnCommandExecute(object sender, ExecutedRoutedEventArgs e)
         {
-            var ele = Content as DockElement;
-            ele.DockControl.Hide();
+            var element = Content as DockElement;
+            element.DockControl.Hide();
         }
 
         #endregion

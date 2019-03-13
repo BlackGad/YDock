@@ -2,6 +2,9 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+
 namespace YDock
 {
     public static class Win32Helper
@@ -24,8 +27,7 @@ namespace YDock
         public const int WM_ACTIVATE = 0x0006;
         public const int WM_CAPTURECHANGED = 0x0215;
 
-        public const int
-            WM_CREATE = 0x0001;
+        public const int WM_CREATE = 0x0001;
 
         public const int WM_ENTERSIZEMOVE = 0x0231;
         public const int WM_EXITSIZEMOVE = 0x0232;
@@ -62,16 +64,15 @@ namespace YDock
 
         public const int WM_WINDOWPOSCHANGED = 0x0047;
         public const int WM_WINDOWPOSCHANGING = 0x0046;
+        public const int WS_BORDER = 0x00800000;
 
-        public const int
-            WS_CHILD = 0x40000000,
-            WS_VISIBLE = 0x10000000,
-            WS_VSCROLL = 0x00200000,
-            WS_BORDER = 0x00800000,
-            WS_CLIPSIBLINGS = 0x04000000,
-            WS_CLIPCHILDREN = 0x02000000,
-            WS_TABSTOP = 0x00010000,
-            WS_GROUP = 0x00020000;
+        public const int WS_CHILD = 0x40000000;
+        public const int WS_CLIPCHILDREN = 0x02000000;
+        public const int WS_CLIPSIBLINGS = 0x04000000;
+        public const int WS_GROUP = 0x00020000;
+        public const int WS_TABSTOP = 0x00010000;
+        public const int WS_VISIBLE = 0x10000000;
+        public const int WS_VSCROLL = 0x00200000;
 
         public static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
         public static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);

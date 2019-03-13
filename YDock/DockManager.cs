@@ -428,8 +428,8 @@ namespace YDock
                 //优先返回活跃的文档
                 if (ActiveControl != null && ActiveControl.IsDocument) return ActiveControl;
                 if (_root == null) return null;
-                var ele = (_root?.DocumentModels[0].View as TabControl).SelectedItem as DockElement;
-                return ele?.DockControl;
+                var element = (_root?.DocumentModels[0].View as TabControl).SelectedItem as DockElement;
+                return element?.DockControl;
             }
         }
 
@@ -474,7 +474,7 @@ namespace YDock
                                      double floatLeft = 0.0,
                                      double floatTop = 0.0)
         {
-            var ele = new DockElement(true)
+            var element = new DockElement(true)
             {
                 ID = id++,
                 Title = content.Header,
@@ -488,9 +488,9 @@ namespace YDock
                 FloatLeft = floatLeft,
                 FloatTop = floatTop
             };
-            var ctrl = new DockControl(ele);
+            var ctrl = new DockControl(element);
             AddDockControl(ctrl);
-            _root.DocumentModels[0].Attach(ele);
+            _root.DocumentModels[0].Attach(element);
             content.DockControl = ctrl;
         }
 
@@ -513,7 +513,7 @@ namespace YDock
                                  double floatLeft = 0.0,
                                  double floatTop = 0.0)
         {
-            var ele = new DockElement
+            var element = new DockElement
             {
                 ID = id++,
                 Title = content.Header,
@@ -533,14 +533,14 @@ namespace YDock
                 case DockSide.Right:
                 case DockSide.Top:
                 case DockSide.Bottom:
-                    _root.AddSideChild(ele, side);
+                    _root.AddSideChild(element, side);
                     break;
                 default: //其他非法方向返回NULL
-                    ele.Dispose();
+                    element.Dispose();
                     break;
             }
 
-            var ctrl = new DockControl(ele);
+            var ctrl = new DockControl(element);
             AddDockControl(ctrl);
             content.DockControl = ctrl;
         }
@@ -562,7 +562,7 @@ namespace YDock
                                   double floatLeft = 0.0,
                                   double floatTop = 0.0)
         {
-            var ele = new DockElement
+            var element = new DockElement
             {
                 ID = id++,
                 Title = content.Header,
@@ -575,9 +575,9 @@ namespace YDock
                 FloatLeft = floatLeft,
                 FloatTop = floatTop
             };
-            var ctrl = new DockControl(ele);
-            var group = new LayoutGroup(side, ele.Mode, this);
-            group.Attach(ele);
+            var ctrl = new DockControl(element);
+            var group = new LayoutGroup(side, element.Mode, this);
+            group.Attach(element);
             AddDockControl(ctrl);
             content.DockControl = ctrl;
         }
@@ -592,11 +592,9 @@ namespace YDock
 
         public void UpdateTitleAll()
         {
-            IDockSource source;
             foreach (var dockControl in _dockControls.Values)
             {
-                source = dockControl.Content as IDockSource;
-                if (source != null)
+                if (dockControl.Content is IDockSource source)
                 {
                     dockControl.Title = source.Header;
                 }
@@ -677,7 +675,7 @@ namespace YDock
                 }
 
                 group.Attach(source.ProtoType);
-                var _atsource = target.ProtoType.Container.View as IAttcah;
+                var _atsource = target.ProtoType.Container.View as IAttach;
                 _atsource.AttachWith(ctrl, mode);
                 source.SetActive();
             }
@@ -1033,9 +1031,9 @@ namespace YDock
             return rootNode;
         }
 
-        private void _LoadFloatWindows(XElement ele)
+        private void _LoadFloatWindows(XElement element)
         {
-            foreach (var item in ele.Elements())
+            foreach (var item in element.Elements())
             {
                 var node = item.Element("Panel");
                 if (node != null)
@@ -1056,10 +1054,10 @@ namespace YDock
             }
         }
 
-        private void _LoadRootPanel(XElement ele)
+        private void _LoadRootPanel(XElement element)
         {
             var rootNode = new PanelNode(null);
-            rootNode.Load(ele);
+            rootNode.Load(element);
             rootNode.ApplyLayout(this);
             rootNode.Dispose();
         }

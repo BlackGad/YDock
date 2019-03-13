@@ -87,7 +87,7 @@ namespace YDock.Model
 
         public int CompareTo(DockElement other)
         {
-            return Title.CompareTo(other.Title);
+            return string.Compare(Title, other.Title, StringComparison.InvariantCulture);
         }
 
         #endregion
@@ -273,15 +273,18 @@ namespace YDock.Model
         {
             get
             {
-                return _container == null
-                    ? false
-                    : Mode != DockMode.Float || _container?.View == null || _container.Children.Count() > 1 || _container.View.DockViewParent != null || !_canSelect;
+                if (_container == null) return false;
+                return Mode != DockMode.Float ||
+                       _container?.View == null ||
+                       _container.Children.Count() > 1 ||
+                       _container.View.DockViewParent != null ||
+                       !_canSelect;
             }
         }
 
         public bool CanDock
         {
-            get { return _container == null ? false : Mode != DockMode.Normal; }
+            get { return _container != null && Mode != DockMode.Normal; }
         }
 
         public bool CanDockAsDocument
@@ -291,7 +294,7 @@ namespace YDock.Model
 
         public bool CanSwitchAutoHideStatus
         {
-            get { return _container == null ? false : Mode != DockMode.Float; }
+            get { return _container != null && Mode != DockMode.Float; }
         }
 
         public bool CanHide
@@ -490,23 +493,23 @@ namespace YDock.Model
 
         public XElement Save()
         {
-            var ele = new XElement("Item");
-            ele.SetAttributeValue("ID", _id);
-            ele.SetAttributeValue("DesiredWidth", DesiredWidth);
-            ele.SetAttributeValue("DesiredHeight", DesiredHeight);
-            ele.SetAttributeValue("FloatLeft", _floatLeft);
-            ele.SetAttributeValue("FloatTop", _floatTop);
-            ele.SetAttributeValue("CanSelect", _canSelect);
-            return ele;
+            var element = new XElement("Item");
+            element.SetAttributeValue("ID", _id);
+            element.SetAttributeValue("DesiredWidth", DesiredWidth);
+            element.SetAttributeValue("DesiredHeight", DesiredHeight);
+            element.SetAttributeValue("FloatLeft", _floatLeft);
+            element.SetAttributeValue("FloatTop", _floatTop);
+            element.SetAttributeValue("CanSelect", _canSelect);
+            return element;
         }
 
-        public void Load(XElement ele)
+        public void Load(XElement element)
         {
-            DesiredWidth = double.Parse(ele.Attribute("DesiredWidth").Value);
-            DesiredHeight = double.Parse(ele.Attribute("DesiredHeight").Value);
-            _floatLeft = double.Parse(ele.Attribute("FloatLeft").Value);
-            _floatTop = double.Parse(ele.Attribute("FloatTop").Value);
-            CanSelect = bool.Parse(ele.Attribute("CanSelect").Value);
+            DesiredWidth = double.Parse(element.Attribute("DesiredWidth").Value);
+            DesiredHeight = double.Parse(element.Attribute("DesiredHeight").Value);
+            _floatLeft = double.Parse(element.Attribute("FloatLeft").Value);
+            _floatTop = double.Parse(element.Attribute("FloatTop").Value);
+            CanSelect = bool.Parse(element.Attribute("CanSelect").Value);
         }
 
         public bool IsDisposed { get; private set; }

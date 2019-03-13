@@ -48,12 +48,12 @@ namespace YDock.LayoutSetting
             get { return _children; }
         }
 
-        public void Load(XElement ele)
+        public void Load(XElement element)
         {
-            IsDocument = bool.Parse(ele.Attribute("IsDocument").Value);
-            Side = (DockSide)System.Enum.Parse(typeof(DockSide), ele.Attribute("Side").Value);
-            Direction = (Direction)System.Enum.Parse(typeof(Direction), ele.Attribute("Direction").Value);
-            foreach (var item in ele.Elements())
+            IsDocument = bool.Parse(element.Attribute("IsDocument").Value);
+            Side = (DockSide)System.Enum.Parse(typeof(DockSide), element.Attribute("Side").Value);
+            Direction = (Direction)System.Enum.Parse(typeof(Direction), element.Attribute("Direction").Value);
+            foreach (var item in element.Elements())
             {
                 var node = default(ILayoutNode);
                 if (item.Name == "Panel")

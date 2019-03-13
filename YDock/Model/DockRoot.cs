@@ -195,7 +195,7 @@ namespace YDock.Model
 
         public XElement GenerateLayout()
         {
-            var ele = new XElement("ToolBar");
+            var element = new XElement("ToolBar");
 
             // Left bar
             var node = new XElement("LeftBar");
@@ -204,7 +204,7 @@ namespace YDock.Model
                 node.Add(new XElement("Item", item.ID));
             }
 
-            ele.Add(node);
+            element.Add(node);
 
             // Top bar
             node = new XElement("TopBar");
@@ -213,7 +213,7 @@ namespace YDock.Model
                 node.Add(new XElement("Item", item.ID));
             }
 
-            ele.Add(node);
+            element.Add(node);
 
             // Right bar
             node = new XElement("RightBar");
@@ -222,7 +222,7 @@ namespace YDock.Model
                 node.Add(new XElement("Item", item.ID));
             }
 
-            ele.Add(node);
+            element.Add(node);
 
             // Bottom bar
             node = new XElement("BottomBar");
@@ -231,9 +231,9 @@ namespace YDock.Model
                 node.Add(new XElement("Item", item.ID));
             }
 
-            ele.Add(node);
+            element.Add(node);
 
-            return ele;
+            return element;
         }
 
         public void LoadLayout(XElement root)
@@ -241,47 +241,47 @@ namespace YDock.Model
             foreach (var item in root.Element("LeftBar").Elements())
             {
                 var id = int.Parse(item.Value);
-                var ele = _dockManager.GetDockControl(id);
-                ele.ProtoType.ToDockSide(DockSide.Left);
+                var element = _dockManager.GetDockControl(id);
+                element.ProtoType.ToDockSide(DockSide.Left);
             }
 
             foreach (var item in root.Element("TopBar").Elements())
             {
                 var id = int.Parse(item.Value);
-                var ele = _dockManager.GetDockControl(id);
-                ele.ProtoType.ToDockSide(DockSide.Top);
+                var element = _dockManager.GetDockControl(id);
+                element.ProtoType.ToDockSide(DockSide.Top);
             }
 
             foreach (var item in root.Element("RightBar").Elements())
             {
                 var id = int.Parse(item.Value);
-                var ele = _dockManager.GetDockControl(id);
-                ele.ProtoType.ToDockSide(DockSide.Right);
+                var element = _dockManager.GetDockControl(id);
+                element.ProtoType.ToDockSide(DockSide.Right);
             }
 
             foreach (var item in root.Element("BottomBar").Elements())
             {
                 var id = int.Parse(item.Value);
-                var ele = _dockManager.GetDockControl(id);
-                ele.ProtoType.ToDockSide(DockSide.Bottom);
+                var element = _dockManager.GetDockControl(id);
+                element.ProtoType.ToDockSide(DockSide.Bottom);
             }
         }
 
-        internal void AddSideChild(IDockElement ele, DockSide side)
+        internal void AddSideChild(IDockElement element, DockSide side)
         {
             switch (side)
             {
                 case DockSide.Left:
-                    LeftSide.Attach(ele);
+                    LeftSide.Attach(element);
                     break;
                 case DockSide.Right:
-                    RightSide.Attach(ele);
+                    RightSide.Attach(element);
                     break;
                 case DockSide.Top:
-                    TopSide.Attach(ele);
+                    TopSide.Attach(element);
                     break;
                 case DockSide.Bottom:
-                    BottomSide.Attach(ele);
+                    BottomSide.Attach(element);
                     break;
             }
         }

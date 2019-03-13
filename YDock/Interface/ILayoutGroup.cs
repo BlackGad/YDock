@@ -23,8 +23,8 @@ namespace YDock.Interface
         int IndexOf(IDockElement child);
         void MoveTo(int src, int des);
         void RaisePropertyChanged(string propertyName);
-        void ShowWithActive(IDockElement element, bool toActice = true);
-        void ShowWithActive(int index, bool toActice = true);
+        void ShowWithActive(IDockElement element, bool activate = true);
+        void ShowWithActive(int index, bool activate = true);
         void ToFloat();
 
         #endregion

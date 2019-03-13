@@ -132,7 +132,7 @@ namespace YDock
         /// </summary>
         public bool CanFloat
         {
-            get { return ProtoType == null ? false : ProtoType.CanFloat; }
+            get { return ProtoType != null && ProtoType.CanFloat; }
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace YDock
         /// </summary>
         public bool CanDock
         {
-            get { return ProtoType == null ? false : ProtoType.CanDock; }
+            get { return ProtoType != null && ProtoType.CanDock; }
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace YDock
         /// </summary>
         public bool CanDockAsDocument
         {
-            get { return ProtoType == null ? false : ProtoType.CanDockAsDocument; }
+            get { return ProtoType != null && ProtoType.CanDockAsDocument; }
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace YDock
         /// </summary>
         public bool CanSwitchAutoHideStatus
         {
-            get { return ProtoType == null ? false : ProtoType.CanSwitchAutoHideStatus; }
+            get { return ProtoType != null && ProtoType.CanSwitchAutoHideStatus; }
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace YDock
         /// </summary>
         public bool CanHide
         {
-            get { return ProtoType == null ? false : ProtoType.CanHide; }
+            get { return ProtoType != null && ProtoType.CanHide; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
@@ -173,23 +173,23 @@ namespace YDock
         ///     通用显示的方法。
         ///     显示的模式（Dock，Float，AnchorSide）与当前Status有关
         /// </summary>
-        public void Show(bool toActice = true)
+        public void Show(bool activate = true)
         {
             if (IsVisible && IsActive) return;
             if (Mode == DockMode.Float)
             {
                 if (!IsDocument)
                 {
-                    ToFloat(toActice);
+                    ToFloat(activate);
                 }
                 else
                 {
-                    ToDockAsDocument(toActice);
+                    ToDockAsDocument(activate);
                 }
             }
             else
             {
-                Container.ShowWithActive(ProtoType, toActice);
+                Container.ShowWithActive(ProtoType, activate);
             }
         }
 
@@ -256,11 +256,11 @@ namespace YDock
             Hide();
         }
 
-        public void SetActive(bool _isActive = true)
+        public void SetActive(bool isActive = true)
         {
-            if (_isActive)
+            if (isActive)
             {
-                ProtoType.Container.ShowWithActive(ProtoType, _isActive);
+                ProtoType.Container.ShowWithActive(ProtoType);
             }
             else if (DockManager.ActiveElement == ProtoType)
             {

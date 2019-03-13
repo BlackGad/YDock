@@ -17,7 +17,7 @@ namespace YDock.Interface
 
         #region Members
 
-        void Load(XElement ele);
+        void Load(XElement element);
 
         #endregion
     }

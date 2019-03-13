@@ -21,7 +21,7 @@ namespace YDock.View
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(ele => ele.Visibility != Visibility.Collapsed);
+            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(element => element.Visibility != Visibility.Collapsed);
 
             var height = 0.0;
             var width = 0.0;
@@ -37,27 +37,27 @@ namespace YDock.View
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var visibleChildren = InternalChildren.Cast<TabItem>().Where(ele => ele.Visibility != Visibility.Collapsed).ToList();
+            var visibleChildren = InternalChildren.Cast<TabItem>().Where(element => element.Visibility != Visibility.Collapsed).ToList();
 
             var width = 0.0;
             var index = 0;
             for (; index < visibleChildren.Count; index++)
             {
-                var ele = visibleChildren[index];
-                ele.Arrange(new Rect(new Point(width, 0), ele.DesiredSize));
-                width += ele.DesiredSize.Width + ele.Margin.Left + ele.Margin.Right;
+                var element = visibleChildren[index];
+                element.Arrange(new Rect(new Point(width, 0), element.DesiredSize));
+                width += element.DesiredSize.Width + element.Margin.Left + element.Margin.Right;
                 if (width > finalSize.Width)
                 {
-                    ele.Visibility = Visibility.Hidden;
-                    if (ele.IsSelected)
+                    element.Visibility = Visibility.Hidden;
+                    if (element.IsSelected)
                     {
-                        ele.Visibility = Visibility.Visible;
+                        element.Visibility = Visibility.Visible;
                         break;
                     }
                 }
                 else
                 {
-                    ele.Visibility = Visibility.Visible;
+                    element.Visibility = Visibility.Visible;
                 }
             }
 

@@ -41,9 +41,9 @@ namespace YDock.LayoutSetting
             get { yield break; }
         }
 
-        public void Load(XElement ele)
+        public void Load(XElement element)
         {
-            ID = int.Parse(ele.Value);
+            ID = int.Parse(element.Value);
         }
 
         public void Dispose()

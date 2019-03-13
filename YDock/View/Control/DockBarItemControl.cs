@@ -36,14 +36,14 @@ namespace YDock.View
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            var ele = Content as DockElement;
-            if (ele == Container.DockManager.AutoHideElement)
+            var element = Content as DockElement;
+            if (element == Container.DockManager.AutoHideElement)
             {
                 Container.ShowWithActive(null);
             }
             else
             {
-                Container.ShowWithActive(ele);
+                Container.ShowWithActive(element);
             }
 
             base.OnMouseLeftButtonDown(e);
