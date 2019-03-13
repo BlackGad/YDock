@@ -7,9 +7,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.Model;
+using YDock.Model.Layout;
+using YDock.View.Control;
+using YDock.View.Meun;
 
-namespace YDock.View
+namespace YDock.View.Window
 {
     public class AnchorGroupWindow : BaseFloatWindow,
                                      INotifyPropertyChanged

@@ -11,7 +11,12 @@ using YDock.Enum;
 using YDock.Interface;
 using YDock.LayoutSetting;
 using YDock.Model;
+using YDock.Model.Element;
+using YDock.Model.Layout;
 using YDock.View;
+using YDock.View.Control;
+using YDock.View.Layout;
+using YDock.View.Window;
 
 namespace YDock
 {

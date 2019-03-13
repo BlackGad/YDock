@@ -1,12 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using YDock.Model;
+using YDock.Model.Element;
 
-namespace YDock.View
+namespace YDock.View.Element
 {
-    public class LayoutContentControl : Control,
+    public class LayoutContentControl : System.Windows.Controls.Control,
                                         INotifyPropertyChanged,
                                         IDisposable
     {

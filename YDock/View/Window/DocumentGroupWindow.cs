@@ -4,11 +4,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using YDock.Commands;
 using YDock.Enum;
+using YDock.Global.Commands;
 using YDock.Interface;
+using YDock.View.Control;
 
-namespace YDock.View
+namespace YDock.View.Window
 {
     public class DocumentGroupWindow : BaseFloatWindow
     {

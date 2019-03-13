@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Input;
-using YDock.Commands;
-using YDock.Global;
+using YDock.Global.Commands;
+using YDock.Global.Extension;
 using YDock.Interface;
 
-namespace YDock.View
+namespace YDock.View.Meun
 {
     public class DockMenu : ContextMenu,
                             IDisposable

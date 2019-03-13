@@ -3,7 +3,7 @@ using System.Windows.Markup;
 using YDock.Enum;
 using YDock.Interface;
 
-namespace YDock.Model
+namespace YDock.Model.Layout
 {
     [ContentProperty("Children")]
     public class DockSideGroup : BaseLayoutGroup

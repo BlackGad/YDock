@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using YDock.Model;
+using YDock.Model.Element;
 
-namespace YDock.View
+namespace YDock.View.Render
 {
     public class TextureHeaderVisual : BaseVisual
     {

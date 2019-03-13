@@ -6,8 +6,9 @@ using System.ComponentModel;
 using System.Linq;
 using YDock.Enum;
 using YDock.Interface;
+using YDock.Model.Element;
 
-namespace YDock.Model
+namespace YDock.Model.Layout
 {
     public abstract class BaseLayoutGroup : ILayoutGroup
     {

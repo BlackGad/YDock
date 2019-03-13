@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
-namespace YDock.View
+namespace YDock.View.Control
 {
     public class CustomToggleButton : ToggleButton,
                                       IDisposable

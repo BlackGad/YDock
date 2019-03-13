@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using YDock.View;
+using YDock.View.Control;
+using YDock.View.Window;
 
 namespace YDock
 {

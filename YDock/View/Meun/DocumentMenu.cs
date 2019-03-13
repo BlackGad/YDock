@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
-using YDock.Commands;
 using YDock.Enum;
-using YDock.Global;
+using YDock.Global.Commands;
+using YDock.Global.Extension;
 using YDock.Interface;
 
-namespace YDock.View
+namespace YDock.View.Meun
 {
     public class DocumentMenu : ContextMenu,
                                 IDisposable

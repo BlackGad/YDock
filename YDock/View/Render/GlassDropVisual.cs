@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using YDock.Enum;
 
-namespace YDock.View
+namespace YDock.View.Render
 {
     public class GlassDropVisual : BaseDropVisual
     {

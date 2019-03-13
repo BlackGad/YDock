@@ -6,9 +6,11 @@ using System.Windows.Media;
 using System.Xml.Linq;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.View;
+using YDock.Model.Layout;
+using YDock.View.Control;
+using YDock.View.Window;
 
-namespace YDock.Model
+namespace YDock.Model.Element
 {
     public class DockElement : DependencyObject,
                                IDockElement,

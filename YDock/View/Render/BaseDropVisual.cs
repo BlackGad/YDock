@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace YDock.View
+namespace YDock.View.Render
 {
     public abstract class BaseDropVisual : BaseVisual
     {

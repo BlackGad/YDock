@@ -2,9 +2,9 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using YDock.Interface;
-using YDock.Model;
+using YDock.Model.Element;
 
-namespace YDock.View
+namespace YDock.View.Control
 {
     public class DockBarItemControl : ContentControl,
                                       IDockView

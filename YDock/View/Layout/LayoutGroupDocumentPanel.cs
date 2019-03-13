@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.Model;
+using YDock.Model.Layout;
+using YDock.View.Control;
 
-namespace YDock.View
+namespace YDock.View.Layout
 {
     public class LayoutGroupDocumentPanel : LayoutGroupPanel
     {

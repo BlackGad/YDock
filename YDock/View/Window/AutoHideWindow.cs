@@ -7,9 +7,11 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.Model;
+using YDock.Model.Element;
+using YDock.View.Element;
+using YDock.View.Layout;
 
-namespace YDock.View
+namespace YDock.View.Window
 {
     public class AutoHideWindow : Panel,
                                   ILayout,

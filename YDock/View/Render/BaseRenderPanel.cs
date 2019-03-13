@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 
-namespace YDock.View
+namespace YDock.View.Render
 {
     public class BaseRenderPanel : FrameworkElement,
                                    IDisposable

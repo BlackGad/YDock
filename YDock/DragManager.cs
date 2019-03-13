@@ -6,7 +6,12 @@ using System.Windows.Threading;
 using YDock.Enum;
 using YDock.Interface;
 using YDock.Model;
+using YDock.Model.Layout;
 using YDock.View;
+using YDock.View.Control;
+using YDock.View.Layout;
+using YDock.View.Render;
+using YDock.View.Window;
 
 namespace YDock
 {

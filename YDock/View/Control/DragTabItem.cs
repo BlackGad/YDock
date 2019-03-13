@@ -2,12 +2,14 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using YDock.Commands;
 using YDock.Enum;
+using YDock.Global.Commands;
 using YDock.Interface;
-using YDock.Model;
+using YDock.Model.Element;
+using YDock.Model.Layout;
+using YDock.View.Meun;
 
-namespace YDock.View
+namespace YDock.View.Control
 {
     public class DragTabItem : TabItem,
                                IDockView

@@ -5,7 +5,7 @@ using System.Linq;
 using YDock.Enum;
 using YDock.Interface;
 
-namespace YDock.Model
+namespace YDock.Model.Layout
 {
     public class LayoutDocumentGroup : LayoutGroup
     {

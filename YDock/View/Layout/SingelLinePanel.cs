@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace YDock.View
+namespace YDock.View.Layout
 {
     public class SingelLinePanel : Panel
     {

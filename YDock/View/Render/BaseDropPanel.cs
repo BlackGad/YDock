@@ -2,8 +2,9 @@
 using System.Windows.Media;
 using YDock.Enum;
 using YDock.Interface;
+using YDock.View.Control;
 
-namespace YDock.View
+namespace YDock.View.Render
 {
     public class BaseDropPanel : BaseRenderPanel
     {

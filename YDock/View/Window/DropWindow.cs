@@ -4,8 +4,9 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using YDock.Enum;
 using YDock.Interface;
+using YDock.View.Render;
 
-namespace YDock.View
+namespace YDock.View.Window
 {
     public class DropWindow : Popup,
                               IDropWindow,

@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
-namespace YDock.View
+namespace YDock.View.Window
 {
     [TemplateVisualState(GroupName = PresentationGroup, Name = NormalState)]
     [TemplateVisualState(GroupName = PresentationGroup, Name = DefaultTransitionState)]

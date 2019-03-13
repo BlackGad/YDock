@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using YDock.Commands;
 using YDock.Enum;
+using YDock.Global.Commands;
 using YDock.Interface;
-using YDock.Model;
+using YDock.Model.Element;
+using YDock.View.Meun;
 
-namespace YDock.View
+namespace YDock.View.Control
 {
-    public class AnchorHeaderControl : Control,
+    public class AnchorHeaderControl : System.Windows.Controls.Control,
                                        IDisposable
     {
         private Point _mouseDown;

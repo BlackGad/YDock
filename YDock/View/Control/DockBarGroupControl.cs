@@ -7,9 +7,9 @@ using System.Windows.Data;
 using System.Windows.Media;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.Model;
+using YDock.Model.Layout;
 
-namespace YDock.View
+namespace YDock.View.Control
 {
     public class DockBarGroupControl : ItemsControl,
                                        IDockView

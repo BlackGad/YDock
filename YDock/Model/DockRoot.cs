@@ -4,6 +4,7 @@ using System.Windows;
 using System.Xml.Linq;
 using YDock.Enum;
 using YDock.Interface;
+using YDock.Model.Layout;
 
 namespace YDock.Model
 {

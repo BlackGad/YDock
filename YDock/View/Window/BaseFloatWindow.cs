@@ -5,14 +5,17 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Xml.Linq;
-using YDock.Commands;
 using YDock.Enum;
+using YDock.Global.Commands;
 using YDock.Interface;
-using YDock.Model;
+using YDock.Model.Element;
+using YDock.Model.Layout;
+using YDock.View.Control;
+using YDock.View.Layout;
 
-namespace YDock.View
+namespace YDock.View.Window
 {
-    public abstract class BaseFloatWindow : Window,
+    public abstract class BaseFloatWindow : System.Windows.Window,
                                             ILayoutViewParent
     {
         protected DockManager _dockManager;

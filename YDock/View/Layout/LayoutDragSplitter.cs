@@ -2,7 +2,7 @@
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
-namespace YDock.View
+namespace YDock.View.Layout
 {
     public class LayoutDragSplitter : Thumb
     {

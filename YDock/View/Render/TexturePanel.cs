@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using YDock.Interface;
 
-namespace YDock.View
+namespace YDock.View.Render
 {
     public class TexturePanel : BaseRenderPanel
     {

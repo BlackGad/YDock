@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
-namespace YDock.View
+namespace YDock.View.Window
 {
     public static class VisualStates
     {

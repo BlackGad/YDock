@@ -2,8 +2,9 @@
 using System.Windows;
 using System.Windows.Media;
 using YDock.Enum;
+using YDock.View.Control;
 
-namespace YDock.View
+namespace YDock.View.Render
 {
     public class ActiveRectDropVisual : BaseDropVisual
     {

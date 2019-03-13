@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using YDock.Interface;
 
-namespace YDock.View
+namespace YDock.View.Layout
 {
     public class DocumentPanel : Panel
     {

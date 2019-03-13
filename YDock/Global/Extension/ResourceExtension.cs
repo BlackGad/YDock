@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace YDock.Global
+namespace YDock.Global.Extension
 {
     public class ResourceExtension : MarkupExtension,
                                      INotifyPropertyChanged

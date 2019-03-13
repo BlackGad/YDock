@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using YDock.Interface;
 
-namespace YDock.View
+namespace YDock.View.Control
 {
     public class CustomMenuItem : MenuItem
     {

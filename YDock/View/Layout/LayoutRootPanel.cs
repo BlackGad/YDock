@@ -3,8 +3,10 @@ using System.Windows.Controls;
 using YDock.Enum;
 using YDock.Interface;
 using YDock.Model;
+using YDock.View.Control;
+using YDock.View.Window;
 
-namespace YDock.View
+namespace YDock.View.Layout
 {
     /// <summary>
     ///     用于容纳<see cref="LayoutGroupPanel" />,以及AutoHideWindow

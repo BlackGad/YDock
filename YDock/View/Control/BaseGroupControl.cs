@@ -9,9 +9,13 @@ using System.Windows.Media;
 using System.Xml.Linq;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.Model;
+using YDock.Model.Element;
+using YDock.Model.Layout;
+using YDock.View.Layout;
+using YDock.View.Render;
+using YDock.View.Window;
 
-namespace YDock.View
+namespace YDock.View.Control
 {
     public class BaseGroupControl : TabControl,
                                     ILayoutGroupControl,
@@ -418,7 +422,7 @@ namespace YDock.View
                     {
                         var ctrl = this as LayoutDocumentGroupControl;
                         var panel = DockViewParent as LayoutGroupDocumentPanel;
-                        if (panel.Children.Count > 1 || DockManager.MainWindow != Window.GetWindow(panel))
+                        if (panel.Children.Count > 1 || DockManager.MainWindow != System.Windows.Window.GetWindow(panel))
                         {
                             panel.DetachChild(this);
                             if (isDispose)
@@ -436,7 +440,7 @@ namespace YDock.View
 
                 var parent = Parent;
                 (parent as ILayoutViewParent).DetachChild(this);
-                if (parent is Window) (parent as Window).Close();
+                if (parent is System.Windows.Window) (parent as System.Windows.Window).Close();
                 DesiredHeight = ActualHeight;
                 DesiredWidth = ActualWidth;
                 if (isDispose)

@@ -1,8 +1,10 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using YDock.Enum;
+using YDock.View.Control;
+using YDock.View.Layout;
 
-namespace YDock.View
+namespace YDock.View.Render
 {
     public class UnitDropVisual : BaseDropVisual
     {

@@ -4,9 +4,9 @@ using System.Windows;
 using System.Windows.Interop;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.Model;
+using YDock.Model.Element;
 
-namespace YDock.View
+namespace YDock.View.Window
 {
     public class _AutoHideWindow : HwndHost,
                                    ILayout

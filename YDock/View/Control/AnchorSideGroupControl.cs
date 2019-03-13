@@ -2,8 +2,10 @@
 using System.Windows;
 using YDock.Enum;
 using YDock.Interface;
+using YDock.View.Layout;
+using YDock.View.Window;
 
-namespace YDock.View
+namespace YDock.View.Control
 {
     public class AnchorSideGroupControl : BaseGroupControl
     {

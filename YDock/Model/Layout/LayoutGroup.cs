@@ -5,9 +5,11 @@ using System.Linq;
 using System.Windows.Controls;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.View;
+using YDock.Model.Element;
+using YDock.View.Control;
+using YDock.View.Window;
 
-namespace YDock.Model
+namespace YDock.Model.Layout
 {
     public class LayoutGroup : BaseLayoutGroup
     {

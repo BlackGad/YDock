@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 
-namespace YDock.View
+namespace YDock.View.Control
 {
     public class PopupNotTop : Popup
     {
@@ -57,7 +57,7 @@ namespace YDock.View
 
         #endregion
 
-        public static DependencyProperty TopmostProperty = Window.TopmostProperty.AddOwner(typeof(PopupNotTop), new FrameworkPropertyMetadata(false, OnTopmostChanged));
+        public static DependencyProperty TopmostProperty = System.Windows.Window.TopmostProperty.AddOwner(typeof(PopupNotTop), new FrameworkPropertyMetadata(false, OnTopmostChanged));
 
         #region Nested type: RECT
 

@@ -10,9 +10,11 @@ using System.Windows.Shapes;
 using System.Xml.Linq;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.Model;
+using YDock.Model.Layout;
+using YDock.View.Control;
+using YDock.View.Window;
 
-namespace YDock.View
+namespace YDock.View.Layout
 {
     /// <summary>
     ///     the core class for layout and resize region

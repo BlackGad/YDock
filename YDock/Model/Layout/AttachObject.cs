@@ -2,9 +2,10 @@
 using System.Linq;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.View;
+using YDock.View.Control;
+using YDock.View.Layout;
 
-namespace YDock.Model
+namespace YDock.Model.Layout
 {
     internal class AttachObject : IDisposable
     {

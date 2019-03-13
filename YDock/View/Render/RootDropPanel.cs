@@ -1,6 +1,6 @@
 ﻿using YDock.Interface;
 
-namespace YDock.View
+namespace YDock.View.Render
 {
     public class RootDropPanel : BaseDropPanel
     {

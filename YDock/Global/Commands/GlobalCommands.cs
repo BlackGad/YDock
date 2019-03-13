@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace YDock.Commands
+namespace YDock.Global.Commands
 {
     public static class GlobalCommands
     {
