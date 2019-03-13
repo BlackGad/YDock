@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using YDock.Enum;
 using YDock.Interface;
@@ -11,7 +7,8 @@ namespace YDock.View
 {
     public class BaseDropPanel : BaseRenderPanel
     {
-        private static BaseDropVisual _activeVisual;
+        #region Static members
+
         internal static BaseDropVisual ActiveVisual
         {
             get { return _activeVisual; }
@@ -24,6 +21,7 @@ namespace YDock.View
                         _activeVisual.Flag &= ~DragManager.ACTIVE;
                         _activeVisual.Update();
                     }
+
                     _activeVisual = value;
                     if (_activeVisual != null)
                     {
@@ -34,7 +32,6 @@ namespace YDock.View
             }
         }
 
-        private static ActiveRectDropVisual _currentRect;
         internal static ActiveRectDropVisual CurrentRect
         {
             get { return _currentRect; }
@@ -48,57 +45,78 @@ namespace YDock.View
                         _currentRect.Flag = DragManager.NONE;
                         _currentRect.Update();
                     }
+
                     _currentRect = value;
                     if (_currentRect != null)
+                    {
                         _currentRect.Update();
+                    }
                 }
-                else _currentRect?.Update();
+                else
+                {
+                    _currentRect?.Update();
+                }
             }
         }
+
+        #endregion
+
+        protected DragItem _source;
+
+        protected IDragTarget _target;
+
+        #region Constructors
 
         internal BaseDropPanel(IDragTarget target, DragItem source)
         {
             _target = target;
             _source = source;
             //绘制停靠的区域
-            _activeRect = new ActiveRectDropVisual(DragManager.NONE);
-            AddChild(_activeRect);
+            ActiveRect = new ActiveRectDropVisual(DragManager.NONE);
+            AddChild(ActiveRect);
         }
 
-        protected IDragTarget _target;
-        /// <summary>
-        /// 拖放目标
-        /// </summary>
-        internal IDragTarget Target
-        {
-            get { return _target; }
-        }
+        #endregion
 
-        protected DragItem _source;
+        #region Properties
+
+        public ActiveRectDropVisual ActiveRect { get; private set; }
+
+        public Rect InnerRect { get; set; }
+
+        public Rect OuterRect { get; set; }
+
         /// <summary>
-        /// 拖放源
+        ///     拖放源
         /// </summary>
         internal DragItem Source
         {
             get { return _source; }
         }
 
-        private ActiveRectDropVisual _activeRect;
-        public ActiveRectDropVisual ActiveRect { get { return _activeRect; } }
-
-        private Rect _innerRect;
-        public Rect InnerRect
+        /// <summary>
+        ///     拖放目标
+        /// </summary>
+        internal IDragTarget Target
         {
-            get { return _innerRect; }
-            set { _innerRect = value; }
+            get { return _target; }
         }
 
-        private Rect _outerRect;
-        public Rect OuterRect
+        #endregion
+
+        #region Override members
+
+        public override void Dispose()
         {
-            get { return _outerRect; }
-            set { _outerRect = value; }
+            _target = null;
+            _source = null;
+            ActiveRect = null;
+            base.Dispose();
         }
+
+        #endregion
+
+        #region Members
 
         public void Update(Point mouseP)
         {
@@ -106,30 +124,36 @@ namespace YDock.View
             var result = VisualTreeHelper.HitTest(this, new Point(mouseP.X - p.X, mouseP.Y - p.Y));
             if (result?.VisualHit != null && result?.VisualHit is UnitDropVisual)
             {
-                UnitDropVisual visual = result?.VisualHit as UnitDropVisual;
+                var visual = result?.VisualHit as UnitDropVisual;
                 ActiveVisual = visual;
                 var mode = _GetMode(visual.Flag);
                 if (mode == _target.DropMode)
+                {
                     return;
+                }
+
                 _target.DropMode = mode;
 
-                _activeRect.Flag = visual.Flag;
-                _activeRect.Rect = Rect.Empty;
+                ActiveRect.Flag = visual.Flag;
+                ActiveRect.Rect = Rect.Empty;
             }
             else
             {
                 ActiveVisual = null;
                 if (_target is BaseGroupControl)
                 {
-                    (_target as BaseGroupControl).HitTest(mouseP, _activeRect);
+                    (_target as BaseGroupControl).HitTest(mouseP, ActiveRect);
                     if (!(_target as BaseGroupControl).canUpdate)
+                    {
                         return;
-                    _target.DropMode = _GetMode(_activeRect.Flag);
+                    }
+
+                    _target.DropMode = _GetMode(ActiveRect.Flag);
                 }
                 else
                 {
                     _target.DropMode = DropMode.None;
-                    _activeRect.Flag = DragManager.NONE;
+                    ActiveRect.Flag = DragManager.NONE;
                 }
             }
 
@@ -142,93 +166,75 @@ namespace YDock.View
                     _currentRect.DropPanel._target.DropMode = DropMode.None;
                     _currentRect.Update();
                 }
-                _activeRect.Update();
+
+                ActiveRect.Update();
             }
+
             if (!(this is RootDropPanel))
-                CurrentRect = _activeRect;
+            {
+                CurrentRect = ActiveRect;
+            }
         }
 
-        DropMode _GetMode(int flag)
+        private DropMode _GetMode(int flag)
         {
             if ((flag & DragManager.HEAD) != 0)
+            {
                 return DropMode.Header;
+            }
+
             if ((flag & DragManager.LEFT) != 0)
             {
                 if ((flag & DragManager.SPLIT) != 0)
+                {
                     return DropMode.Left_WithSplit;
-                else return DropMode.Left;
+                }
+
+                return DropMode.Left;
             }
+
             if ((flag & DragManager.RIGHT) != 0)
             {
                 if ((flag & DragManager.SPLIT) != 0)
+                {
                     return DropMode.Right_WithSplit;
-                else return DropMode.Right;
+                }
+
+                return DropMode.Right;
             }
+
             if ((flag & DragManager.TOP) != 0)
             {
                 if ((flag & DragManager.SPLIT) != 0)
+                {
                     return DropMode.Top_WithSplit;
-                else return DropMode.Top;
+                }
+
+                return DropMode.Top;
             }
+
             if ((flag & DragManager.BOTTOM) != 0)
             {
                 if ((flag & DragManager.SPLIT) != 0)
+                {
                     return DropMode.Bottom_WithSplit;
-                else return DropMode.Bottom;
+                }
+
+                return DropMode.Bottom;
             }
+
             if ((flag & DragManager.CENTER) != 0)
+            {
                 return DropMode.Center;
+            }
+
             return DropMode.None;
         }
 
-        public override void Dispose()
-        {
-            _target = null;
-            _source = null;
-            _activeRect = null;
-            base.Dispose();
-        }
-    }
+        #endregion
 
-    public class RootDropPanel : BaseDropPanel
-    {
-        internal RootDropPanel(IDragTarget target, DragItem source) : base(target, source)
-        {
-            //绘制左边的拖放区域
-            AddChild(new UnitDropVisual(DragManager.LEFT));
-            //绘制顶部的拖放区域
-            AddChild(new UnitDropVisual(DragManager.TOP));
-            //绘制右边的拖放区域
-            AddChild(new UnitDropVisual(DragManager.RIGHT));
-            //绘制底部的拖放区域
-            AddChild(new UnitDropVisual(DragManager.BOTTOM));
-        }
-    }
+        private static BaseDropVisual _activeVisual;
 
-    public class DropPanel : BaseDropPanel
-    {
-        internal DropPanel(IDragTarget target, DragItem source) : base(target, source)
-        {
-            //绘制拖放区域的玻璃外观
-            AddChild(new GlassDropVisual(DragManager.NONE));
-            //绘制中心的拖放区域
-            AddChild(new UnitDropVisual(DragManager.CENTER));
-            //绘制左边的拖放区域
-            AddChild(new UnitDropVisual(DragManager.LEFT));
-            //绘制顶部的拖放区域
-            AddChild(new UnitDropVisual(DragManager.TOP));
-            //绘制右边的拖放区域
-            AddChild(new UnitDropVisual(DragManager.RIGHT));
-            //绘制底部的拖放区域
-            AddChild(new UnitDropVisual(DragManager.BOTTOM));
-            //绘制左分割的拖放区域
-            AddChild(new UnitDropVisual(DragManager.LEFT | DragManager.SPLIT));
-            //绘制上分割的拖放区域
-            AddChild(new UnitDropVisual(DragManager.TOP | DragManager.SPLIT));
-            //绘制右分割的拖放区域
-            AddChild(new UnitDropVisual(DragManager.RIGHT | DragManager.SPLIT));
-            //绘制下分割的拖放区域
-            AddChild(new UnitDropVisual(DragManager.BOTTOM | DragManager.SPLIT));
-        }
+        private static ActiveRectDropVisual _currentRect;
     }
 }

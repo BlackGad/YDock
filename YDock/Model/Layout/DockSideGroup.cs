@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Windows.Markup;
 using YDock.Enum;
 using YDock.Interface;
@@ -13,32 +8,39 @@ namespace YDock.Model
     [ContentProperty("Children")]
     public class DockSideGroup : BaseLayoutGroup
     {
+        private DockRoot _root;
+
+        #region Constructors
+
         public DockSideGroup()
         {
             _mode = DockMode.DockBar;
         }
 
-        #region Root
-        private DockRoot _root;
+        #endregion
+
+        #region Properties
+
+        public override DockManager DockManager
+        {
+            get { return _root.DockManager; }
+        }
+
         public DockRoot Root
         {
             get { return _root; }
             set
             {
                 if (_root != value)
+                {
                     _root = value;
+                }
             }
         }
+
         #endregion
 
-
-        public override DockManager DockManager
-        {
-            get
-            {
-                return _root.DockManager;
-            }
-        }
+        #region Override members
 
         public override void ShowWithActive(IDockElement element, bool toActive = true)
         {
@@ -50,13 +52,17 @@ namespace YDock.Model
         {
             base.Detach(element);
             if (DockManager.AutoHideElement == element)
+            {
                 DockManager.AutoHideElement = null;
+            }
         }
 
         public override void ToFloat()
         {
             foreach (var child in _children.ToList())
+            {
                 child.ToFloat();
+            }
         }
 
         public override void Dispose()
@@ -64,5 +70,7 @@ namespace YDock.Model
             base.Dispose();
             _root = null;
         }
+
+        #endregion
     }
 }

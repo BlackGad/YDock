@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Media;
-using YDock.Interface;
+﻿using System.Windows;
 using YDock.Model;
 
 namespace YDock.View
 {
     public class TextureHeaderVisual : BaseVisual
     {
+        #region Override members
+
         public override void Update(Size size)
         {
-            double voffset = (size.Height - 4) / 2;
+            var voffset = (size.Height - 4) / 2;
             using (var ctx = RenderOpen())
             {
                 var model = (VisualParent as FrameworkElement).DataContext as DockElement;
@@ -32,5 +28,7 @@ namespace YDock.View
                 }
             }
         }
+
+        #endregion
     }
 }

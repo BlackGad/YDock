@@ -108,7 +108,7 @@ namespace YDockTest
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(SettingFileName))
+            if (File.Exists(SettingFileName) && false)
             {
                 var layout = XDocument.Parse(File.ReadAllText(SettingFileName));
                 foreach (var item in layout.Root.Elements())

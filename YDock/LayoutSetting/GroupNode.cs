@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Xml.Linq;
 using YDock.Enum;
 using YDock.Interface;
@@ -11,25 +7,71 @@ namespace YDock.LayoutSetting
 {
     public class GroupNode : ILayoutNode
     {
+        private readonly LinkedList<ItemNode> _children;
+        private PanelNode _parent;
+
+        #region Constructors
+
         public GroupNode(PanelNode parent)
         {
             _parent = parent;
             _children = new LinkedList<ItemNode>();
         }
 
-        public bool IsDocument { get { return _isDocument; } }
-        private bool _isDocument;
+        #endregion
 
-        public DockSide Side { get { return _side; } }
-        private DockSide _side;
+        #region Properties
 
-        public LayoutNodeType Type { get { return LayoutNodeType.Group; } }
+        public bool IsDocument { get; private set; }
 
-        public ILayoutNode Parent { get { return _parent; } }
-        private PanelNode _parent;
+        public DockSide Side { get; private set; }
 
-        public IEnumerable<ILayoutNode> Children { get { return _children; } }
-        private LinkedList<ItemNode> _children;
+        #endregion
+
+        #region ILayoutNode Members
+
+        public LayoutNodeType Type
+        {
+            get { return LayoutNodeType.Group; }
+        }
+
+        public ILayoutNode Parent
+        {
+            get { return _parent; }
+        }
+
+        public IEnumerable<ILayoutNode> Children
+        {
+            get { return _children; }
+        }
+
+        public void Load(XElement ele)
+        {
+            IsDocument = bool.Parse(ele.Attribute("IsDocument").Value);
+            Side = (DockSide)System.Enum.Parse(typeof(DockSide), ele.Attribute("Side").Value);
+            foreach (var item in ele.Elements())
+            {
+                var itemNode = new ItemNode(this);
+                itemNode.Load(item);
+                _children.AddLast(itemNode);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var child in _children)
+            {
+                child.Dispose();
+            }
+
+            _children.Clear();
+
+            _parent = null;
+        }
+
+        #endregion
+
+        #region Members
 
         public IDockControl ApplyLayout(DockManager dockManager, bool isFloat = false)
         {
@@ -42,13 +84,20 @@ namespace YDock.LayoutSetting
                     relative = ele;
                     if (!isFloat)
                     {
-                        ele.ProtoType.ToDockSide(_side);
+                        ele.ProtoType.ToDockSide(Side);
                         ele.ToDock(false);
                     }
-                    else ele.ToFloat(false);
+                    else
+                    {
+                        ele.ToFloat(false);
+                    }
                 }
-                else dockManager.AttachTo(ele, relative, AttachMode.Center);
+                else
+                {
+                    dockManager.AttachTo(ele, relative, AttachMode.Center);
+                }
             }
+
             return relative;
         }
 
@@ -60,8 +109,11 @@ namespace YDock.LayoutSetting
                 var ele = dockManager.GetDockControl(child.ID);
                 dockManager.AttachTo(ele, target, dir == Direction.Horizontal ? AttachMode.Right : AttachMode.Bottom);
                 if (relative == null)
+                {
                     relative = ele;
+                }
             }
+
             return relative;
         }
 
@@ -74,12 +126,21 @@ namespace YDock.LayoutSetting
                 if (ele != null)
                 {
                     if (!isFloat)
+                    {
                         ele.ToDockAsDocument(false);
-                    else ele.ToFloat(false);
+                    }
+                    else
+                    {
+                        ele.ToFloat(false);
+                    }
+
                     if (relative == null)
+                    {
                         relative = ele;
+                    }
                 }
             }
+
             return relative;
         }
 
@@ -96,31 +157,16 @@ namespace YDock.LayoutSetting
                         dockManager.AttachTo(ele, target, _parent.Direction == Direction.Horizontal ? AttachMode.Right_WithSplit : AttachMode.Bottom_WithSplit);
                         relative = ele;
                     }
-                    else dockManager.AttachTo(ele, relative, AttachMode.Center);
+                    else
+                    {
+                        dockManager.AttachTo(ele, relative, AttachMode.Center);
+                    }
                 }
             }
+
             return relative;
         }
 
-        public void Load(XElement ele)
-        {
-            _isDocument = bool.Parse(ele.Attribute("IsDocument").Value);
-            _side = (DockSide)System.Enum.Parse(typeof(DockSide), ele.Attribute("Side").Value);
-            foreach (var item in ele.Elements())
-            {
-                var itemNode = new ItemNode(this);
-                itemNode.Load(item);
-                _children.AddLast(itemNode);
-            }
-        }
-
-        public void Dispose()
-        {
-            foreach (var child in _children)
-                child.Dispose();
-            _children.Clear();
-
-            _parent = null;
-        }
+        #endregion
     }
 }

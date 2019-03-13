@@ -1,105 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using YDock.Interface;
 
 namespace YDock.View
 {
-    public class BaseRenderPanel : FrameworkElement, IDisposable
+    public class BaseRenderPanel : FrameworkElement,
+                                   IDisposable
     {
+        #region Constructors
+
         public BaseRenderPanel()
         {
-            _children = new List<BaseVisual>();
+            Children = new List<BaseVisual>();
             DataContextChanged += OnDataContextChanged;
             //RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
         }
 
-        protected virtual void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            
-        }
+        #endregion
 
-        private IList<BaseVisual> _children;
-        public IList<BaseVisual> Children
-        {
-            get { return _children; }
-        }
+        #region Properties
+
+        public IList<BaseVisual> Children { get; private set; }
 
         protected override int VisualChildrenCount
         {
             get
             {
-                if (_children == null) return 0;
-                return _children.Count;
+                if (Children == null) return 0;
+                return Children.Count;
             }
         }
 
+        #endregion
+
+        #region Override members
+
         protected override Visual GetVisualChild(int index)
         {
-            return _children[index];
+            return Children[index];
         }
 
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
             base.OnRenderSizeChanged(sizeInfo);
-            foreach (var child in _children)
+            foreach (var child in Children)
+            {
                 child.Update(sizeInfo.NewSize);
+            }
         }
+
+        #endregion
+
+        #region IDisposable Members
+
+        public virtual void Dispose()
+        {
+            DataContext = null;
+            Children.Clear();
+            Children = null;
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        protected virtual void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+        }
+
+        #endregion
+
+        #region Members
 
         public void AddChild(BaseVisual child)
         {
-            _children.Add(child);
+            Children.Add(child);
             AddLogicalChild(child);
             AddVisualChild(child);
         }
 
         public void RemoveChild(BaseVisual child)
         {
-            _children.Remove(child);
+            Children.Remove(child);
             RemoveLogicalChild(child);
             RemoveVisualChild(child);
         }
 
         public virtual void UpdateChildren()
         {
-            foreach (var child in _children)
-                child.Update(new Size(ActualWidth, ActualHeight));
-        }
-
-        public virtual void Dispose()
-        {
-            DataContext = null;
-            _children.Clear();
-            _children = null;
-        }
-    }
-
-    public class TexturePanel : BaseRenderPanel
-    {
-        public TexturePanel()
-        {
-            AddChild(new TextureHeaderVisual());
-        }
-
-        protected override void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            base.OnDataContextChanged(sender, e);
-            if (e.OldValue != null && e.OldValue is IDockElement)
-                (e.OldValue as IDockElement).PropertyChanged -= OnModelPropertyChanged;
-            if (e.NewValue != null && e.NewValue is IDockElement)
+            foreach (var child in Children)
             {
-                (e.NewValue as IDockElement).PropertyChanged += OnModelPropertyChanged;
-                UpdateChildren();
+                child.Update(new Size(ActualWidth, ActualHeight));
             }
         }
 
-        private void OnModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "IsActive")
-                UpdateChildren();
-        }
+        #endregion
     }
 }

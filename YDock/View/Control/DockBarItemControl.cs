@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using YDock.Enum;
 using YDock.Interface;
 using YDock.Model;
 
 namespace YDock.View
 {
-    public class DockBarItemControl : ContentControl, IDockView
+    public class DockBarItemControl : ContentControl,
+                                      IDockView
     {
+        #region Constructors
+
         static DockBarItemControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(DockBarItemControl), new FrameworkPropertyMetadata(typeof(DockBarItemControl)));
@@ -22,46 +18,53 @@ namespace YDock.View
 
         internal DockBarItemControl(IDockView dockViewParent)
         {
-            _dockViewParent = dockViewParent;
+            DockViewParent = dockViewParent;
         }
+
+        #endregion
+
+        #region Properties
 
         public ILayoutGroup Container
         {
-            get
-            {
-                return _dockViewParent?.Model as ILayoutGroup;
-            }
+            get { return DockViewParent?.Model as ILayoutGroup; }
         }
 
-        public IDockModel Model
-        {
-            get
-            {
-                return null;
-            }
-        }
+        #endregion
 
-        private IDockView _dockViewParent;
-        public IDockView DockViewParent
-        {
-            get
-            {
-                return _dockViewParent;
-            }
-        }
+        #region Override members
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             var ele = Content as DockElement;
             if (ele == Container.DockManager.AutoHideElement)
+            {
                 Container.ShowWithActive(null);
-            else Container.ShowWithActive(ele);
+            }
+            else
+            {
+                Container.ShowWithActive(ele);
+            }
+
             base.OnMouseLeftButtonDown(e);
         }
 
+        #endregion
+
+        #region IDockView Members
+
+        public IDockModel Model
+        {
+            get { return null; }
+        }
+
+        public IDockView DockViewParent { get; private set; }
+
         public void Dispose()
         {
-            _dockViewParent = null;
+            DockViewParent = null;
         }
+
+        #endregion
     }
 }

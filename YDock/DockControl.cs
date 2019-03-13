@@ -1,242 +1,177 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.ComponentModel;
 using System.Windows.Media;
 using YDock.Enum;
 using YDock.Interface;
 using YDock.Model;
-using YDock.View;
 
 namespace YDock
 {
     public class DockControl : IDockControl
     {
+        #region Constructors
+
         internal DockControl(IDockElement prototype)
         {
-            _protoType = prototype;
-            (_protoType as DockElement).DockControl = this;
+            ProtoType = prototype;
+            (ProtoType as DockElement).DockControl = this;
             prototype.PropertyChanged += OnPrototypePropertyChanged;
         }
 
-        private void OnPrototypePropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            PropertyChanged(_protoType, new PropertyChangedEventArgs(e.PropertyName));
-        }
-
-        #region ProtoType
-        private IDockElement _protoType;
-
-        public IDockElement ProtoType
-        {
-            get { return _protoType; }
-        }
         #endregion
 
-        #region Interface
+        #region IDockControl Members
+
+        public IDockElement ProtoType { get; private set; }
+
         public int ID
         {
-            get
-            {
-                return _protoType.ID;
-            }
+            get { return ProtoType.ID; }
         }
 
         public string Title
         {
-            get
-            {
-                return _protoType.Title;
-            }
-            set { _protoType.Title = value; }
+            get { return ProtoType.Title; }
+            set { ProtoType.Title = value; }
         }
 
         public ImageSource ImageSource
         {
-            get
-            {
-                return _protoType.ImageSource;
-            }
+            get { return ProtoType.ImageSource; }
         }
 
         public object Content
         {
-            get
-            {
-                return _protoType.Content;
-            }
+            get { return ProtoType.Content; }
         }
 
         public DockSide Side
         {
-            get
-            {
-                return _protoType.Side;
-            }
+            get { return ProtoType.Side; }
         }
 
         public DockManager DockManager
         {
-            get
-            {
-                return _protoType.DockManager;
-            }
+            get { return ProtoType.DockManager; }
         }
 
         public double DesiredWidth
         {
-            get
-            {
-                return _protoType.DesiredWidth;
-            }
+            get { return ProtoType.DesiredWidth; }
 
-            set
-            {
-                _protoType.DesiredWidth = value;
-            }
+            set { ProtoType.DesiredWidth = value; }
         }
 
         public double DesiredHeight
         {
-            get
-            {
-                return _protoType.DesiredHeight;
-            }
+            get { return ProtoType.DesiredHeight; }
 
-            set
-            {
-                _protoType.DesiredHeight = value;
-            }
+            set { ProtoType.DesiredHeight = value; }
         }
 
         public double FloatLeft
         {
-            get
-            {
-                return _protoType.FloatLeft;
-            }
+            get { return ProtoType.FloatLeft; }
 
-            set
-            {
-                _protoType.FloatLeft = value;
-            }
+            set { ProtoType.FloatLeft = value; }
         }
 
         public double FloatTop
         {
-            get
-            {
-                return _protoType.FloatTop;
-            }
+            get { return ProtoType.FloatTop; }
 
-            set
-            {
-                _protoType.FloatTop = value;
-            }
+            set { ProtoType.FloatTop = value; }
         }
 
         public bool IsDocument
         {
-            get { return _protoType.IsDocument; }
+            get { return ProtoType.IsDocument; }
         }
 
         public DockMode Mode
         {
-            get
-            {
-                return _protoType.Mode;
-            }
+            get { return ProtoType.Mode; }
         }
 
         public bool IsVisible
         {
-            get { return _protoType.IsVisible; }
+            get { return ProtoType.IsVisible; }
         }
 
         public bool IsActive
         {
-            get { return _protoType.IsActive; }
+            get { return ProtoType.IsActive; }
         }
 
         public bool CanSelect
         {
-            get { return _protoType.CanSelect; }
+            get { return ProtoType.CanSelect; }
         }
 
         public ILayoutGroup Container
         {
-            get { return _protoType.Container; }
+            get { return ProtoType.Container; }
         }
 
-        public bool IsDocked => _protoType.IsDocked;
+        public bool IsDocked
+        {
+            get { return ProtoType.IsDocked; }
+        }
 
-        public bool IsFloat => _protoType.IsFloat;
+        public bool IsFloat
+        {
+            get { return ProtoType.IsFloat; }
+        }
 
-        public bool IsAutoHide => _protoType.IsAutoHide;
+        public bool IsAutoHide
+        {
+            get { return ProtoType.IsAutoHide; }
+        }
 
         /// <summary>
-        /// 是否可以转为浮动模式
+        ///     是否可以转为浮动模式
         /// </summary>
         public bool CanFloat
         {
-            get
-            {
-                return _protoType == null ? false : _protoType.CanFloat;
-            }
+            get { return ProtoType == null ? false : ProtoType.CanFloat; }
         }
 
         /// <summary>
-        /// 是否可以转为Dock模式
+        ///     是否可以转为Dock模式
         /// </summary>
         public bool CanDock
         {
-            get
-            {
-                return _protoType == null ? false : _protoType.CanDock;
-            }
+            get { return ProtoType == null ? false : ProtoType.CanDock; }
         }
 
         /// <summary>
-        /// 是否可以转为Document模式
+        ///     是否可以转为Document模式
         /// </summary>
         public bool CanDockAsDocument
         {
-            get
-            {
-                return _protoType == null ? false : _protoType.CanDockAsDocument;
-            }
+            get { return ProtoType == null ? false : ProtoType.CanDockAsDocument; }
         }
 
         /// <summary>
-        /// 是否可以切换自动隐藏状态
+        ///     是否可以切换自动隐藏状态
         /// </summary>
         public bool CanSwitchAutoHideStatus
         {
-            get
-            {
-                return _protoType == null ? false : _protoType.CanSwitchAutoHideStatus;
-            }
+            get { return ProtoType == null ? false : ProtoType.CanSwitchAutoHideStatus; }
         }
 
         /// <summary>
-        /// 是否可以隐藏
+        ///     是否可以隐藏
         /// </summary>
         public bool CanHide
         {
-            get
-            {
-                return _protoType == null ? false : _protoType.CanHide;
-            }
+            get { return ProtoType == null ? false : ProtoType.CanHide; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
-        #endregion
 
         /// <summary>
-        /// 通用显示的方法。
-        /// 显示的模式（Dock，Float，AnchorSide）与当前Status有关
+        ///     通用显示的方法。
+        ///     显示的模式（Dock，Float，AnchorSide）与当前Status有关
         /// </summary>
         public void Show(bool toActice = true)
         {
@@ -244,66 +179,77 @@ namespace YDock
             if (Mode == DockMode.Float)
             {
                 if (!IsDocument)
+                {
                     ToFloat(toActice);
-                else ToDockAsDocument(toActice);
+                }
+                else
+                {
+                    ToDockAsDocument(toActice);
+                }
             }
-            else Container.ShowWithActive(_protoType, toActice);
+            else
+            {
+                Container.ShowWithActive(ProtoType, toActice);
+            }
         }
 
         /// <summary>
-        /// 此方法会直接从用户界面隐藏该项（CanSelect设为False）
+        ///     此方法会直接从用户界面隐藏该项（CanSelect设为False）
         /// </summary>
         public void Hide()
         {
             if (Content is IDockDocSource
                 && !(Content as IDockDocSource).AllowClose())
+            {
                 return;
-            _protoType?.Hide();
+            }
+
+            ProtoType?.Hide();
         }
 
         /// <summary>
-        /// 转为浮动窗口
+        ///     转为浮动窗口
         /// </summary>
         public void ToFloat(bool isActive = true)
         {
-            _protoType?.ToFloat(isActive);
+            ProtoType?.ToFloat(isActive);
         }
 
         /// <summary>
-        /// 转为Dock模式
+        ///     转为Dock模式
         /// </summary>
         public void ToDock(bool isActive = true)
         {
-            _protoType?.ToDock(isActive);
+            ProtoType?.ToDock(isActive);
         }
 
         /// <summary>
-        /// 转为Document模式
+        ///     转为Document模式
         /// </summary>
         public void ToDockAsDocument(bool isActive = true)
         {
-            _protoType?.ToDockAsDocument(isActive);
+            ProtoType?.ToDockAsDocument(isActive);
         }
 
         /// <summary>
-        /// 转为Document模式
+        ///     转为Document模式
         /// </summary>
         public void ToDockAsDocument(int index, bool isActive = true)
         {
-            _protoType?.ToDockAsDocument(index, isActive);
+            ProtoType?.ToDockAsDocument(index, isActive);
         }
 
         /// <summary>
-        /// 在Normal和DockBar模式间切换
+        ///     在Normal和DockBar模式间切换
         /// </summary>
         public void SwitchAutoHideStatus()
         {
-            _protoType?.SwitchAutoHideStatus();
+            ProtoType?.SwitchAutoHideStatus();
         }
 
         /// <summary>
-        /// 将CanSelect设为False，并从界面移除此项
-        /// 对于Normal or Float模式，效果与Hide方法相同
+        ///     将CanSelect设为False，并从界面移除此项
+        ///     对于Normal or Float模式，效果与Hide方法相同
         /// </summary>
         public void Close()
         {
@@ -313,25 +259,36 @@ namespace YDock
         public void SetActive(bool _isActive = true)
         {
             if (_isActive)
-                _protoType.Container.ShowWithActive(_protoType, _isActive);
-            else if(DockManager.ActiveElement == _protoType)
+            {
+                ProtoType.Container.ShowWithActive(ProtoType, _isActive);
+            }
+            else if (DockManager.ActiveElement == ProtoType)
+            {
                 DockManager.ActiveElement = null;
+            }
         }
 
-        private bool _isDisposed = false;
-        public bool IsDisposed
-        {
-            get { return _isDisposed; }
-        }
+        public bool IsDisposed { get; private set; }
 
         public void Dispose()
         {
-            if (_isDisposed) return;
-            _isDisposed = true;
+            if (IsDisposed) return;
+            IsDisposed = true;
             DockManager.RemoveDockControl(this);
-            _protoType.PropertyChanged -= OnPrototypePropertyChanged;
-            _protoType.Dispose();
-            _protoType = null;
+            ProtoType.PropertyChanged -= OnPrototypePropertyChanged;
+            ProtoType.Dispose();
+            ProtoType = null;
         }
+
+        #endregion
+
+        #region Event handlers
+
+        private void OnPrototypePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            PropertyChanged(ProtoType, new PropertyChangedEventArgs(e.PropertyName));
+        }
+
+        #endregion
     }
 }

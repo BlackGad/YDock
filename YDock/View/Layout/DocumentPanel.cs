@@ -1,28 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
 using YDock.Interface;
-using System.Collections.ObjectModel;
-using YDock.Model;
 
 namespace YDock.View
 {
     public class DocumentPanel : Panel
     {
-        internal DocumentPanel()
+        #region Constructors
+
+        public DocumentPanel()
         {
             FlowDirection = FlowDirection.LeftToRight;
         }
 
+        #endregion
+
+        #region Override members
+
         protected override Size MeasureOverride(Size availableSize)
         {
-            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(ele => ele.Visibility != System.Windows.Visibility.Collapsed);
+            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(ele => ele.Visibility != Visibility.Collapsed);
 
-            double height = 0.0;
-            double width = 0.0;
+            var height = 0.0;
+            var width = 0.0;
             foreach (var child in visibleChildren)
             {
                 child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -35,10 +37,10 @@ namespace YDock.View
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var visibleChildren = InternalChildren.Cast<TabItem>().Where(ele => ele.Visibility != System.Windows.Visibility.Collapsed).ToList();
+            var visibleChildren = InternalChildren.Cast<TabItem>().Where(ele => ele.Visibility != Visibility.Collapsed).ToList();
 
-            double width = 0.0;
-            int index = 0;
+            var width = 0.0;
+            var index = 0;
             for (; index < visibleChildren.Count; index++)
             {
                 var ele = visibleChildren[index];
@@ -53,23 +55,27 @@ namespace YDock.View
                         break;
                     }
                 }
-                else ele.Visibility = Visibility.Visible;
+                else
+                {
+                    ele.Visibility = Visibility.Visible;
+                }
             }
 
             if (index > 0 && index < visibleChildren.Count && visibleChildren[index].IsSelected)
             {
                 var selecteditem = visibleChildren[index];
-                int startindex = index - 1;
+                var startindex = index - 1;
                 for (; startindex >= 0; startindex--)
                 {
                     var item = visibleChildren[startindex];
                     width -= item.DesiredSize.Width + item.Margin.Left + item.Margin.Right;
                     if (width <= finalSize.Width || startindex == 0) break;
                 }
+
                 width -= selecteditem.DesiredSize.Width + selecteditem.Margin.Left + selecteditem.Margin.Right;
 
-                IDockElement element = selecteditem.Content as IDockElement;
-                ILayoutGroup tab = element.Container;
+                var element = selecteditem.Content as IDockElement;
+                var tab = element.Container;
                 tab.MoveTo(index, startindex);
 
                 for (; startindex < visibleChildren.Count; startindex++)
@@ -78,12 +84,19 @@ namespace YDock.View
                     item.Arrange(new Rect(new Point(width, 0), item.DesiredSize));
                     width += item.DesiredSize.Width + item.Margin.Left + item.Margin.Right;
                     if (width > finalSize.Width)
+                    {
                         item.Visibility = Visibility.Hidden;
-                    else item.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        item.Visibility = Visibility.Visible;
+                    }
                 }
             }
 
             return finalSize;
         }
+
+        #endregion
     }
 }

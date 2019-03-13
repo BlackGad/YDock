@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace YDock.Enum
 {
@@ -19,20 +16,6 @@ namespace YDock.Enum
         Right_WithSplit = Right | Split,
         Bottom_WithSplit = Bottom | Split,
         Center = 0x0020,
-        Split = 0x1000,
-    }
-
-    public enum AttachMode
-    {
-        None,
-        Left,
-        Top,
-        Right,
-        Bottom,
-        Left_WithSplit,
-        Top_WithSplit,
-        Right_WithSplit,
-        Bottom_WithSplit,
-        Center
+        Split = 0x1000
     }
 }

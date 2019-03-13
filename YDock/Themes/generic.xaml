@@ -10,42 +10,43 @@
     <enum:DockSide x:Key="Top">Top</enum:DockSide>
     <enum:DockSide x:Key="Right">Right</enum:DockSide>
 
-    <converters:NullToDoNothingConverter x:Key="NullToDoNothingConverter"/>
-    <converters:SideToAngleConverter x:Key="SideToAngleConverter"/>
-    <converters:DockModeToTransformConverter x:Key="DockModeToTransformConverter"/>
-    <converters:DockModeToVisibilityConverter x:Key="DockModeToVisibilityConverter"/>
-    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <converters:NullToDoNothingConverter x:Key="NullToDoNothingConverter" />
+    <converters:SideToAngleConverter x:Key="SideToAngleConverter" />
+    <converters:DockModeToTransformConverter x:Key="DockModeToTransformConverter" />
+    <converters:DockModeToVisibilityConverter x:Key="DockModeToVisibilityConverter" />
+    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
-    <SolidColorBrush x:Key="WindowBackground" Color="#FFEEEEF2"/>
-    <SolidColorBrush x:Key="MouseOnBackground" Color="#FF1C97EA"/>
-    <SolidColorBrush x:Key="SelectedBackground" Color="#FFD4D4D4"/>
-    <SolidColorBrush x:Key="BorderBrush" Color="#FFCCCEDB"/>
-    <SolidColorBrush x:Key="WindowBorderBrush" Color="#FF9B9FB9"/>
-    <SolidColorBrush x:Key="ActiveHeaderBackground" Color="#FF007ACC"/>
-    <SolidColorBrush x:Key="DisActiveHeaderBackground" Color="#FFEEEEF2"/>
-    <SolidColorBrush x:Key="AnchorPanelBackground" Color="#FFEEEEF2"/>
-    <SolidColorBrush x:Key="ActivePanelItemBackground" Color="#FFC9DEF5"/>
+    <SolidColorBrush x:Key="WindowBackground" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="MouseOnBackground" Color="#FF1C97EA" />
+    <SolidColorBrush x:Key="SelectedBackground" Color="#FFD4D4D4" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="WindowBorderBrush" Color="#FF9B9FB9" />
+    <SolidColorBrush x:Key="ActiveHeaderBackground" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="DisActiveHeaderBackground" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="AnchorPanelBackground" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="ActivePanelItemBackground" Color="#FFC9DEF5" />
 
     <Style x:Key="CustomContextMenuStyle" TargetType="{x:Type view:CustomContextMenu}">
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type view:CustomContextMenu}">
                     <Grid SnapsToDevicePixels="True">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="8" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="8"/>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="8" />
                         </Grid.RowDefinitions>
                         <Grid.Effect>
-                            <DropShadowEffect Opacity="0.4" Color="Black" ShadowDepth="3"/>
+                            <DropShadowEffect Opacity="0.4" Color="Black" ShadowDepth="3" />
                         </Grid.Effect>
-                        <Border Background="#FFF6F6F6" Padding="2" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
-                            <StackPanel IsItemsHost="True"/>
+                        <Border Background="#FFF6F6F6" Padding="2" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                            <StackPanel IsItemsHost="True" />
                         </Border>
                     </Grid>
                 </ControlTemplate>
@@ -54,21 +55,23 @@
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="{x:Type view:CustomMenuItem}">
-                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Background" Value="Transparent" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type view:CustomMenuItem}">
                                 <Grid Background="{TemplateBinding Background}" Height="22">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="32"/>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="32" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Height="14" Source="{Binding ImageSource}"/>
-                                    <TextBlock Foreground="Black" Grid.Column="1" VerticalAlignment="Center" Text="{Binding Title}" Margin="10,0,50,0"/>
+                                    <Image Height="14" Source="{Binding ImageSource}" />
+                                    <TextBlock Foreground="Black" Grid.Column="1" VerticalAlignment="Center"
+                                               Text="{Binding Title}" Margin="10,0,50,0" />
                                 </Grid>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource ActivePanelItemBackground}"/>
+                                        <Setter Property="Background"
+                                                Value="{StaticResource ActivePanelItemBackground}" />
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -80,26 +83,26 @@
     </Style>
 
     <Style x:Key="WindowButtonStyle" TargetType="{x:Type Button}">
-        <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
-        <Setter Property="Background" Value="{StaticResource DisActiveHeaderBackground}"/>
-        <Setter Property="Height" Value="20"/>
-        <Setter Property="Width" Value="24"/>
-        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+        <Setter Property="Background" Value="{StaticResource DisActiveHeaderBackground}" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Width" Value="24" />
+        <Setter Property="IsTabStop" Value="False" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="White"/>
-                <Setter Property="Foreground" Value="{StaticResource ActiveHeaderBackground}"/>
+                <Setter Property="Background" Value="White" />
+                <Setter Property="Foreground" Value="{StaticResource ActiveHeaderBackground}" />
             </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
-                    <Condition Property="IsMouseOver" Value="True"/>
-                    <Condition Property="IsPressed" Value="True"/>
+                    <Condition Property="IsMouseOver" Value="True" />
+                    <Condition Property="IsPressed" Value="True" />
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Background" Value="{StaticResource ActiveHeaderBackground}"/>
-                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Background" Value="{StaticResource ActiveHeaderBackground}" />
+                    <Setter Property="Foreground" Value="White" />
                 </MultiTrigger.Setters>
             </MultiTrigger>
         </Style.Triggers>
@@ -109,11 +112,12 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid SnapsToDevicePixels="True" Background="{TemplateBinding Background}" ToolTip="{Global:Resource Key=Close}">
+                    <Grid SnapsToDevicePixels="True" Background="{TemplateBinding Background}"
+                          ToolTip="{Global:Resource Key=Close}">
                         <Path VerticalAlignment="Center" HorizontalAlignment="Center"
                               Data="M2,1 L6,5 L10,1 L11,2 L7,6 L11,10 L10,11 L6,7 L2,11 L1,10 L5,6 L1,2 Z"
                               Width="12" Height="12" UseLayoutRounding="True"
-                              Fill="{TemplateBinding Foreground}"/>
+                              Fill="{TemplateBinding Foreground}" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -124,11 +128,12 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Restore}" Background="{TemplateBinding Background}">
+                    <Grid SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Restore}"
+                          Background="{TemplateBinding Background}">
                         <Path VerticalAlignment="Center" HorizontalAlignment="Center"
                               Data="M1,5 L1,11 L8,11 L8,5 Z M4,2 L4,3 L9,3 L9,8 L11,8 L11,2 Z M3,0 L12,0 L12,9 L9,9 L9,12 L0,12 L0,3 L3,3 Z"
                               Width="12" Height="12" UseLayoutRounding="True"
-                              Fill="{TemplateBinding Foreground}"/>
+                              Fill="{TemplateBinding Foreground}" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -139,11 +144,12 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Maximize}" Background="{TemplateBinding Background}">
+                    <Grid SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Maximize}"
+                          Background="{TemplateBinding Background}">
                         <Path VerticalAlignment="Center" HorizontalAlignment="Center"
                               Data="M1,4 L1,11 L11,11 L11,4 Z M0,1 L12,1 L12,12 L0,12 Z"
                               Width="12" Height="12" UseLayoutRounding="True"
-                              Fill="{TemplateBinding Foreground}"/>
+                              Fill="{TemplateBinding Foreground}" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -154,11 +160,12 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Minimize}" Background="{TemplateBinding Background}">
+                    <Grid SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Minimize}"
+                          Background="{TemplateBinding Background}">
                         <Path VerticalAlignment="Center" HorizontalAlignment="Center"
                               Data="M0,5 L12,5 L12,7 L0,7 Z"
                               Width="12" Height="12" UseLayoutRounding="True"
-                              Fill="{TemplateBinding Foreground}"/>
+                              Fill="{TemplateBinding Foreground}" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -166,30 +173,36 @@
     </Style>
 
     <Style x:Key="Header_Close" TargetType="{x:Type Button}">
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Height" Value="16"/>
-        <Setter Property="Width" Value="16"/>
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="Width" Value="16" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Close}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                    <Border SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Close}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             Background="{TemplateBinding Background}">
                         <Path VerticalAlignment="Center" HorizontalAlignment="Center"
                               Data="M2,1 L6,5 L10,1 L11,2 L7,6 L11,10 L10,11 L6,7 L2,11 L1,10 L5,6 L1,2 Z"
                               Width="12" Height="12" UseLayoutRounding="True"
-                              Fill="{TemplateBinding Foreground}"/>
+                              Fill="{TemplateBinding Foreground}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type view:DragTabItem}},Path=IsSelected}" Value="True"/>
-                                <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type view:DragTabItem}},Path=Content.IsActive}" Value="False"/>
+                                <Condition
+                                    Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type view:DragTabItem}},Path=IsSelected}"
+                                    Value="True" />
+                                <Condition
+                                    Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type view:DragTabItem}},Path=Content.IsActive}"
+                                    Value="False" />
                             </MultiDataTrigger.Conditions>
                             <MultiDataTrigger.Setters>
-                                <Setter Property="Foreground" Value="Black"/>
+                                <Setter Property="Foreground" Value="Black" />
                             </MultiDataTrigger.Setters>
                         </MultiDataTrigger>
                     </ControlTemplate.Triggers>
@@ -198,135 +211,154 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FF52B0EF"/>
+                <Setter Property="Background" Value="#FF52B0EF" />
             </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
-                    <Condition Property="IsMouseOver" Value="True"/>
-                    <Condition Property="IsPressed" Value="True"/>
+                    <Condition Property="IsMouseOver" Value="True" />
+                    <Condition Property="IsPressed" Value="True" />
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Background" Value="#FF0E6198"/>
+                    <Setter Property="Background" Value="#FF0E6198" />
                 </MultiTrigger.Setters>
             </MultiTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" Value="True"/>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=IsSelected}" Value="True"/>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Content.IsActive}" Value="False"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" Value="True" />
+                    <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=IsSelected}"
+                               Value="True" />
+                    <Condition
+                        Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Content.IsActive}"
+                        Value="False" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Background" Value="#FFE6E7ED"/>
+                    <Setter Property="Background" Value="#FFE6E7ED" />
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" Value="True"/>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=IsSelected}" Value="True"/>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsPressed}" Value="True"/>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Content.IsActive}" Value="False"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" Value="True" />
+                    <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=IsSelected}"
+                               Value="True" />
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsPressed}" Value="True" />
+                    <Condition
+                        Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Content.IsActive}"
+                        Value="False" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Background" Value="#FFB7B9C5"/>
+                    <Setter Property="Background" Value="#FFB7B9C5" />
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
         </Style.Triggers>
     </Style>
 
     <Style x:Key="CustomToggleButtonStyle" TargetType="{x:Type ToggleButton}">
-        <Setter Property="Width" Value="18"/>
-        <Setter Property="Height" Value="16"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Width" Value="18" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
-                        <Path Data="M0,0 L8,0 L4,4 Z" VerticalAlignment="Center" HorizontalAlignment="Center" Fill="{TemplateBinding Foreground}"/>
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}">
+                        <Path Data="M0,0 L8,0 L4,4 Z" VerticalAlignment="Center" HorizontalAlignment="Center"
+                              Fill="{TemplateBinding Foreground}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <Style x:Key="Header_TB_Style" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource CustomToggleButtonStyle}">
-        <Setter Property="Foreground" Value="Black"/>
+    <Style x:Key="Header_TB_Style" TargetType="{x:Type ToggleButton}"
+           BasedOn="{StaticResource CustomToggleButtonStyle}">
+        <Setter Property="Foreground" Value="Black" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FFF7F7F9"/>
+                <Setter Property="Background" Value="#FFF7F7F9" />
             </Trigger>
-            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.IsActive}" Value="True">
-                <Setter Property="Foreground" Value="White"/>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.IsActive}"
+                         Value="True">
+                <Setter Property="Foreground" Value="White" />
             </DataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" Value="True"/>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.IsActive}" Value="True"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" Value="True" />
+                    <Condition
+                        Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.IsActive}"
+                        Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Background" Value="#FF52B0EF"/>
+                    <Setter Property="Background" Value="#FF52B0EF" />
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Background" Value="#FFB7B9C5"/>
+                <Setter Property="Background" Value="#FFB7B9C5" />
             </Trigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsChecked}" Value="True"/>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.IsActive}" Value="True"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsChecked}" Value="True" />
+                    <Condition
+                        Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.IsActive}"
+                        Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Background" Value="#FF0E6198"/>
+                    <Setter Property="Background" Value="#FF0E6198" />
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="DocumentToggleButtonStyle" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource CustomToggleButtonStyle}">
+    <Style x:Key="DocumentToggleButtonStyle" TargetType="{x:Type ToggleButton}"
+           BasedOn="{StaticResource CustomToggleButtonStyle}">
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FFC9DEF5"/>
-                <Setter Property="Foreground" Value="#FF007ACC"/>
+                <Setter Property="Background" Value="#FFC9DEF5" />
+                <Setter Property="Foreground" Value="#FF007ACC" />
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Background" Value="{StaticResource ActiveHeaderBackground}"/>
-                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Background" Value="{StaticResource ActiveHeaderBackground}" />
+                <Setter Property="Foreground" Value="White" />
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <Style x:Key="Anchor_Btn" TargetType="{x:Type Button}">
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Height" Value="16"/>
-        <Setter Property="Width" Value="18"/>
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="Width" Value="18" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FFF7F7F9"/>
+                <Setter Property="Background" Value="#FFF7F7F9" />
             </Trigger>
-            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.IsActive}" Value="False">
-                <Setter Property="Foreground" Value="Black"/>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.IsActive}"
+                         Value="False">
+                <Setter Property="Foreground" Value="Black" />
             </DataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" Value="True"/>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.IsActive}" Value="True"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" Value="True" />
+                    <Condition
+                        Binding="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.IsActive}"
+                        Value="True" />
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter Property="Background" Value="#FF52B0EF"/>
+                    <Setter Property="Background" Value="#FF52B0EF" />
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
-                    <Condition Property="IsMouseOver" Value="True"/>
-                    <Condition Property="IsPressed" Value="True"/>
+                    <Condition Property="IsMouseOver" Value="True" />
+                    <Condition Property="IsPressed" Value="True" />
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Background" Value="#FF0E6198"/>
-                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Background" Value="#FF0E6198" />
+                    <Setter Property="Foreground" Value="White" />
                 </MultiTrigger.Setters>
             </MultiTrigger>
         </Style.Triggers>
@@ -336,12 +368,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Close}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                    <Border SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Close}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             Background="{TemplateBinding Background}">
                         <Path VerticalAlignment="Center" HorizontalAlignment="Center" SnapsToDevicePixels="True"
                               Data="M2,1 L6,5 L10,1 L11,2 L7,6 L11,10 L10,11 L6,7 L2,11 L1,10 L5,6 L1,2 Z"
                               Width="12" Height="12" UseLayoutRounding="True"
-                              Fill="{TemplateBinding Foreground}"/>
+                              Fill="{TemplateBinding Foreground}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -352,13 +386,15 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=_AutoHide}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                    <Border SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=_AutoHide}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             Background="{TemplateBinding Background}">
                         <Path VerticalAlignment="Center" HorizontalAlignment="Center" SnapsToDevicePixels="True"
                               Data="M3,0 L9,0 L9,6 L10,6 L10,7 L6.5,7 L6.5,11 L5.5,11 L5.5,7 L2,7 L2,6 L3,6 Z M4,1 L6,1 L6,6 L4,6 Z"
                               Width="12" Height="12" UseLayoutRounding="True"
                               Fill="{TemplateBinding Foreground}"
-                              LayoutTransform="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type view:AnchorHeaderControl}},Path=DataContext.Mode,Converter={StaticResource DockModeToTransformConverter}}"/>
+                              LayoutTransform="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type view:AnchorHeaderControl}},Path=DataContext.Mode,Converter={StaticResource DockModeToTransformConverter}}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -369,12 +405,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Maximize}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                    <Border SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Maximize}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             Background="{TemplateBinding Background}">
                         <Path VerticalAlignment="Center" HorizontalAlignment="Center"
                               Data="M1,4 L1,11 L11,11 L11,4 Z M0,1 L12,1 L12,12 L0,12 Z"
                               Width="12" Height="12" UseLayoutRounding="True"
-                              Fill="{TemplateBinding Foreground}"/>
+                              Fill="{TemplateBinding Foreground}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -385,12 +423,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Restore}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                    <Border SnapsToDevicePixels="True" ToolTip="{Global:Resource Key=Restore}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             Background="{TemplateBinding Background}">
                         <Path VerticalAlignment="Center" HorizontalAlignment="Center"
                               Data="M1,5 L1,11 L8,11 L8,5 Z M4,2 L4,3 L9,3 L9,8 L11,8 L11,2 Z M3,0 L12,0 L12,9 L9,9 L9,12 L0,12 L0,3 L3,3 Z"
                               Width="12" Height="12" UseLayoutRounding="True"
-                              Fill="{TemplateBinding Foreground}"/>
+                              Fill="{TemplateBinding Foreground}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -594,7 +634,7 @@
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
                                 <ContentPresenter.RenderTransform>
                                     <TransformGroup>
-                                        <ScaleTransform/>
+                                        <ScaleTransform />
                                         <SkewTransform />
                                         <RotateTransform />
                                         <TranslateTransform />
@@ -609,7 +649,7 @@
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
                                 <ContentPresenter.RenderTransform>
                                     <TransformGroup>
-                                        <ScaleTransform/>
+                                        <ScaleTransform />
                                         <SkewTransform />
                                         <RotateTransform />
                                         <TranslateTransform />
@@ -627,40 +667,51 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type view:LayoutDragSplitter}">
-                    <Rectangle SnapsToDevicePixels="True" Fill="{TemplateBinding Background}"/>
+                    <Rectangle SnapsToDevicePixels="True" Fill="{TemplateBinding Background}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
     <Style x:Key="LayoutHeaderControlStyle" TargetType="{x:Type view:AnchorHeaderControl}">
-        <Setter Property="Background" Value="{StaticResource DisActiveHeaderBackground}"/>
+        <Setter Property="Background" Value="{StaticResource DisActiveHeaderBackground}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type view:AnchorHeaderControl}">
                     <Border SnapsToDevicePixels="True"
-                        Background="{TemplateBinding Background}" Padding="3.5">
+                            Background="{TemplateBinding Background}" Padding="3.5">
                         <Grid SnapsToDevicePixels="True">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="HeaderTextBlock" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Text="{Binding Title}"/>
-                            <view:TexturePanel DataContext="{Binding}" Grid.Column="1" SnapsToDevicePixels="True" Margin="10,0,10,0"/>
+                            <TextBlock x:Name="HeaderTextBlock" TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center" Text="{Binding Title}" />
+                            <view:TexturePanel DataContext="{Binding}" Grid.Column="1" SnapsToDevicePixels="True"
+                                               Margin="10,0,10,0" />
                             <StackPanel Grid.Column="2" Orientation="Horizontal" SnapsToDevicePixels="True">
-                                <ToggleButton x:Name="PART_DropMenu" ToolTip="{Global:Resource Key=Window_Position}" IsChecked="{Binding RelativeSource={RelativeSource Self},Path=ContextMenu.IsOpen}" IsThreeState="False" Style="{StaticResource Header_TB_Style}"/>
-                                <Button x:Name="Maximize" Style="{StaticResource Anchor_Maximize}" Command="{x:Static command:GlobalCommands.MaximizeCommand}" Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                <Button x:Name="Restore" Style="{StaticResource Anchor_Restore}" Command="{x:Static command:GlobalCommands.RestoreCommand}" Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                <Button Style="{StaticResource Anchor_AutoHide}" Command="{x:Static command:GlobalCommands.SwitchAutoHideStatusCommand}" Visibility="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.Mode,Converter={StaticResource DockModeToVisibilityConverter}}"/>
-                                <Button Style="{StaticResource Anchor_Close}" Command="{x:Static command:GlobalCommands.HideStatusCommand}"/>
+                                <ToggleButton x:Name="PART_DropMenu" ToolTip="{Global:Resource Key=Window_Position}"
+                                              IsChecked="{Binding RelativeSource={RelativeSource Self},Path=ContextMenu.IsOpen}"
+                                              IsThreeState="False" Style="{StaticResource Header_TB_Style}" />
+                                <Button x:Name="Maximize" Style="{StaticResource Anchor_Maximize}"
+                                        Command="{x:Static command:GlobalCommands.MaximizeCommand}"
+                                        Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource BoolToVisibilityConverter}}" />
+                                <Button x:Name="Restore" Style="{StaticResource Anchor_Restore}"
+                                        Command="{x:Static command:GlobalCommands.RestoreCommand}"
+                                        Visibility="{Binding RelativeSource={RelativeSource Self},Path=IsEnabled,Converter={StaticResource BoolToVisibilityConverter}}" />
+                                <Button Style="{StaticResource Anchor_AutoHide}"
+                                        Command="{x:Static command:GlobalCommands.SwitchAutoHideStatusCommand}"
+                                        Visibility="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DataContext.Mode,Converter={StaticResource DockModeToVisibilityConverter}}" />
+                                <Button Style="{StaticResource Anchor_Close}"
+                                        Command="{x:Static command:GlobalCommands.HideStatusCommand}" />
                             </StackPanel>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsActive}" Value="True">
-                            <Setter TargetName="HeaderTextBlock" Property="Foreground" Value="White"/>
-                            <Setter Property="Background" Value="{StaticResource ActiveHeaderBackground}"/>
+                            <Setter TargetName="HeaderTextBlock" Property="Foreground" Value="White" />
+                            <Setter Property="Background" Value="{StaticResource ActiveHeaderBackground}" />
                         </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -669,20 +720,24 @@
     </Style>
 
     <Style TargetType="{x:Type view:LayoutContentControl}">
-        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="Background" Value="WhiteSmoke" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type view:LayoutContentControl}">
-                    <Border SnapsToDevicePixels="true" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                    <Border SnapsToDevicePixels="true" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             Background="{TemplateBinding Background}">
                         <Grid SnapsToDevicePixels="true"
-                          KeyboardNavigation.TabNavigation="Local">
+                              KeyboardNavigation.TabNavigation="Local">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <view:AnchorHeaderControl SnapsToDevicePixels="True" DataContext="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Model}" Style="{StaticResource LayoutHeaderControlStyle}"/>
-                            <ContentPresenter Grid.Row="1" SnapsToDevicePixels="True" Content="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Model.Content}"/>
+                            <view:AnchorHeaderControl SnapsToDevicePixels="True"
+                                                      DataContext="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Model}"
+                                                      Style="{StaticResource LayoutHeaderControlStyle}" />
+                            <ContentPresenter Grid.Row="1" SnapsToDevicePixels="True"
+                                              Content="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Model.Content}" />
                         </Grid>
                     </Border>
                 </ControlTemplate>
@@ -692,15 +747,17 @@
 
 
     <Style TargetType="{x:Type view:DockBarGroupControl}">
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type view:DockBarGroupControl}">
                     <Border SnapsToDevicePixels="True" Background="{TemplateBinding Background}">
                         <Border.ContextMenu>
-                            <view:CustomContextMenu ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Model.Children_CanSelect}" Style="{StaticResource CustomContextMenuStyle}"/>
+                            <view:CustomContextMenu
+                                ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Model.Children_CanSelect}"
+                                Style="{StaticResource CustomContextMenuStyle}" />
                         </Border.ContextMenu>
-                        <view:SingelLinePanel SnapsToDevicePixels="True" IsItemsHost="True"/>
+                        <view:SingelLinePanel SnapsToDevicePixels="True" IsItemsHost="True" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -708,9 +765,9 @@
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="{x:Type view:DockBarItemControl}">
-                    <Setter Property="MaxWidth" Value="240"/>
-                    <Setter Property="Background" Value="{StaticResource WindowBackground}"/>
-                    <Setter Property="Margin" Value="0,0,4,0"/>
+                    <Setter Property="MaxWidth" Value="240" />
+                    <Setter Property="Background" Value="{StaticResource WindowBackground}" />
+                    <Setter Property="Margin" Value="0,0,4,0" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type view:DockBarItemControl}">
@@ -718,26 +775,30 @@
                                         Background="{TemplateBinding Background}">
                                     <Grid SnapsToDevicePixels="True">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="3"/>
-                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="3" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
-                                        <Rectangle x:Name="Rect" SnapsToDevicePixels="True" Fill="{StaticResource BorderBrush}" Height="6" Grid.Row="2"/>
-                                        <TextBlock x:Name="Title" VerticalAlignment="Center" Text="{Binding Path=Title}" TextTrimming="CharacterEllipsis"/>
+                                        <Rectangle x:Name="Rect" SnapsToDevicePixels="True"
+                                                   Fill="{StaticResource BorderBrush}" Height="6" Grid.Row="2" />
+                                        <TextBlock x:Name="Title" VerticalAlignment="Center"
+                                                   Text="{Binding Path=Title}" TextTrimming="CharacterEllipsis" />
                                     </Grid>
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Rect" Property="Fill" Value="{StaticResource ActiveHeaderBackground}"/>
-                                        <Setter TargetName="Title" Property="Foreground" Value="{StaticResource ActiveHeaderBackground}"/>
+                                        <Setter TargetName="Rect" Property="Fill"
+                                                Value="{StaticResource ActiveHeaderBackground}" />
+                                        <Setter TargetName="Title" Property="Foreground"
+                                                Value="{StaticResource ActiveHeaderBackground}" />
                                     </Trigger>
                                     <DataTrigger Binding="{Binding Side}" Value="{StaticResource Top}">
-                                        <Setter TargetName="Rect" Property="Grid.Row" Value="0"/>
-                                        <Setter TargetName="Title" Property="Grid.Row" Value="2"/>
+                                        <Setter TargetName="Rect" Property="Grid.Row" Value="0" />
+                                        <Setter TargetName="Title" Property="Grid.Row" Value="2" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Side}" Value="{StaticResource Right}">
-                                        <Setter TargetName="Rect" Property="Grid.Row" Value="0"/>
-                                        <Setter TargetName="Title" Property="Grid.Row" Value="2"/>
+                                        <Setter TargetName="Rect" Property="Grid.Row" Value="0" />
+                                        <Setter TargetName="Title" Property="Grid.Row" Value="2" />
                                     </DataTrigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -750,33 +811,38 @@
 
     <ControlTemplate x:Key="DocumentHeaderTemplate" TargetType="{x:Type view:DragTabItem}">
         <Border Name="Border" SnapsToDevicePixels="True"
-                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                Background="{TemplateBinding Background}">
             <Grid Margin="4,3,4,2" SnapsToDevicePixels="True">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Image VerticalAlignment="Center" Height="14" Source="{Binding Path=ImageSource,Converter={StaticResource NullToDoNothingConverter}}" Stretch="Uniform"/>
-                <TextBlock x:Name="title" VerticalAlignment="Center" Margin="4,0,0,0" Text="{Binding Path=Title}" Grid.Column="1" TextTrimming="CharacterEllipsis"/>
+                <Image VerticalAlignment="Center" Height="14"
+                       Source="{Binding Path=ImageSource,Converter={StaticResource NullToDoNothingConverter}}"
+                       Stretch="Uniform" />
+                <TextBlock x:Name="title" VerticalAlignment="Center" Margin="4,0,0,0" Text="{Binding Path=Title}"
+                           Grid.Column="1" TextTrimming="CharacterEllipsis" />
                 <Button x:Name="PART_Close" Margin="8,0,0,0" Grid.Column="2" Visibility="Hidden"
-                        Style="{StaticResource Header_Close}" Command="{x:Static command:GlobalCommands.HideStatusCommand}"/>
+                        Style="{StaticResource Header_Close}"
+                        Command="{x:Static command:GlobalCommands.HideStatusCommand}" />
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter TargetName="PART_Close" Property="Visibility" Value="Visible"/>
-                <Setter Property="Background" Value="{StaticResource MouseOnBackground}"/>
-                <Setter TargetName="title" Property="Foreground" Value="White"/>
+                <Setter TargetName="PART_Close" Property="Visibility" Value="Visible" />
+                <Setter Property="Background" Value="{StaticResource MouseOnBackground}" />
+                <Setter TargetName="title" Property="Foreground" Value="White" />
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
-                <Setter TargetName="PART_Close" Property="Visibility" Value="Visible"/>
-                <Setter Property="Background" Value="{StaticResource BorderBrush}"/>
-                <Setter TargetName="title" Property="Foreground" Value="#FF717171"/>
+                <Setter TargetName="PART_Close" Property="Visibility" Value="Visible" />
+                <Setter Property="Background" Value="{StaticResource BorderBrush}" />
+                <Setter TargetName="title" Property="Foreground" Value="#FF717171" />
             </Trigger>
             <DataTrigger Binding="{Binding IsActive}" Value="True">
-                <Setter Property="Background" Value="{StaticResource ActiveHeaderBackground}"/>
-                <Setter TargetName="title" Property="Foreground" Value="White"/>
+                <Setter Property="Background" Value="{StaticResource ActiveHeaderBackground}" />
+                <Setter TargetName="title" Property="Foreground" Value="White" />
             </DataTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -784,46 +850,51 @@
     <ControlTemplate x:Key="DocumentGroupControlNormal" TargetType="{x:Type view:LayoutDocumentGroupControl}">
         <Grid KeyboardNavigation.TabNavigation="Local">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Rectangle x:Name="Rect" Height="2" SnapsToDevicePixels="True" Grid.Row="1" Fill="{StaticResource BorderBrush}"/>
+            <Rectangle x:Name="Rect" Height="2" SnapsToDevicePixels="True" Grid.Row="1"
+                       Fill="{StaticResource BorderBrush}" />
             <Border x:Name="Border" SnapsToDevicePixels="True">
                 <Grid SnapsToDevicePixels="True">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
                     </Grid.ColumnDefinitions>
-                    <view:DocumentPanel IsItemsHost="True" SnapsToDevicePixels="True" KeyboardNavigation.TabIndex="1"/>
-                    <view:CustomToggleButton IsChecked="{Binding RelativeSource={RelativeSource Self},Path=DropContextMenu.IsOpen}" IsThreeState="False" Grid.Column="1" Style="{StaticResource DocumentToggleButtonStyle}">
+                    <view:DocumentPanel IsItemsHost="True" SnapsToDevicePixels="True" KeyboardNavigation.TabIndex="1" />
+                    <view:CustomToggleButton
+                        IsChecked="{Binding RelativeSource={RelativeSource Self},Path=DropContextMenu.IsOpen}"
+                        IsThreeState="False" Grid.Column="1" Style="{StaticResource DocumentToggleButtonStyle}">
                         <view:CustomToggleButton.DropContextMenu>
-                            <view:CustomContextMenu ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Model.ChildrenSorted}" Style="{StaticResource CustomContextMenuStyle}"/>
+                            <view:CustomContextMenu
+                                ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent},Path=Model.ChildrenSorted}"
+                                Style="{StaticResource CustomContextMenuStyle}" />
                         </view:CustomToggleButton.DropContextMenu>
                     </view:CustomToggleButton>
                 </Grid>
             </Border>
             <Border x:Name="ContentPanel"
-                                VerticalAlignment="Stretch"
-                                HorizontalAlignment="Stretch"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Background="{TemplateBinding Background}"
-                                KeyboardNavigation.DirectionalNavigation="Contained"
-                                Grid.Row="2" SnapsToDevicePixels="True"
-                                KeyboardNavigation.TabIndex="2"
-                                KeyboardNavigation.TabNavigation="Cycle">
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Background="{TemplateBinding Background}"
+                    KeyboardNavigation.DirectionalNavigation="Contained"
+                    Grid.Row="2" SnapsToDevicePixels="True"
+                    KeyboardNavigation.TabIndex="2"
+                    KeyboardNavigation.TabNavigation="Cycle">
                 <ContentPresenter ContentSource="SelectedContent"
-                                              Margin="{TemplateBinding Padding}"
-                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                  Margin="{TemplateBinding Padding}"
+                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
             </Border>
         </Grid>
         <ControlTemplate.Triggers>
             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self},Path=Items.Count}" Value="0">
-                <Setter Property="Visibility" Value="Hidden"/>
+                <Setter Property="Visibility" Value="Hidden" />
             </DataTrigger>
             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self},Path=Model.IsActive}" Value="True">
-                <Setter TargetName="Rect" Property="Fill" Value="{StaticResource ActiveHeaderBackground}"/>
+                <Setter TargetName="Rect" Property="Fill" Value="{StaticResource ActiveHeaderBackground}" />
             </DataTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -831,25 +902,25 @@
     <ControlTemplate x:Key="DocumentGroupControlDrag" TargetType="{x:Type view:LayoutDocumentGroupControl}">
         <Grid SnapsToDevicePixels="True">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Border x:Name="Border" SnapsToDevicePixels="True">
-                <view:DocumentPanel IsItemsHost="True" KeyboardNavigation.TabIndex="1"/>
+                <view:DocumentPanel IsItemsHost="True" KeyboardNavigation.TabIndex="1" />
             </Border>
             <Border x:Name="ContentPanel"
-                                VerticalAlignment="Stretch"
-                                HorizontalAlignment="Stretch"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Background="{TemplateBinding Background}"
-                                KeyboardNavigation.DirectionalNavigation="Contained"
-                                Grid.Row="1" SnapsToDevicePixels="True"
-                                KeyboardNavigation.TabIndex="2"
-                                KeyboardNavigation.TabNavigation="Cycle">
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Background="{TemplateBinding Background}"
+                    KeyboardNavigation.DirectionalNavigation="Contained"
+                    Grid.Row="1" SnapsToDevicePixels="True"
+                    KeyboardNavigation.TabIndex="2"
+                    KeyboardNavigation.TabNavigation="Cycle">
                 <ContentPresenter ContentSource="SelectedContent"
-                                              Margin="{TemplateBinding Padding}"
-                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                  Margin="{TemplateBinding Padding}"
+                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
             </Border>
         </Grid>
     </ControlTemplate>
@@ -857,29 +928,31 @@
     <ControlTemplate x:Key="AnchorSideGroupControlNormal" TargetType="{x:Type view:AnchorSideGroupControl}">
         <Grid KeyboardNavigation.TabNavigation="Local" SnapsToDevicePixels="True">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Border Background="Transparent" Grid.RowSpan="2" SnapsToDevicePixels="True"/>
+            <Border Background="Transparent" Grid.RowSpan="2" SnapsToDevicePixels="True" />
             <Border x:Name="ContentPanel"
-                                VerticalAlignment="Stretch"
-                                HorizontalAlignment="Stretch"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Background="{TemplateBinding Background}"
-                                KeyboardNavigation.DirectionalNavigation="Contained"
-                                KeyboardNavigation.TabIndex="2"
-                                KeyboardNavigation.TabNavigation="Cycle"
-                                SnapsToDevicePixels="True">
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Background="{TemplateBinding Background}"
+                    KeyboardNavigation.DirectionalNavigation="Contained"
+                    KeyboardNavigation.TabIndex="2"
+                    KeyboardNavigation.TabNavigation="Cycle"
+                    SnapsToDevicePixels="True">
                 <ContentPresenter ContentSource="SelectedContent"
-                                              Margin="{TemplateBinding Padding}"
-                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                  Margin="{TemplateBinding Padding}"
+                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
             </Border>
-            <view:AnchorSidePanel Grid.Row="1" SnapsToDevicePixels="True" x:Name="ItemsHost" Background="{StaticResource WindowBackground}" IsItemsHost="True" KeyboardNavigation.TabIndex="1"/>
+            <view:AnchorSidePanel Grid.Row="1" SnapsToDevicePixels="True" x:Name="ItemsHost"
+                                  Background="{StaticResource WindowBackground}" IsItemsHost="True"
+                                  KeyboardNavigation.TabIndex="1" />
         </Grid>
         <ControlTemplate.Triggers>
             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self},Path=Items.Count}" Value="1">
-                <Setter TargetName="ItemsHost" Property="Height" Value="0"/>
+                <Setter TargetName="ItemsHost" Property="Height" Value="0" />
             </DataTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -897,30 +970,31 @@
                 SnapsToDevicePixels="True">
             <Grid KeyboardNavigation.TabNavigation="Local" SnapsToDevicePixels="True">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <ContentPresenter ContentSource="SelectedContent"
-                                              Margin="{TemplateBinding Padding}"
-                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                <view:AnchorSidePanel Grid.Row="1" x:Name="ItemsHost" IsItemsHost="True" Background="{StaticResource WindowBackground}" KeyboardNavigation.TabIndex="1"/>
+                                  Margin="{TemplateBinding Padding}"
+                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                <view:AnchorSidePanel Grid.Row="1" x:Name="ItemsHost" IsItemsHost="True"
+                                      Background="{StaticResource WindowBackground}" KeyboardNavigation.TabIndex="1" />
             </Grid>
         </Border>
     </ControlTemplate>
 
     <Style TargetType="{x:Type view:LayoutDocumentGroupControl}">
-        <Setter Property="BorderThickness" Value="1,0,1,1"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="Template" Value="{StaticResource DocumentGroupControlNormal}"/>
+        <Setter Property="BorderThickness" Value="1,0,1,1" />
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Template" Value="{StaticResource DocumentGroupControlNormal}" />
 
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="{x:Type view:DragTabItem}">
-                    <Setter Property="MaxWidth" Value="240"/>
-                    <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
-                    <Setter Property="Background" Value="{StaticResource WindowBackground}"/>
-                    <Setter Property="Template" Value="{StaticResource DocumentHeaderTemplate}"/>
+                    <Setter Property="MaxWidth" Value="240" />
+                    <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+                    <Setter Property="Background" Value="{StaticResource WindowBackground}" />
+                    <Setter Property="Template" Value="{StaticResource DocumentHeaderTemplate}" />
                 </Style>
             </Setter.Value>
         </Setter>
@@ -928,35 +1002,39 @@
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <ContentPresenter Content="{Binding Content}"/>
+                    <ContentPresenter Content="{Binding Content}" />
                 </DataTemplate>
             </Setter.Value>
         </Setter>
         <Style.Triggers>
             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},Path=IsDraggingFromDock}" Value="True">
-                <Setter Property="Template" Value="{StaticResource DocumentGroupControlDrag}"/>
+                <Setter Property="Template" Value="{StaticResource DocumentGroupControlDrag}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},Path=IsDraggingFromDock}" Value="False">
-                <Setter Property="Template" Value="{StaticResource DocumentGroupControlNormal}"/>
+                <Setter Property="Template" Value="{StaticResource DocumentGroupControlNormal}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
 
     <Style TargetType="{x:Type view:AnchorSideGroupControl}">
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Template" Value="{StaticResource AnchorSideGroupControlNormal}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Template" Value="{StaticResource AnchorSideGroupControlNormal}" />
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="{x:Type view:DragTabItem}">
-                    <Setter Property="Background" Value="{StaticResource WindowBackground}"/>
-                    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+                    <Setter Property="Background" Value="{StaticResource WindowBackground}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type view:DragTabItem}">
-                                <Grid SnapsToDevicePixels="True" Background="{TemplateBinding Background}" HorizontalAlignment="Stretch">
-                                    <Border Padding="4,2" SnapsToDevicePixels="True" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                                        <TextBlock Foreground="{TemplateBinding Foreground}" TextTrimming="CharacterEllipsis" Text="{Binding Title}"/>
+                                <Grid SnapsToDevicePixels="True" Background="{TemplateBinding Background}"
+                                      HorizontalAlignment="Stretch">
+                                    <Border Padding="4,2" SnapsToDevicePixels="True"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}">
+                                        <TextBlock Foreground="{TemplateBinding Foreground}"
+                                                   TextTrimming="CharacterEllipsis" Text="{Binding Title}" />
                                     </Border>
                                 </Grid>
                             </ControlTemplate>
@@ -965,18 +1043,18 @@
                     <Style.Triggers>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver" Value="True"/>
-                                <Condition Property="IsSelected" Value="False"/>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsSelected" Value="False" />
                             </MultiTrigger.Conditions>
                             <MultiTrigger.Setters>
-                                <Setter Property="Background" Value="{StaticResource ActivePanelItemBackground}"/>
+                                <Setter Property="Background" Value="{StaticResource ActivePanelItemBackground}" />
                             </MultiTrigger.Setters>
                         </MultiTrigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Foreground" Value="{StaticResource ActiveHeaderBackground}"/>
-                            <Setter Property="Background" Value="WhiteSmoke"/>
-                            <Setter Property="BorderThickness" Value="1,0,1,1"/>
-                            <Setter Property="Margin" Value="0,-1,0,0"/>
+                            <Setter Property="Foreground" Value="{StaticResource ActiveHeaderBackground}" />
+                            <Setter Property="Background" Value="WhiteSmoke" />
+                            <Setter Property="BorderThickness" Value="1,0,1,1" />
+                            <Setter Property="Margin" Value="0,-1,0,0" />
                         </Trigger>
                     </Style.Triggers>
                 </Style>
@@ -986,78 +1064,86 @@
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <view:LayoutContentControl Model="{Binding}"/>
+                    <view:LayoutContentControl Model="{Binding}" />
                 </DataTemplate>
             </Setter.Value>
         </Setter>
         <Style.Triggers>
             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},Path=IsDraggingFromDock}" Value="True">
-                <Setter Property="Template" Value="{StaticResource AnchorSideGroupControlDrag}"/>
+                <Setter Property="Template" Value="{StaticResource AnchorSideGroupControlDrag}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
 
     <ControlTemplate x:Key="AnchorGroupWindow_Single" TargetType="{x:Type view:AnchorGroupWindow}">
         <Border BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}"
-                    Background="{TemplateBinding Background}"
-                    SnapsToDevicePixels="True" Padding="{TemplateBinding Padding}">
+                BorderThickness="{TemplateBinding BorderThickness}"
+                Background="{TemplateBinding Background}"
+                SnapsToDevicePixels="True" Padding="{TemplateBinding Padding}">
             <AdornerDecorator>
-                <view:TransitioningContentControl IsRandom="True" Content="{TemplateBinding Content}"/>
+                <view:TransitioningContentControl IsRandom="True" Content="{TemplateBinding Content}" />
             </AdornerDecorator>
         </Border>
     </ControlTemplate>
 
     <ControlTemplate x:Key="AnchorGroupWindow_Multi" TargetType="{x:Type view:AnchorGroupWindow}">
-        <Border Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True" BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            Background="{TemplateBinding Background}">
+        <Border Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                Background="{TemplateBinding Background}">
             <Grid SnapsToDevicePixels="True">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="32"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="32" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <DockPanel>
                     <StackPanel x:Name="Header_Title_Image" DockPanel.Dock="Left" Orientation="Horizontal">
-                        <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DockManager.DockImageSource}"/>
-                        <TextBlock x:Name="Title" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DockManager.DockTitle}"/>
+                        <Image
+                            Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DockManager.DockImageSource}" />
+                        <TextBlock x:Name="Title" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="12"
+                                   TextTrimming="CharacterEllipsis"
+                                   Text="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DockManager.DockTitle}" />
                     </StackPanel>
-                    <StackPanel x:Name="HeaderPanel" DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal">
-                        <Button x:Name="Restore_Btn" Visibility="Collapsed" Style="{StaticResource Window_Restore}" Command="{x:Static command:GlobalCommands.RestoreCommand}"/>
-                        <Button x:Name="Maximize_Btn" Style="{StaticResource Window_Maximize}" Command="{x:Static command:GlobalCommands.MaximizeCommand}"/>
-                        <Button Style="{StaticResource Window_Close}" Command="{x:Static command:GlobalCommands.CloseCommand}"/>
+                    <StackPanel x:Name="HeaderPanel" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                        <Button x:Name="Restore_Btn" Visibility="Collapsed" Style="{StaticResource Window_Restore}"
+                                Command="{x:Static command:GlobalCommands.RestoreCommand}" />
+                        <Button x:Name="Maximize_Btn" Style="{StaticResource Window_Maximize}"
+                                Command="{x:Static command:GlobalCommands.MaximizeCommand}" />
+                        <Button Style="{StaticResource Window_Close}"
+                                Command="{x:Static command:GlobalCommands.CloseCommand}" />
                     </StackPanel>
                 </DockPanel>
                 <AdornerDecorator Grid.Row="1">
                     <Border>
-                        <view:TransitioningContentControl IsRandom="True" Content="{TemplateBinding Content}"/>
+                        <view:TransitioningContentControl IsRandom="True" Content="{TemplateBinding Content}" />
                     </Border>
                 </AdornerDecorator>
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="WindowState" Value="Maximized">
-                <Setter TargetName="Restore_Btn" Property="Visibility" Value="Visible"/>
-                <Setter TargetName="Maximize_Btn" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="Restore_Btn" Property="Visibility" Value="Visible" />
+                <Setter TargetName="Maximize_Btn" Property="Visibility" Value="Collapsed" />
             </Trigger>
             <Trigger Property="IsActive" Value="False">
-                <Setter Property="BorderBrush" Value="#FF8D8D8D"/>
-                <Setter TargetName="Title" Property="Foreground" Value="#FFB2B2B2"/>
+                <Setter Property="BorderBrush" Value="#FF8D8D8D" />
+                <Setter TargetName="Title" Property="Foreground" Value="#FFB2B2B2" />
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
     <Style TargetType="{x:Type view:DocumentGroupWindow}">
-        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderBrush}"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Background" Value="{StaticResource WindowBackground}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{StaticResource WindowBackground}" />
         <Setter Property="WindowChrome.WindowChrome">
             <Setter.Value>
                 <WindowChrome
                     ResizeBorderThickness="6"
                     CaptionHeight="28"
                     CornerRadius="0"
-                    GlassFrameThickness="2"/>
+                    GlassFrameThickness="2" />
             </Setter.Value>
         </Setter>
         <Setter Property="Template">
@@ -1068,37 +1154,45 @@
                             Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
                         <Grid SnapsToDevicePixels="True">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <DockPanel x:Name="PART_Header" Height="32">
                                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                                    <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DockManager.DockImageSource}"/>
-                                    <TextBlock x:Name="Title" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DockManager.DockTitle}"/>
+                                    <Image
+                                        Source="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DockManager.DockImageSource}" />
+                                    <TextBlock x:Name="Title" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="12"
+                                               TextTrimming="CharacterEllipsis"
+                                               Text="{Binding RelativeSource={RelativeSource TemplatedParent},Path=DockManager.DockTitle}" />
                                 </StackPanel>
                                 <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal">
-                                    <Button Height="24" Style="{StaticResource Window_Minimize}" Command="{x:Static command:GlobalCommands.MinimizeCommand}"/>
-                                    <Button x:Name="Maximize_Btn" Height="24" Style="{StaticResource Window_Maximize}" Command="{x:Static command:GlobalCommands.MaximizeCommand}"/>
-                                    <Button x:Name="Restore_Btn" Height="24" Visibility="Collapsed" Style="{StaticResource Window_Restore}" Command="{x:Static command:GlobalCommands.RestoreCommand}"/>
-                                    <Button Height="24" Style="{StaticResource Window_Close}" Command="{x:Static command:GlobalCommands.CloseCommand}"/>
+                                    <Button Height="24" Style="{StaticResource Window_Minimize}"
+                                            Command="{x:Static command:GlobalCommands.MinimizeCommand}" />
+                                    <Button x:Name="Maximize_Btn" Height="24" Style="{StaticResource Window_Maximize}"
+                                            Command="{x:Static command:GlobalCommands.MaximizeCommand}" />
+                                    <Button x:Name="Restore_Btn" Height="24" Visibility="Collapsed"
+                                            Style="{StaticResource Window_Restore}"
+                                            Command="{x:Static command:GlobalCommands.RestoreCommand}" />
+                                    <Button Height="24" Style="{StaticResource Window_Close}"
+                                            Command="{x:Static command:GlobalCommands.CloseCommand}" />
                                 </StackPanel>
                             </DockPanel>
                             <AdornerDecorator Grid.Row="1">
                                 <Border Padding="6,0,6,6">
-                                    <ContentPresenter Content="{TemplateBinding Content}"/>
+                                    <ContentPresenter Content="{TemplateBinding Content}" />
                                 </Border>
                             </AdornerDecorator>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="WindowState" Value="Maximized">
-                            <Setter TargetName="Maximize_Btn" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="Restore_Btn" Property="Visibility" Value="Visible"/>
-                            <Setter Property="Padding" Value="6"/>
+                            <Setter TargetName="Maximize_Btn" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="Restore_Btn" Property="Visibility" Value="Visible" />
+                            <Setter Property="Padding" Value="6" />
                         </Trigger>
                         <Trigger Property="IsActive" Value="False">
-                            <Setter Property="BorderBrush" Value="#FF8D8D8D"/>
-                            <Setter TargetName="Title" Property="Foreground" Value="#FFB2B2B2"/>
+                            <Setter Property="BorderBrush" Value="#FF8D8D8D" />
+                            <Setter TargetName="Title" Property="Foreground" Value="#FFB2B2B2" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1107,61 +1201,63 @@
     </Style>
 
     <Style TargetType="{x:Type view:AnchorGroupWindow}">
-        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderBrush}"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Background" Value="{StaticResource WindowBackground}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{StaticResource WindowBackground}" />
         <Setter Property="WindowChrome.WindowChrome">
             <Setter.Value>
                 <WindowChrome
                     ResizeBorderThickness="6"
                     CaptionHeight="20"
                     CornerRadius="0"
-                    GlassFrameThickness="2"/>
+                    GlassFrameThickness="2" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Template" Value="{StaticResource AnchorGroupWindow_Single}"/>
+        <Setter Property="Template" Value="{StaticResource AnchorGroupWindow_Single}" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},Path=NoBorder}" Value="True">
-                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="BorderThickness" Value="0" />
             </DataTrigger>
             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},Path=IsSingleMode}" Value="False">
-                <Setter Property="Template" Value="{StaticResource AnchorGroupWindow_Multi}"/>
-                <Setter Property="WindowChrome.CaptionHeight" Value="28"/>
+                <Setter Property="Template" Value="{StaticResource AnchorGroupWindow_Multi}" />
+                <Setter Property="WindowChrome.CaptionHeight" Value="28" />
             </DataTrigger>
             <Trigger Property="WindowState" Value="Maximized">
-                <Setter Property="Padding" Value="6"/>
+                <Setter Property="Padding" Value="6" />
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <Style TargetType="{x:Type ydock:DockManager}">
-        <Setter Property="DocumentHeaderTemplate" Value="{StaticResource DocumentHeaderTemplate}"/>
-        <Setter Property="Background" Value="{StaticResource WindowBackground}"/>
+        <Setter Property="DocumentHeaderTemplate" Value="{StaticResource DocumentHeaderTemplate}" />
+        <Setter Property="Background" Value="{StaticResource WindowBackground}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ydock:DockManager}">
                     <Border Background="{TemplateBinding Background}" SnapsToDevicePixels="True"
-                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid FlowDirection="LeftToRight">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="5"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="5"/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="5" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="5" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="5"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="5"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="5" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="5" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <ContentPresenter Content="{TemplateBinding LayoutRootPanel}" Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
-                            <ContentPresenter Content="{TemplateBinding RightSide}" Grid.Column="4" Grid.Row="2"/>
-                            <ContentPresenter Content="{TemplateBinding LeftSide}" Grid.Column="0" Grid.Row="2"/>
-                            <ContentPresenter Content="{TemplateBinding TopSide}" Grid.Column="2" Grid.Row="0"/>
-                            <ContentPresenter Content="{TemplateBinding BottomSide}" Grid.Column="2" Grid.Row="4"/>
+                            <ContentPresenter Content="{TemplateBinding LayoutRootPanel}" Grid.Column="1" Grid.Row="1"
+                                              Grid.RowSpan="3" Grid.ColumnSpan="3" />
+                            <ContentPresenter Content="{TemplateBinding RightSide}" Grid.Column="4" Grid.Row="2" />
+                            <ContentPresenter Content="{TemplateBinding LeftSide}" Grid.Column="0" Grid.Row="2" />
+                            <ContentPresenter Content="{TemplateBinding TopSide}" Grid.Column="2" Grid.Row="0" />
+                            <ContentPresenter Content="{TemplateBinding BottomSide}" Grid.Column="2" Grid.Row="4" />
                         </Grid>
                     </Border>
                 </ControlTemplate>

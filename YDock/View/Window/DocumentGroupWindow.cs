@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Threading;
 using YDock.Commands;
 using YDock.Enum;
 using YDock.Interface;
@@ -18,6 +12,16 @@ namespace YDock.View
 {
     public class DocumentGroupWindow : BaseFloatWindow
     {
+        private readonly Timeline _backgroundAnimation;
+        private readonly Storyboard _board;
+        private readonly Timeline _borderBrushAnimation;
+
+        private readonly Timeline _thicknessAnimation;
+
+        private DockPanel header;
+
+        #region Constructors
+
         static DocumentGroupWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(DocumentGroupWindow), new FrameworkPropertyMetadata(typeof(DocumentGroupWindow)));
@@ -40,20 +44,14 @@ namespace YDock.View
             _board.Children.Add(_borderBrushAnimation);
         }
 
+        #endregion
+
+        #region Override members
+
         protected override void OnInitialized(EventArgs e)
         {
             CommandBindings.Add(new CommandBinding(GlobalCommands.MinimizeCommand, OnMinimizeExecute, OnMinimizeCanExecute));
             base.OnInitialized(e);
-        }
-
-        private void OnMinimizeCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = true;
-        }
-
-        private void OnMinimizeExecute(object sender, ExecutedRoutedEventArgs e)
-        {
-            SystemCommands.MinimizeWindow(this);
         }
 
         public override void AttachChild(IDockView child, AttachMode mode, int index)
@@ -64,11 +62,6 @@ namespace YDock.View
             base.AttachChild(child, mode, index);
         }
 
-
-        private Timeline _thicknessAnimation;
-        private Timeline _backgroundAnimation;
-        private Timeline _borderBrushAnimation;
-        private Storyboard _board;
         public override void Recreate()
         {
             if (Child == null) return;
@@ -81,9 +74,9 @@ namespace YDock.View
                 Storyboard.SetTarget(_thicknessAnimation, layoutCtrl);
                 Storyboard.SetTargetProperty(_thicknessAnimation, new PropertyPath(BorderThicknessProperty));
                 Storyboard.SetTarget(_backgroundAnimation, this);
-                Storyboard.SetTargetProperty(_backgroundAnimation, new PropertyPath("(0).(1)",new DependencyProperty[] { BackgroundProperty, SolidColorBrush.ColorProperty }));
+                Storyboard.SetTargetProperty(_backgroundAnimation, new PropertyPath("(0).(1)", BackgroundProperty, SolidColorBrush.ColorProperty));
                 Storyboard.SetTarget(_borderBrushAnimation, this);
-                Storyboard.SetTargetProperty(_borderBrushAnimation, new PropertyPath("(0).(1)", new DependencyProperty[] { BorderBrushProperty, SolidColorBrush.ColorProperty }));
+                Storyboard.SetTargetProperty(_borderBrushAnimation, new PropertyPath("(0).(1)", BorderBrushProperty, SolidColorBrush.ColorProperty));
                 _board.Begin(this);
 
                 Top -= Constants.FloatWindowHeaderHeight;
@@ -99,13 +92,30 @@ namespace YDock.View
             }
         }
 
-        DockPanel header;
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             header = (DockPanel)GetTemplateChild("PART_Header");
             if (_needReCreate)
+            {
                 header.Visibility = Visibility.Collapsed;
+            }
         }
+
+        #endregion
+
+        #region Event handlers
+
+        private void OnMinimizeCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void OnMinimizeExecute(object sender, ExecutedRoutedEventArgs e)
+        {
+            SystemCommands.MinimizeWindow(this);
+        }
+
+        #endregion
     }
 }

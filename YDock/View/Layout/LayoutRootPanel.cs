@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Shapes;
 using YDock.Enum;
 using YDock.Interface;
 using YDock.Model;
@@ -15,10 +7,20 @@ using YDock.Model;
 namespace YDock.View
 {
     /// <summary>
-    /// 用于容纳<see cref="LayoutGroupPanel"/>,以及AutoHideWindow
+    ///     用于容纳<see cref="LayoutGroupPanel" />,以及AutoHideWindow
     /// </summary>
-    public class LayoutRootPanel : Panel, IDockView, ILayoutViewParent
+    public class LayoutRootPanel : Panel,
+                                   IDockView,
+                                   ILayoutViewParent
     {
+        private _AutoHideWindow _ahWindow;
+
+        private IDockModel _model;
+
+        private LayoutGroupPanel _rootGroupPanel;
+
+        #region Constructors
+
         static LayoutRootPanel()
         {
             FocusableProperty.OverrideMetadata(typeof(LayoutRootPanel), new FrameworkPropertyMetadata(false));
@@ -30,36 +32,10 @@ namespace YDock.View
             _InitContent();
         }
 
-        private void _InitContent()
-        {
-            AHWindow = new _AutoHideWindow();
-            //先初始化Document区域
-            RootGroupPanel = new LayoutGroupDocumentPanel();
-            var _documentControl = new LayoutDocumentGroupControl((_model as DockRoot).DocumentModels[0]);
-            RootGroupPanel._AttachChild(_documentControl, 0);
-        }
+        #endregion
 
-        private LayoutGroupPanel _rootGroupPanel;
-        public LayoutGroupPanel RootGroupPanel
-        {
-            get { return _rootGroupPanel; }
-            internal set
-            {
-                if (_rootGroupPanel != value)
-                {
-                    if (_rootGroupPanel != null)
-                    {
-                        Children.Remove(_rootGroupPanel);
-                        _rootGroupPanel.CloseDropWindow();
-                    }
-                    _rootGroupPanel = value;
-                    if (_rootGroupPanel != null)
-                        Children.Add(_rootGroupPanel);
-                }
-            }
-        }
+        #region Properties
 
-        private _AutoHideWindow _ahWindow;
         public _AutoHideWindow AHWindow
         {
             get { return _ahWindow; }
@@ -72,6 +48,7 @@ namespace YDock.View
                         Children.Remove(_ahWindow);
                         _ahWindow.Dispose();
                     }
+
                     _ahWindow = value;
                     if (_ahWindow != null)
                     {
@@ -81,6 +58,32 @@ namespace YDock.View
                 }
             }
         }
+
+        public LayoutGroupPanel RootGroupPanel
+        {
+            get { return _rootGroupPanel; }
+            internal set
+            {
+                if (_rootGroupPanel != value)
+                {
+                    if (_rootGroupPanel != null)
+                    {
+                        Children.Remove(_rootGroupPanel);
+                        _rootGroupPanel.CloseDropWindow();
+                    }
+
+                    _rootGroupPanel = value;
+                    if (_rootGroupPanel != null)
+                    {
+                        Children.Add(_rootGroupPanel);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Override members
 
         protected override Size MeasureOverride(Size availableSize)
         {
@@ -99,6 +102,7 @@ namespace YDock.View
                     _ahWindow.Measure(availableSize);
                     break;
             }
+
             return availableSize;
         }
 
@@ -123,110 +127,38 @@ namespace YDock.View
                     _ahWindow.Arrange(new Rect());
                     break;
             }
+
             return finalSize;
         }
 
-        private IDockModel _model;
+        #endregion
+
+        #region IDockView Members
+
         public IDockModel Model
         {
-            get
-            {
-                return _model;
-            }
+            get { return _model; }
             internal set
             {
                 if (_model != value)
                 {
                     if (_model != null)
+                    {
                         (_model as DockRoot).View = null;
+                    }
+
                     _model = value;
                     if (_model != null)
+                    {
                         (_model as DockRoot).View = this;
+                    }
                 }
             }
         }
 
         public IDockView DockViewParent
         {
-            get
-            {
-                return _model.DockManager;
-            }
-        }
-
-        internal IDockView FindChildByLevel(int level, DockSide side)
-        {
-            IDockView view = _rootGroupPanel;
-            while(level > 0)
-            {
-                level--;
-                if (view is BaseGroupControl)
-                    break;
-                if (view is LayoutGroupPanel)
-                {
-                    var panel = (view as LayoutGroupPanel);
-                    if (panel.Direction == Direction.None)
-                        break;
-                    if (panel.Direction == Direction.Horizontal)
-                    {
-                        if (side == DockSide.Top || side == DockSide.Bottom)
-                            break;
-                        if (side == DockSide.Left)
-                        {
-                            var child = panel.Children[0];
-                            if (child is LayoutDocumentGroupControl)
-                                break;
-                            view = child as IDockView;
-                        }
-                        if (side == DockSide.Right)
-                        {
-                            var child = panel.Children[panel.Count - 1];
-                            if (child is LayoutDocumentGroupControl)
-                                break;
-                            view = child as IDockView;
-                        }
-                    }
-                    else
-                    {
-                        if (side == DockSide.Left || side == DockSide.Right)
-                            break;
-                        if (side == DockSide.Top)
-                        {
-                            var child = panel.Children[0];
-                            if (child is LayoutDocumentGroupControl)
-                                break;
-                            view = child as IDockView;
-                        }
-                        if (side == DockSide.Bottom)
-                        {
-                            var child = panel.Children[panel.Count - 1];
-                            if (child is LayoutDocumentGroupControl)
-                                break;
-                            view = child as IDockView;
-                        }
-                    }
-                }
-            }
-            return view;
-        }
-
-        public void AttachChild(IDockView child, AttachMode mode, int index)
-        {
-            if (child is LayoutGroupPanel)
-                RootGroupPanel = child as LayoutGroupPanel;
-        }
-
-        public void DetachChild(IDockView child, bool force = true)
-        {
-            if (child == RootGroupPanel)
-                RootGroupPanel = null;
-        }
-
-        public int IndexOf(IDockView child)
-        {
-            if (child == RootGroupPanel)
-                return 0;
-            else return -1;
+            get { return _model.DockManager; }
         }
 
         public void Dispose()
@@ -237,5 +169,133 @@ namespace YDock.View
             AHWindow = null;
             Children.Clear();
         }
+
+        #endregion
+
+        #region ILayoutViewParent Members
+
+        public void AttachChild(IDockView child, AttachMode mode, int index)
+        {
+            if (child is LayoutGroupPanel)
+            {
+                RootGroupPanel = child as LayoutGroupPanel;
+            }
+        }
+
+        public void DetachChild(IDockView child, bool force = true)
+        {
+            if (child == RootGroupPanel)
+            {
+                RootGroupPanel = null;
+            }
+        }
+
+        public int IndexOf(IDockView child)
+        {
+            if (child == RootGroupPanel)
+            {
+                return 0;
+            }
+
+            return -1;
+        }
+
+        #endregion
+
+        #region Members
+
+        internal IDockView FindChildByLevel(int level, DockSide side)
+        {
+            IDockView view = _rootGroupPanel;
+            while (level > 0)
+            {
+                level--;
+                if (view is BaseGroupControl)
+                {
+                    break;
+                }
+
+                if (view is LayoutGroupPanel)
+                {
+                    var panel = view as LayoutGroupPanel;
+                    if (panel.Direction == Direction.None)
+                    {
+                        break;
+                    }
+
+                    if (panel.Direction == Direction.Horizontal)
+                    {
+                        if (side == DockSide.Top || side == DockSide.Bottom)
+                        {
+                            break;
+                        }
+
+                        if (side == DockSide.Left)
+                        {
+                            var child = panel.Children[0];
+                            if (child is LayoutDocumentGroupControl)
+                            {
+                                break;
+                            }
+
+                            view = child as IDockView;
+                        }
+
+                        if (side == DockSide.Right)
+                        {
+                            var child = panel.Children[panel.Count - 1];
+                            if (child is LayoutDocumentGroupControl)
+                            {
+                                break;
+                            }
+
+                            view = child as IDockView;
+                        }
+                    }
+                    else
+                    {
+                        if (side == DockSide.Left || side == DockSide.Right)
+                        {
+                            break;
+                        }
+
+                        if (side == DockSide.Top)
+                        {
+                            var child = panel.Children[0];
+                            if (child is LayoutDocumentGroupControl)
+                            {
+                                break;
+                            }
+
+                            view = child as IDockView;
+                        }
+
+                        if (side == DockSide.Bottom)
+                        {
+                            var child = panel.Children[panel.Count - 1];
+                            if (child is LayoutDocumentGroupControl)
+                            {
+                                break;
+                            }
+
+                            view = child as IDockView;
+                        }
+                    }
+                }
+            }
+
+            return view;
+        }
+
+        private void _InitContent()
+        {
+            AHWindow = new _AutoHideWindow();
+            //先初始化Document区域
+            RootGroupPanel = new LayoutGroupDocumentPanel();
+            var _documentControl = new LayoutDocumentGroupControl((_model as DockRoot).DocumentModels[0]);
+            RootGroupPanel._AttachChild(_documentControl, 0);
+        }
+
+        #endregion
     }
 }

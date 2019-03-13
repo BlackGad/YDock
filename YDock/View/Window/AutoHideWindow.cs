@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using YDock.Enum;
@@ -16,253 +11,33 @@ using YDock.Model;
 
 namespace YDock.View
 {
-    public class _AutoHideWindow : HwndHost, ILayout
+    public class AutoHideWindow : Panel,
+                                  ILayout,
+                                  IDisposable
     {
-        public _AutoHideWindow()
-        {
-            _innerContent = new AutoHideWindow();
-        }
+        private double _dragBound1;
+        private double _dragBound2;
 
-        public DockManager DockManager
-        {
-            get
-            {
-                return _innerContent.DockManager;
-            }
-        }
+        private Popup _dragPopup;
 
-        public DockSide Side
-        {
-            get { return _innerContent.Side; }
-        }
+        private LayoutContentControl _layoutContent;
 
-        public DockElement Model
-        {
-            get { return _innerContent.Model; }
-            set { _innerContent.Model = value; }
-        }
+        private DockElement _model;
 
-        HwndSource _innerSource = null;
-        IntPtr _parentWindowHandle;
-        AutoHideWindow _innerContent;
-        bool _contentRendered;
+        private LayoutDragSplitter _splitter;
+        private Point _pToScreen;
 
-        protected override HandleRef BuildWindowCore(HandleRef hwndParent)
-        {
-            _parentWindowHandle = hwndParent.Handle;
-            _innerSource = new HwndSource(new HwndSourceParameters("static")
-            {
-                ParentWindow = hwndParent.Handle,
-                WindowStyle = Win32Helper.WS_CHILD | Win32Helper.WS_VISIBLE | Win32Helper.WS_CLIPSIBLINGS | Win32Helper.WS_CLIPCHILDREN,
-                Width = 0,
-                Height = 0,
-            });
+        #region Constructors
 
-            _contentRendered = false;
-            _innerSource.ContentRendered += _OnContentRendered;
-            _innerSource.RootVisual = _innerContent;
-            AddLogicalChild(_innerContent);
-            Win32Helper.BringWindowToTop(_innerSource.Handle);
-            return new HandleRef(this, _innerSource.Handle);
-        }
-
-        protected override void DestroyWindowCore(HandleRef hwnd)
-        {
-            Win32Helper.DestroyWindow(_innerSource.Handle);
-        }
-
-        void _OnContentRendered(object sender, EventArgs e)
-        {
-            _contentRendered = true;
-        }
-
-        protected override IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            if (msg == Win32Helper.WM_WINDOWPOSCHANGING && _contentRendered)
-                Win32Helper.BringWindowToTop(_innerSource.Handle);
-            return base.WndProc(hwnd, msg, wParam, lParam, ref handled);
-        }
-
-        protected override Size MeasureOverride(Size constraint)
-        {
-            _innerContent.Measure(constraint);
-            return _innerContent.DesiredSize;
-        }
-
-        protected override Size ArrangeOverride(Size finalSize)
-        {
-            _innerContent.Arrange(new Rect(finalSize));
-            return finalSize;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _innerSource.ContentRendered -= _OnContentRendered;
-                _innerContent.Dispose();
-                _innerContent = null;
-            }
-            base.Dispose(disposing);
-        }
-    }
-
-    public class AutoHideWindow : Panel, ILayout, IDisposable
-    {
         public AutoHideWindow()
         {
             _InitChildren();
         }
 
-        private void _InitChildren()
-        {
-            _layoutContent = new LayoutContentControl() { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, BorderThickness = new Thickness(1) ,BorderBrush = new SolidColorBrush(new Color() { A = 0xFF, R = 0xCC,G = 0xCE, B = 0xDB })};
-            _splitter = new LayoutDragSplitter();
-            _splitter.DragStarted += OnDragStarted;
-            _splitter.DragDelta += OnDragDelta;
-            _splitter.DragCompleted += OnDragCompleted;
-            _splitter.Background = ResourceManager.SplitterBrushVertical;
-        }
+        #endregion
 
-        Panel RootPanel { get { return (Parent as FrameworkElement).Parent as Panel; } }
+        #region Properties
 
-        private Popup _dragPopup;
-        private Point pToScreen;
-        private double _dragBound1;
-        private double _dragBound2;
-
-        private void OnDragStarted(object sender, DragStartedEventArgs e)
-        {
-            _ComputeDragBounds(sender as LayoutDragSplitter, ref _dragBound1, ref _dragBound2);
-            _CreateDragPopup(sender as LayoutDragSplitter);
-        }
-
-        private void OnDragDelta(object sender, DragDeltaEventArgs e)
-        {
-            if (Side == DockSide.Left || Side == DockSide.Right)
-            {
-                if (e.HorizontalChange != 0)
-                {
-                    double newPos = pToScreen.X + e.HorizontalChange;
-                    if (_dragBound1 + Constants.SideLength >= _dragBound2 - Constants.SideLength) return;
-                    if ((newPos >= _dragBound1 + Constants.SideLength) && (newPos <= _dragBound2 - Constants.SideLength))
-                        _dragPopup.HorizontalOffset = newPos;
-                    else
-                    {
-                        if (e.HorizontalChange > 0)
-                            _dragPopup.HorizontalOffset = _dragBound2 - Constants.SideLength;
-                        else _dragPopup.HorizontalOffset = _dragBound1 + Constants.SideLength;
-                    }
-                }
-                else _dragPopup.HorizontalOffset = pToScreen.X;
-            }
-            else
-            {
-                if (e.VerticalChange != 0)
-                {
-                    double newPos = pToScreen.Y + e.VerticalChange;
-                    if (_dragBound1 + Constants.SideLength >= _dragBound2 - Constants.SideLength) return;
-                    if ((newPos >= _dragBound1 + Constants.SideLength) && (newPos <= _dragBound2 - Constants.SideLength))
-                        _dragPopup.VerticalOffset = newPos;
-                    else
-                    {
-                        if (e.VerticalChange > 0)
-                            _dragPopup.VerticalOffset = _dragBound2 - Constants.SideLength;
-                        else _dragPopup.VerticalOffset = _dragBound1 + Constants.SideLength;
-                    }
-                }
-                else _dragPopup.VerticalOffset = pToScreen.Y;
-            }
-        }
-
-        private void OnDragCompleted(object sender, DragCompletedEventArgs e)
-        {
-            if (Side == DockSide.Left)
-                Model.DesiredWidth += _dragPopup.HorizontalOffset - pToScreen.X;
-            if (Side == DockSide.Right)
-                Model.DesiredWidth -= _dragPopup.HorizontalOffset - pToScreen.X;
-            if (Side == DockSide.Top)
-                Model.DesiredHeight += _dragPopup.VerticalOffset - pToScreen.Y;
-            if (Side == DockSide.Bottom)
-                Model.DesiredHeight -= _dragPopup.VerticalOffset - pToScreen.Y;
-            (Parent as FrameworkElement).InvalidateMeasure();
-            InvalidateMeasure();
-            _DisposeDragPopup();
-        }
-
-        private void _CreateDragPopup(LayoutDragSplitter splitter)
-        {
-            pToScreen = this.PointToScreenDPIWithoutFlowDirection(new Point());
-            var transfrom = splitter.TransformToAncestor(this);
-            var _pToInterPanel = transfrom.Transform(new Point(0, 0));
-            pToScreen.X += _pToInterPanel.X;
-            pToScreen.Y += _pToInterPanel.Y;
-
-            //switch (Side)
-            //{
-            //    case DockSide.Left:
-            //    case DockSide.Right:
-            //        Model.DesiredWidth = ActualWidth - Constants.SplitterSpan / 2;
-            //        break;
-            //    case DockSide.Top:
-            //    case DockSide.Bottom:
-            //        Model.DesiredHeight = ActualHeight - Constants.SplitterSpan / 2;
-            //        break;
-            //}
-
-            _dragPopup = new Popup()
-            {
-                Child = new Rectangle()
-                {
-                    Height = splitter.ActualHeight,
-                    Width = splitter.ActualWidth,
-                    Fill = Brushes.Black,
-                    Opacity = Constants.DragOpacity,
-                    IsHitTestVisible = false,
-                },
-                Placement = PlacementMode.Absolute,
-                HorizontalOffset = pToScreen.X,
-                VerticalOffset = pToScreen.Y,
-                AllowsTransparency = true
-            };
-
-            DockHelper.ComputeSpliterLocation(_dragPopup, pToScreen, new Size(splitter.ActualWidth, splitter.ActualHeight));
-            _dragPopup.IsOpen = true;
-        }
-
-        private void _DisposeDragPopup()
-        {
-            _dragPopup.IsOpen = false;
-            _dragPopup = null;
-        }
-
-        /// <summary>
-        /// 计算拖动时的上下边界值
-        /// </summary>
-        /// <param name="splitter">拖动的对象</param>
-        /// <param name="x1">下界</param>
-        /// <param name="x2">上界</param>
-        private void _ComputeDragBounds(LayoutDragSplitter splitter, ref double x1, ref double x2)
-        {
-            var pToScreen = RootPanel.PointToScreenDPIWithoutFlowDirection(new Point());
-            switch (Side)
-            {
-                case DockSide.Left:
-                case DockSide.Right:
-                    _dragBound1 = pToScreen.X;
-                    _dragBound2 = pToScreen.X + RootPanel.ActualWidth - Constants.SplitterSpan / 2;
-                    break;
-                case DockSide.Top:
-                case DockSide.Bottom:
-                    _dragBound1 = pToScreen.Y;
-                    _dragBound2 = pToScreen.Y + RootPanel.ActualHeight - Constants.SplitterSpan / 2;
-                    break;
-            }
-        }
-
-        private LayoutContentControl _layoutContent;
-
-        private DockElement _model;
         public DockElement Model
         {
             get { return _model; }
@@ -271,60 +46,30 @@ namespace YDock.View
                 if (_model != value)
                 {
                     if (_model != null)
+                    {
                         _DestroyContentForModel(_model);
+                    }
+
                     _model = value;
                     if (_model != null)
+                    {
                         _CreateContentForModel(_model);
-                    (Parent as FrameworkElement).InvalidateMeasure();
+                    }
+
+                    ((FrameworkElement)Parent).InvalidateMeasure();
                     InvalidateMeasure();
                 }
             }
         }
 
-        private LayoutDragSplitter _splitter;
-
-        public DockSide Side
+        private Panel RootPanel
         {
-            get { return _model == null ? DockSide.None : _model.Side; }
+            get { return ((FrameworkElement)Parent).Parent as Panel; }
         }
 
+        #endregion
 
-        public DockManager DockManager
-        {
-            get
-            {
-                return _model == null ? null : _model.DockManager;
-            }
-        }
-
-        private void _CreateContentForModel(DockElement model)
-        {
-            _layoutContent.Model = model;
-            switch (model.Side)
-            {
-                case DockSide.Left:
-                case DockSide.Right:
-                    _splitter.Cursor = Cursors.SizeWE;
-                    break;
-                case DockSide.Top:
-                case DockSide.Bottom:
-                    _splitter.Cursor = Cursors.SizeNS;
-                    break;
-            }
-            Children.Add(_layoutContent);
-            Children.Add(_splitter);
-        }
-
-        private void _DestroyContentForModel(DockElement Model)
-        {
-            if (ActualWidth > 0)
-            {
-                Model.DesiredWidth = ActualWidth - Constants.SplitterSpan / 2;
-                Model.DesiredHeight = ActualHeight - Constants.SplitterSpan / 2;
-            }
-            _layoutContent.Model = null;
-            Children.Clear();
-        }
+        #region Override members
 
         protected override Size MeasureOverride(Size availableSize)
         {
@@ -350,6 +95,7 @@ namespace YDock.View
                         finalWidth = avaLength;
                         finalHeight = availableSize.Height;
                     }
+
                     break;
                 case DockSide.Top:
                 case DockSide.Bottom:
@@ -369,8 +115,10 @@ namespace YDock.View
                         finalWidth = availableSize.Width;
                         finalHeight = avaLength;
                     }
+
                     break;
             }
+
             return new Size(finalWidth, finalHeight);
         }
 
@@ -404,7 +152,7 @@ namespace YDock.View
                         }
                         else
                         {
-                            double deceed = wholeLength - finalSize.Width;
+                            var deceed = wholeLength - finalSize.Width;
                             if (Side == DockSide.Left)
                             {
                                 if (Model.DesiredWidth > deceed)
@@ -420,7 +168,7 @@ namespace YDock.View
                             }
                             else
                             {
-                                double useLength = finalSize.Width;
+                                var useLength = finalSize.Width;
                                 if (useLength >= Constants.SplitterSpan / 2)
                                 {
                                     useLength -= Constants.SplitterSpan / 2;
@@ -434,6 +182,7 @@ namespace YDock.View
                                 }
                             }
                         }
+
                         break;
                     case DockSide.Top:
                     case DockSide.Bottom:
@@ -453,7 +202,7 @@ namespace YDock.View
                         }
                         else
                         {
-                            double deceed = wholeLength - finalSize.Height;
+                            var deceed = wholeLength - finalSize.Height;
                             if (Side == DockSide.Top)
                             {
                                 if (Model.DesiredHeight > deceed)
@@ -469,7 +218,7 @@ namespace YDock.View
                             }
                             else
                             {
-                                double useLength = finalSize.Height;
+                                var useLength = finalSize.Height;
                                 if (useLength >= Constants.SplitterSpan / 2)
                                 {
                                     useLength -= Constants.SplitterSpan / 2;
@@ -483,11 +232,17 @@ namespace YDock.View
                                 }
                             }
                         }
+
                         break;
                 }
             }
+
             return finalSize;
         }
+
+        #endregion
+
+        #region IDisposable Members
 
         public void Dispose()
         {
@@ -498,5 +253,236 @@ namespace YDock.View
             _splitter = null;
             _layoutContent.Dispose();
         }
+
+        #endregion
+
+        #region ILayout Members
+
+        public DockSide Side
+        {
+            get { return _model == null ? DockSide.None : _model.Side; }
+        }
+
+        public DockManager DockManager
+        {
+            get { return _model == null ? null : _model.DockManager; }
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void OnDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            if (Side == DockSide.Left)
+            {
+                Model.DesiredWidth += _dragPopup.HorizontalOffset - _pToScreen.X;
+            }
+
+            if (Side == DockSide.Right)
+            {
+                Model.DesiredWidth -= _dragPopup.HorizontalOffset - _pToScreen.X;
+            }
+
+            if (Side == DockSide.Top)
+            {
+                Model.DesiredHeight += _dragPopup.VerticalOffset - _pToScreen.Y;
+            }
+
+            if (Side == DockSide.Bottom)
+            {
+                Model.DesiredHeight -= _dragPopup.VerticalOffset - _pToScreen.Y;
+            }
+
+            (Parent as FrameworkElement).InvalidateMeasure();
+            InvalidateMeasure();
+            _DisposeDragPopup();
+        }
+
+        private void OnDragDelta(object sender, DragDeltaEventArgs e)
+        {
+            if (Side == DockSide.Left || Side == DockSide.Right)
+            {
+                if (e.HorizontalChange != 0)
+                {
+                    var newPos = _pToScreen.X + e.HorizontalChange;
+                    if (_dragBound1 + Constants.SideLength >= _dragBound2 - Constants.SideLength) return;
+                    if (newPos >= _dragBound1 + Constants.SideLength && newPos <= _dragBound2 - Constants.SideLength)
+                    {
+                        _dragPopup.HorizontalOffset = newPos;
+                    }
+                    else
+                    {
+                        if (e.HorizontalChange > 0)
+                        {
+                            _dragPopup.HorizontalOffset = _dragBound2 - Constants.SideLength;
+                        }
+                        else
+                        {
+                            _dragPopup.HorizontalOffset = _dragBound1 + Constants.SideLength;
+                        }
+                    }
+                }
+                else
+                {
+                    _dragPopup.HorizontalOffset = _pToScreen.X;
+                }
+            }
+            else
+            {
+                if (e.VerticalChange != 0)
+                {
+                    var newPos = _pToScreen.Y + e.VerticalChange;
+                    if (_dragBound1 + Constants.SideLength >= _dragBound2 - Constants.SideLength) return;
+                    if (newPos >= _dragBound1 + Constants.SideLength && newPos <= _dragBound2 - Constants.SideLength)
+                    {
+                        _dragPopup.VerticalOffset = newPos;
+                    }
+                    else
+                    {
+                        if (e.VerticalChange > 0)
+                        {
+                            _dragPopup.VerticalOffset = _dragBound2 - Constants.SideLength;
+                        }
+                        else
+                        {
+                            _dragPopup.VerticalOffset = _dragBound1 + Constants.SideLength;
+                        }
+                    }
+                }
+                else
+                {
+                    _dragPopup.VerticalOffset = _pToScreen.Y;
+                }
+            }
+        }
+
+        private void OnDragStarted(object sender, DragStartedEventArgs e)
+        {
+            _ComputeDragBounds(sender as LayoutDragSplitter, ref _dragBound1, ref _dragBound2);
+            _CreateDragPopup(sender as LayoutDragSplitter);
+        }
+
+        #endregion
+
+        #region Members
+
+        /// <summary>
+        ///     计算拖动时的上下边界值
+        /// </summary>
+        /// <param name="splitter">拖动的对象</param>
+        /// <param name="x1">下界</param>
+        /// <param name="x2">上界</param>
+        private void _ComputeDragBounds(LayoutDragSplitter splitter, ref double x1, ref double x2)
+        {
+            var pToScreen = RootPanel.PointToScreenDPIWithoutFlowDirection(new Point());
+            switch (Side)
+            {
+                case DockSide.Left:
+                case DockSide.Right:
+                    _dragBound1 = pToScreen.X;
+                    _dragBound2 = pToScreen.X + RootPanel.ActualWidth - Constants.SplitterSpan / 2;
+                    break;
+                case DockSide.Top:
+                case DockSide.Bottom:
+                    _dragBound1 = pToScreen.Y;
+                    _dragBound2 = pToScreen.Y + RootPanel.ActualHeight - Constants.SplitterSpan / 2;
+                    break;
+            }
+        }
+
+        private void _CreateContentForModel(DockElement model)
+        {
+            _layoutContent.Model = model;
+            switch (model.Side)
+            {
+                case DockSide.Left:
+                case DockSide.Right:
+                    _splitter.Cursor = Cursors.SizeWE;
+                    break;
+                case DockSide.Top:
+                case DockSide.Bottom:
+                    _splitter.Cursor = Cursors.SizeNS;
+                    break;
+            }
+
+            Children.Add(_layoutContent);
+            Children.Add(_splitter);
+        }
+
+        private void _CreateDragPopup(LayoutDragSplitter splitter)
+        {
+            _pToScreen = this.PointToScreenDPIWithoutFlowDirection(new Point());
+            var transfrom = splitter.TransformToAncestor(this);
+            var _pToInterPanel = transfrom.Transform(new Point(0, 0));
+            _pToScreen.X += _pToInterPanel.X;
+            _pToScreen.Y += _pToInterPanel.Y;
+
+            //switch (Side)
+            //{
+            //    case DockSide.Left:
+            //    case DockSide.Right:
+            //        Model.DesiredWidth = ActualWidth - Constants.SplitterSpan / 2;
+            //        break;
+            //    case DockSide.Top:
+            //    case DockSide.Bottom:
+            //        Model.DesiredHeight = ActualHeight - Constants.SplitterSpan / 2;
+            //        break;
+            //}
+
+            _dragPopup = new Popup
+            {
+                Child = new Rectangle
+                {
+                    Height = splitter.ActualHeight,
+                    Width = splitter.ActualWidth,
+                    Fill = Brushes.Black,
+                    Opacity = Constants.DragOpacity,
+                    IsHitTestVisible = false
+                },
+                Placement = PlacementMode.Absolute,
+                HorizontalOffset = _pToScreen.X,
+                VerticalOffset = _pToScreen.Y,
+                AllowsTransparency = true
+            };
+
+            DockHelper.ComputeSpliterLocation(_dragPopup, _pToScreen, new Size(splitter.ActualWidth, splitter.ActualHeight));
+            _dragPopup.IsOpen = true;
+        }
+
+        private void _DestroyContentForModel(DockElement Model)
+        {
+            if (ActualWidth > 0)
+            {
+                Model.DesiredWidth = ActualWidth - Constants.SplitterSpan / 2;
+                Model.DesiredHeight = ActualHeight - Constants.SplitterSpan / 2;
+            }
+
+            _layoutContent.Model = null;
+            Children.Clear();
+        }
+
+        private void _DisposeDragPopup()
+        {
+            _dragPopup.IsOpen = false;
+            _dragPopup = null;
+        }
+
+        private void _InitChildren()
+        {
+            _layoutContent = new LayoutContentControl
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, BorderThickness = new Thickness(1), BorderBrush =
+                    new SolidColorBrush(new Color
+                                            { A = 0xFF, R = 0xCC, G = 0xCE, B = 0xDB })
+            };
+            _splitter = new LayoutDragSplitter();
+            _splitter.DragStarted += OnDragStarted;
+            _splitter.DragDelta += OnDragDelta;
+            _splitter.DragCompleted += OnDragCompleted;
+            _splitter.Background = ResourceManager.SplitterBrushVertical;
+        }
+
+        #endregion
     }
 }

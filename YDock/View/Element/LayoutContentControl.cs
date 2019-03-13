@@ -1,46 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using YDock.Enum;
-using YDock.Interface;
 using YDock.Model;
 
 namespace YDock.View
 {
-    public class LayoutContentControl : Control, INotifyPropertyChanged, IDisposable
+    public class LayoutContentControl : Control,
+                                        INotifyPropertyChanged,
+                                        IDisposable
     {
+        #region Property definitions
+
+        public static readonly DependencyProperty ModelProperty =
+            DependencyProperty.Register("Model", typeof(DockElement), typeof(LayoutContentControl));
+
+        #endregion
+
+        #region Constructors
+
         static LayoutContentControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(LayoutContentControl), new FrameworkPropertyMetadata(typeof(LayoutContentControl)));
         }
 
-        public LayoutContentControl()
-        {
-        }
+        #endregion
 
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
-
-
-        public static readonly DependencyProperty ModelProperty =
-            DependencyProperty.Register("Model", typeof(DockElement), typeof(LayoutContentControl));
+        #region Properties
 
         public DockElement Model
         {
             get { return (DockElement)GetValue(ModelProperty); }
-            set
-            {
-                SetValue(ModelProperty, value);
-            }
+            set { SetValue(ModelProperty, value); }
         }
+
+        #endregion
+
+        #region IDisposable Members
 
         public void Dispose()
         {
             Model = null;
             DataContext = null;
         }
+
+        #endregion
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+        #endregion
     }
 }

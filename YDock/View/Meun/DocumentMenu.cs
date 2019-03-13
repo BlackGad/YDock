@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using YDock.Commands;
@@ -13,53 +9,110 @@ using YDock.Interface;
 
 namespace YDock.View
 {
-    public class DocumentMenu : ContextMenu, IDisposable
+    public class DocumentMenu : ContextMenu,
+                                IDisposable
     {
+        #region Constructors
+
         public DocumentMenu(IDockElement targetObj)
         {
-            _targetObj = targetObj;
+            TargetObj = targetObj;
             _InitMenuItem();
-            ResourceExtension.LanaguageChanged += OnLanaguageChanged;
+            ResourceExtension.LanguageChanged += OnLanguageChanged;
         }
 
-        public IDockElement TargetObj { get { return _targetObj; } }
-        private IDockElement _targetObj;
+        #endregion
 
-        private void _InitMenuItem()
+        #region Properties
+
+        public IDockElement TargetObj { get; private set; }
+
+        #endregion
+
+        #region Override members
+
+        protected override void OnInitialized(EventArgs e)
         {
-            MenuItem item = default(MenuItem);
-            for (int i = 0; i < 5; i++)
+            CommandBindings.Add(new CommandBinding(GlobalCommands.CloseCommand, OnCommandExecute));
+            CommandBindings.Add(new CommandBinding(GlobalCommands.CloseAllExceptCommand, OnCommandExecute, OnCommandCanExecute));
+            CommandBindings.Add(new CommandBinding(GlobalCommands.CloseAllCommand, OnCommandExecute));
+            CommandBindings.Add(new CommandBinding(GlobalCommands.ToFloatCommand, OnCommandExecute, OnCommandCanExecute));
+            CommandBindings.Add(new CommandBinding(GlobalCommands.ToFloatAllCommand, OnCommandExecute, OnCommandCanExecute));
+            base.OnInitialized(e);
+        }
+
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            TargetObj = null;
+            ResourceExtension.LanguageChanged -= OnLanguageChanged;
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void OnCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (TargetObj == null || TargetObj.IsDisposed)
             {
-                item = new MenuItem() { Tag = i };
-                switch (i)
-                {
-                    case 0:
-                        item.Header = Properties.Resources._Close;
-                        item.Command = GlobalCommands.CloseCommand;
-                        break;
-                    case 1:
-                        item.Header = Properties.Resources.Close_All_Except;
-                        item.Command = GlobalCommands.CloseAllExceptCommand;
-                        break;
-                    case 2:
-                        item.Header = Properties.Resources.Close_All;
-                        item.Command = GlobalCommands.CloseAllCommand;
-                        break;
-                    case 3:
-                        Items.Add(new Separator());
-                        item.Header = Properties.Resources.Float;
-                        item.Command = GlobalCommands.ToFloatCommand;
-                        break;
-                    case 4:
-                        item.Header = Properties.Resources.Float_All;
-                        item.Command = GlobalCommands.ToFloatAllCommand;
-                        break;
-                }
-                Items.Add(item);
+                e.CanExecute = false;
+                return;
+            }
+
+            if (e.Command == GlobalCommands.CloseAllExceptCommand)
+            {
+                e.CanExecute = TargetObj.Container.Children.Count() > 1;
+            }
+
+            if (e.Command == GlobalCommands.ToFloatCommand)
+            {
+                e.CanExecute = TargetObj.CanFloat;
+            }
+
+            if (e.Command == GlobalCommands.ToFloatAllCommand)
+            {
+                e.CanExecute = TargetObj.Container.Mode != DockMode.Float;
             }
         }
 
-        private void OnLanaguageChanged(object sender, EventArgs e)
+        private void OnCommandExecute(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (TargetObj == null || TargetObj.IsDisposed)
+            {
+                return;
+            }
+
+            if (e.Command == GlobalCommands.CloseCommand)
+            {
+                TargetObj.Hide();
+            }
+
+            if (e.Command == GlobalCommands.CloseAllExceptCommand)
+            {
+                TargetObj.Container.CloseAllExcept(TargetObj);
+            }
+
+            if (e.Command == GlobalCommands.CloseAllCommand)
+            {
+                TargetObj.Container.CloseAll();
+            }
+
+            if (e.Command == GlobalCommands.ToFloatCommand)
+            {
+                TargetObj.ToFloat();
+            }
+
+            if (e.Command == GlobalCommands.ToFloatAllCommand)
+            {
+                TargetObj.Container.ToFloat();
+            }
+        }
+
+        private void OnLanguageChanged(object sender, EventArgs e)
         {
             foreach (var item in Items)
             {
@@ -88,51 +141,46 @@ namespace YDock.View
             }
         }
 
-        protected override void OnInitialized(EventArgs e)
-        {
-            CommandBindings.Add(new CommandBinding(GlobalCommands.CloseCommand, OnCommandExecute));
-            CommandBindings.Add(new CommandBinding(GlobalCommands.CloseAllExceptCommand, OnCommandExecute, OnCommandCanExecute));
-            CommandBindings.Add(new CommandBinding(GlobalCommands.CloseAllCommand, OnCommandExecute));
-            CommandBindings.Add(new CommandBinding(GlobalCommands.ToFloatCommand, OnCommandExecute, OnCommandCanExecute));
-            CommandBindings.Add(new CommandBinding(GlobalCommands.ToFloatAllCommand, OnCommandExecute, OnCommandCanExecute));
-            base.OnInitialized(e);
-        }
+        #endregion
 
-        private void OnCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        #region Members
+
+        private void _InitMenuItem()
         {
-            if (_targetObj == null || _targetObj.IsDisposed)
+            var item = default(MenuItem);
+            for (var i = 0; i < 5; i++)
             {
-                e.CanExecute = false;
-                return;
+                item = new MenuItem
+                    { Tag = i };
+                switch (i)
+                {
+                    case 0:
+                        item.Header = Properties.Resources._Close;
+                        item.Command = GlobalCommands.CloseCommand;
+                        break;
+                    case 1:
+                        item.Header = Properties.Resources.Close_All_Except;
+                        item.Command = GlobalCommands.CloseAllExceptCommand;
+                        break;
+                    case 2:
+                        item.Header = Properties.Resources.Close_All;
+                        item.Command = GlobalCommands.CloseAllCommand;
+                        break;
+                    case 3:
+                        Items.Add(new Separator());
+                        item.Header = Properties.Resources.Float;
+                        item.Command = GlobalCommands.ToFloatCommand;
+                        break;
+                    case 4:
+                        item.Header = Properties.Resources.Float_All;
+                        item.Command = GlobalCommands.ToFloatAllCommand;
+                        break;
+                }
+
+                Items.Add(item);
             }
-            if (e.Command == GlobalCommands.CloseAllExceptCommand)
-                e.CanExecute = _targetObj.Container.Children.Count() > 1;
-            if (e.Command == GlobalCommands.ToFloatCommand)
-                e.CanExecute = _targetObj.CanFloat;
-            if (e.Command == GlobalCommands.ToFloatAllCommand)
-                e.CanExecute = _targetObj.Container.Mode != DockMode.Float;
         }
 
-        private void OnCommandExecute(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (_targetObj == null || _targetObj.IsDisposed)
-                return;
-            if (e.Command == GlobalCommands.CloseCommand)
-                _targetObj.Hide();
-            if (e.Command == GlobalCommands.CloseAllExceptCommand)
-                _targetObj.Container.CloseAllExcept(_targetObj);
-            if (e.Command == GlobalCommands.CloseAllCommand)
-                _targetObj.Container.CloseAll();
-            if (e.Command == GlobalCommands.ToFloatCommand)
-                _targetObj.ToFloat();
-            if (e.Command == GlobalCommands.ToFloatAllCommand)
-                _targetObj.Container.ToFloat();
-        }
-
-        public void Dispose()
-        {
-            _targetObj = null;
-            ResourceExtension.LanaguageChanged -= OnLanaguageChanged;
-        }
+        #endregion
     }
 }

@@ -1,22 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 
 namespace YDock.LayoutSetting
 {
     public class LayoutSetting
     {
+        private XElement _layout;
+
+        #region Constructors
+
         public LayoutSetting(string name, XElement layout)
         {
-            _name = name;
+            Name = name;
             Layout = layout;
         }
 
-        public string Name { get { return _name; } }
-        private string _name;
+        #endregion
+
+        #region Properties
+
+        public string Name { get; }
 
         internal XElement Layout
         {
@@ -28,21 +30,31 @@ namespace YDock.LayoutSetting
                     _layout = value;
                     var name_attr = _layout.Attribute("Name");
                     if (name_attr == null)
-                        _layout.SetAttributeValue("Name", _name);
-                    else name_attr.Value = _name;
+                    {
+                        _layout.SetAttributeValue("Name", Name);
+                    }
+                    else
+                    {
+                        name_attr.Value = Name;
+                    }
                 }
             }
         }
-        private XElement _layout;
+
+        #endregion
+
+        #region Members
+
+        public void Load(XElement layout)
+        {
+            Layout = layout;
+        }
 
         public void Save(XElement parent)
         {
             parent.Add(_layout);
         }
 
-        public void Load(XElement layout)
-        {
-            Layout = layout;
-        }
+        #endregion
     }
 }

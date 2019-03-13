@@ -1,19 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
 
 namespace YDock.Global
 {
-    public class ResourceExtension : MarkupExtension, INotifyPropertyChanged
+    public class ResourceExtension : MarkupExtension,
+                                     INotifyPropertyChanged
     {
+        #region Static members
+
+        public static void RaiseLanguageChanged()
+        {
+            LanguageChanged(null, new EventArgs());
+        }
+
+        #endregion
+
+        #region Constructors
+
         public ResourceExtension()
         {
-            LanaguageChanged += OnLanaguageChanged;
+            LanguageChanged += OnLanguageChanged;
         }
 
         public ResourceExtension(string key) : this()
@@ -21,10 +30,10 @@ namespace YDock.Global
             Key = key;
         }
 
-        private void OnLanaguageChanged(object sender, EventArgs e)
-        {
-            PropertyChanged(this, new PropertyChangedEventArgs("Value"));
-        }
+        #endregion
+
+        #region Properties
+
         [ConstructorArgument("Key")]
         public string Key { get; set; }
 
@@ -33,26 +42,44 @@ namespace YDock.Global
             get { return Properties.Resources.ResourceManager.GetString(Key, Properties.Resources.Culture); }
         }
 
-        public static event EventHandler LanaguageChanged = delegate { };
+        #endregion
 
-        public static void RaiseLanaguageChanged()
-        {
-            LanaguageChanged(null, new EventArgs());
-        }
+        #region Events
 
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        public static event EventHandler LanguageChanged = delegate { };
+
+        #endregion
+
+        #region Override members
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            IProvideValueTarget target = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
-            Setter setter = target.TargetObject as Setter;
+            var target = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
+            var setter = target.TargetObject as Setter;
             if (setter == null)
-                return new Binding("Value") { Source = this, Mode = BindingMode.OneWay };
-            else
             {
-                Binding binding = new Binding("Value") { Source = this, Mode = BindingMode.OneWay };
-                return binding.ProvideValue(serviceProvider);
+                return new Binding("Value") { Source = this, Mode = BindingMode.OneWay };
             }
+
+            var binding = new Binding("Value") { Source = this, Mode = BindingMode.OneWay };
+            return binding.ProvideValue(serviceProvider);
         }
+
+        #endregion
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+        #endregion
+
+        #region Event handlers
+
+        private void OnLanguageChanged(object sender, EventArgs e)
+        {
+            PropertyChanged(this, new PropertyChangedEventArgs("Value"));
+        }
+
+        #endregion
     }
 }

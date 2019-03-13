@@ -79,10 +79,15 @@
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\DockModeToTransformConverter.cs" />
     <Compile Include="Converters\DockModeToVisibilityConverter.cs" />
-    <Compile Include="Enum\Layout.cs" />
+    <Compile Include="DragItem.cs" />
+    <Compile Include="DragStatusChanged.cs" />
+    <Compile Include="DragStatusChangedEventArgs.cs" />
+    <Compile Include="ElementComparer.cs" />
+    <Compile Include="Enum\AttachMode.cs" />
+    <Compile Include="Enum\LayoutNodeType.cs" />
     <Compile Include="Global\Commands\GlobalCommands.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Converters\NullBindingConverter.cs" />
+    <Compile Include="Converters\NullToDoNothingConverter.cs" />
     <Compile Include="Converters\SideToAngleConverter.cs" />
     <Compile Include="DockControl.cs" />
     <Compile Include="DragManager.cs" />
@@ -92,13 +97,27 @@
     <Compile Include="Enum\DragMode.cs" />
     <Compile Include="Enum\DropMode.cs" />
     <Compile Include="Global\Extension\ResourceExtension.cs" />
+    <Compile Include="Interface\IAttcah.cs" />
+    <Compile Include="Interface\IDockControl.cs" />
+    <Compile Include="Interface\IDockDocSource.cs" />
+    <Compile Include="Interface\IDockElement.cs" />
+    <Compile Include="Interface\IDockItem.cs" />
     <Compile Include="Interface\IDockManager.cs" />
+    <Compile Include="Interface\IDockModel.cs" />
+    <Compile Include="Interface\IDockOrigin.cs" />
     <Compile Include="Interface\IDockSource.cs" />
-    <Compile Include="Interface\IDrag.cs" />
-    <Compile Include="Interface\IDrop.cs" />
+    <Compile Include="Interface\IDragTarget.cs" />
+    <Compile Include="Interface\IDropWindow.cs" />
     <Compile Include="Interface\ILayout.cs" />
-    <Compile Include="Interface\IModel.cs" />
-    <Compile Include="Interface\IView.cs" />
+    <Compile Include="Interface\ILayoutGroup.cs" />
+    <Compile Include="Interface\ILayoutGroupControl.cs" />
+    <Compile Include="Interface\ILayoutNode.cs" />
+    <Compile Include="Interface\ILayoutPanel.cs" />
+    <Compile Include="Interface\ILayoutSize.cs" />
+    <Compile Include="Interface\ILayoutViewParent.cs" />
+    <Compile Include="Interface\ILayoutViewWithSize.cs" />
+    <Compile Include="Interface\INotifyDisposable.cs" />
+    <Compile Include="Interface\IDockView.cs" />
     <Compile Include="LayoutSetting\GroupNode.cs" />
     <Compile Include="LayoutSetting\ItemNode.cs" />
     <Compile Include="LayoutSetting\LayoutSetting.cs" />
@@ -106,6 +125,7 @@
     <Compile Include="Model\Element\DockElement.cs" />
     <Compile Include="Model\Layout\AttachObject.cs" />
     <Compile Include="Model\Layout\BaseLayoutGroup.cs" />
+    <Compile Include="Model\Layout\LayoutDocumentGroup.cs" />
     <Compile Include="Model\Layout\LayoutGroup.cs" />
     <Compile Include="Model\Layout\DockSideGroup.cs" />
     <Compile Include="Model\DockRoot.cs" />
@@ -128,8 +148,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="ResourceManager.cs" />
     <Compile Include="View\Control\BaseGroupControl.cs" />
-    <Compile Include="View\Control\CustomControl.cs" />
+    <Compile Include="View\Control\CustomContextMenu.cs" />
+    <Compile Include="View\Control\CustomToggleButton.cs" />
+    <Compile Include="View\Control\CustomMenuItem.cs" />
     <Compile Include="View\Control\DragTabItem.cs" />
     <Compile Include="View\Control\AnchorHeaderControl.cs" />
     <Compile Include="View\Control\PopupNotTop.cs" />
@@ -146,8 +169,14 @@
     <Compile Include="View\Control\DockBarGroupControl.cs" />
     <Compile Include="View\Meun\DockMenu.cs" />
     <Compile Include="View\Meun\DocumentMenu.cs" />
+    <Compile Include="View\Render\ActiveRectDropVisual.cs" />
     <Compile Include="View\Render\BaseDropPanel.cs" />
     <Compile Include="View\Render\BaseDropVisual.cs" />
+    <Compile Include="View\Render\DropPanel.cs" />
+    <Compile Include="View\Render\GlassDropVisual.cs" />
+    <Compile Include="View\Render\RootDropPanel.cs" />
+    <Compile Include="View\Render\TexturePanel.cs" />
+    <Compile Include="View\Render\UnitDropVisual.cs" />
     <Compile Include="View\ViewExtensions.cs" />
     <Compile Include="View\Layout\SingelLinePanel.cs" />
     <Compile Include="View\Render\BaseVisual.cs" />
@@ -162,6 +191,8 @@
     <Compile Include="View\Window\DropWindow.cs" />
     <Compile Include="View\Window\TransitioningContentControl.cs" />
     <Compile Include="View\Window\VisualStates.cs" />
+    <Compile Include="View\Window\_AutoHideWindow.cs" />
+    <Compile Include="Win32Helper.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
@@ -10,18 +7,28 @@ using YDock.Interface;
 
 namespace YDock.View
 {
-    public class DropWindow : Popup, IDropWindow, IDisposable
+    public class DropWindow : Popup,
+                              IDropWindow,
+                              IDisposable
     {
+        #region Constructors
+
         public DropWindow(IDragTarget host)
         {
             AllowsTransparency = true;
-            _host = host;
+            Host = host;
             if (host.Mode == DragMode.RootPanel)
-                _dropPanel = new RootDropPanel(host, host.DockManager.DragManager.DragItem);
-            else _dropPanel = new DropPanel(host, host.DockManager.DragManager.DragItem);
-            _dropPanel.SizeChanged += OnSizeChanged;
+            {
+                DropPanel = new RootDropPanel(host, host.DockManager.DragManager.DragItem);
+            }
+            else
+            {
+                DropPanel = new DropPanel(host, host.DockManager.DragManager.DragItem);
+            }
 
-            Child = _dropPanel;
+            DropPanel.SizeChanged += OnSizeChanged;
+
+            Child = DropPanel;
 
             if (host.Mode != DragMode.RootPanel)
             {
@@ -44,35 +51,38 @@ namespace YDock.View
             }
         }
 
-        //Popup在全屏时显示不全，这里将PopupRoot的高度强制为ScreenHeight
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            _dropPanel.SizeChanged -= OnSizeChanged;
-            DependencyObject parent = Child;
-            do
-            {
-                parent = VisualTreeHelper.GetParent(parent);
+        #endregion
 
-                if (parent != null && parent.ToString() == "System.Windows.Controls.Primitives.PopupRoot")
-                {
-                    (parent as FrameworkElement).Height = Math.Max(_dropPanel.OuterRect.Height, MinHeight);
-                    break;
-                }
-            }
-            while (parent != null);
+        #region Properties
+
+        public BaseDropPanel DropPanel { get; private set; }
+
+        public IDragTarget Host { get; private set; }
+
+        #endregion
+
+        #region Override members
+
+        protected override void OnClosed(EventArgs e)
+        {
+            Dispose();
+            base.OnClosed(e);
         }
 
-        private BaseDropPanel _dropPanel;
-        public BaseDropPanel DropPanel
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
         {
-            get { return _dropPanel; }
+            DropPanel.Dispose();
+            DropPanel = null;
+            Host = null;
         }
 
-        private IDragTarget _host;
-        public IDragTarget Host
-        {
-            get { return _host; }
-        }
+        #endregion
+
+        #region IDropWindow Members
 
         public void Hide()
         {
@@ -91,20 +101,30 @@ namespace YDock.View
 
         public void Update(Point mouseP)
         {
-            _dropPanel.Update(mouseP);
+            DropPanel.Update(mouseP);
         }
 
-        public void Dispose()
+        #endregion
+
+        #region Event handlers
+
+        //Popup在全屏时显示不全，这里将PopupRoot的高度强制为ScreenHeight
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _dropPanel.Dispose();
-            _dropPanel = null;
-            _host = null;
+            DropPanel.SizeChanged -= OnSizeChanged;
+            DependencyObject parent = Child;
+            do
+            {
+                parent = VisualTreeHelper.GetParent(parent);
+
+                if (parent != null && parent.ToString() == "System.Windows.Controls.Primitives.PopupRoot")
+                {
+                    (parent as FrameworkElement).Height = Math.Max(DropPanel.OuterRect.Height, MinHeight);
+                    break;
+                }
+            } while (parent != null);
         }
 
-        protected override void OnClosed(EventArgs e)
-        {
-            Dispose();
-            base.OnClosed(e);
-        }
+        #endregion
     }
 }

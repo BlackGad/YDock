@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using YDock.Enum;
+﻿using System.Windows;
 
 namespace YDock.Interface
 {
     public interface IDropWindow
     {
+        #region Members
+
+        void Close();
         void Hide();
         void Show();
-        void Close();
         void Update(Point mouseP);
+
+        #endregion
     }
 }

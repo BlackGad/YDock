@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 using YDock.Commands;
 using YDock.Enum;
 using YDock.Interface;
@@ -14,8 +9,13 @@ using YDock.Model;
 
 namespace YDock.View
 {
-    public class DragTabItem : TabItem, IDockView
+    public class DragTabItem : TabItem,
+                               IDockView
     {
+        private BaseGroupControl _dockViewParent;
+
+        #region Constructors
+
         static DragTabItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(DragTabItem), new FrameworkPropertyMetadata(typeof(DragTabItem)));
@@ -27,30 +27,18 @@ namespace YDock.View
             _dockViewParent = dockViewParent;
         }
 
+        #endregion
+
+        #region Properties
+
         public ILayoutGroup Container
         {
-            get
-            {
-                return _dockViewParent.Model as ILayoutGroup;
-            }
+            get { return _dockViewParent.Model as ILayoutGroup; }
         }
 
-        public IDockModel Model
-        {
-            get
-            {
-                return null;
-            }
-        }
+        #endregion
 
-        private BaseGroupControl _dockViewParent;
-        public IDockView DockViewParent
-        {
-            get
-            {
-                return _dockViewParent;
-            }
-        }
+        #region Override members
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
@@ -59,7 +47,10 @@ namespace YDock.View
             if (e.MiddleButton == MouseButtonState.Pressed)
             {
                 if ((Content as DockElement).IsActive)
+                {
                     Container.ShowWithActive(null);
+                }
+
                 (Content as DockElement).CanSelect = false;
             }
         }
@@ -68,20 +59,32 @@ namespace YDock.View
         {
             base.OnContentChanged(oldContent, newContent);
             if (oldContent != null)
+            {
                 ContextMenu = null;
+            }
+
             if (newContent is IDockItem)
             {
                 if (_dockViewParent is AnchorSideGroupControl)
+                {
                     ContextMenu = new DockMenu(newContent as IDockItem);
-                else ContextMenu = new DocumentMenu(newContent as IDockElement);
+                }
+                else
+                {
+                    ContextMenu = new DocumentMenu(newContent as IDockElement);
+                }
             }
+
             ToolTip = string.Empty;
         }
 
         protected override void OnToolTipOpening(ToolTipEventArgs e)
         {
             if (Content is DockElement)
+            {
                 ToolTip = (Content as DockElement).ToolTip;
+            }
+
             base.OnToolTipOpening(e);
         }
 
@@ -90,7 +93,10 @@ namespace YDock.View
             base.OnMouseLeftButtonUp(e);
 
             if (IsMouseCaptured)
+            {
                 ReleaseMouseCapture();
+            }
+
             _dockViewParent._mouseInside = false;
             _dockViewParent._dragItem = null;
         }
@@ -104,14 +110,22 @@ namespace YDock.View
             _dockViewParent._mouseDown = e.GetPosition(this);
             _dockViewParent._dragItem = Content as IDockElement;
             if (_dockViewParent._dragItem.Container is LayoutDocumentGroup)
+            {
                 _dockViewParent._rect = new Rect();
-            else _dockViewParent._rect = DockHelper.CreateChildRectFromParent(VisualParent as Panel, this);
+            }
+            else
+            {
+                _dockViewParent._rect = DockHelper.CreateChildRectFromParent(VisualParent as Panel, this);
+            }
+
             _dockViewParent.UpdateChildrenBounds(VisualParent as Panel);
 
             Container.ShowWithActive(_dockViewParent._dragItem);
 
             if (!IsMouseCaptured)
+            {
                 CaptureMouse();
+            }
         }
 
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
@@ -128,20 +142,38 @@ namespace YDock.View
                 {
                     var parent = VisualParent as Panel;
                     var p = e.GetPosition(parent);
-                    int src = Container.IndexOf(_dockViewParent._dragItem);
-                    int des = _dockViewParent._childrenBounds.FindIndex(p);
+                    var src = Container.IndexOf(_dockViewParent._dragItem);
+                    var des = _dockViewParent._childrenBounds.FindIndex(p);
                     if (des < 0)
                     {
                         if (IsMouseCaptured)
+                        {
                             ReleaseMouseCapture();
+                        }
+
                         //TODO Drag
                         var item = _dockViewParent._dragItem;
                         _dockViewParent._dragItem = null;
-                        (item as ILayoutSize).DesiredWidth = _dockViewParent.ActualWidth;
-                        (item as ILayoutSize).DesiredHeight = _dockViewParent.ActualHeight;
+                        item.DesiredWidth = _dockViewParent.ActualWidth;
+                        item.DesiredHeight = _dockViewParent.ActualHeight;
                         if (_dockViewParent is AnchorSideGroupControl)
-                            _dockViewParent.Model.DockManager.DragManager.IntoDragAction(new DragItem(item, item.Mode, DragMode.Anchor, _dockViewParent._mouseDown, _dockViewParent._rect, new Size(item.DesiredWidth, item.DesiredHeight)));
-                        else _dockViewParent.Model.DockManager.DragManager.IntoDragAction(new DragItem(item, item.Mode, DragMode.Document, _dockViewParent._mouseDown, _dockViewParent._rect, new Size(item.DesiredWidth, item.DesiredHeight)));
+                        {
+                            _dockViewParent.Model.DockManager.DragManager.IntoDragAction(new DragItem(item,
+                                                                                                      item.Mode,
+                                                                                                      DragMode.Anchor,
+                                                                                                      _dockViewParent._mouseDown,
+                                                                                                      _dockViewParent._rect,
+                                                                                                      new Size(item.DesiredWidth, item.DesiredHeight)));
+                        }
+                        else
+                        {
+                            _dockViewParent.Model.DockManager.DragManager.IntoDragAction(new DragItem(item,
+                                                                                                      item.Mode,
+                                                                                                      DragMode.Document,
+                                                                                                      _dockViewParent._mouseDown,
+                                                                                                      _dockViewParent._rect,
+                                                                                                      new Size(item.DesiredWidth, item.DesiredHeight)));
+                        }
                     }
                     else
                     {
@@ -153,31 +185,45 @@ namespace YDock.View
                                 _dockViewParent._mouseInside = false;
                             }
                             else if (!_dockViewParent._mouseInside)
+                            {
                                 _dockViewParent._mouseInside = true;
+                            }
                         }
                         else
                         {
                             if (src == des)
+                            {
                                 _dockViewParent._mouseInside = true;
+                            }
                             else
                             {
                                 if (des < src)
                                 {
                                     double len = 0;
-                                    for (int i = 0; i < des; i++)
+                                    for (var i = 0; i < des; i++)
+                                    {
                                         len += _dockViewParent._childrenBounds[i].Size.Width;
+                                    }
+
                                     len += _dockViewParent._childrenBounds[src].Size.Width;
                                     if (len > p.X)
+                                    {
                                         MoveTo(src, des, parent);
+                                    }
                                 }
                                 else
                                 {
                                     double len = 0;
-                                    for (int i = 0; i < src; i++)
+                                    for (var i = 0; i < src; i++)
+                                    {
                                         len += _dockViewParent._childrenBounds[i].Size.Width;
+                                    }
+
                                     len += _dockViewParent._childrenBounds[des].Size.Width;
                                     if (len < p.X)
+                                    {
                                         MoveTo(src, des, parent);
+                                    }
                                 }
                             }
                         }
@@ -191,18 +237,11 @@ namespace YDock.View
         protected override void OnDragOver(DragEventArgs e)
         {
             base.OnDragOver(e);
-            BaseGroupControl ctrl = _dockViewParent as BaseGroupControl;
+            var ctrl = _dockViewParent;
             if (ctrl != null)
+            {
                 ctrl.SelectedItem = Content;
-        }
-
-        private void MoveTo(int src, int des, Panel parent)
-        {
-            Container.MoveTo(src, des);
-            parent.UpdateLayout();
-            (_dockViewParent as BaseGroupControl).SelectedIndex = des;
-            parent.Children[des].CaptureMouse();
-            _dockViewParent.UpdateChildrenBounds(parent);
+            }
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -210,6 +249,36 @@ namespace YDock.View
             CommandBindings.Add(new CommandBinding(GlobalCommands.HideStatusCommand, OnCommandExecute, OnCommandCanExecute));
             base.OnInitialized(e);
         }
+
+        #endregion
+
+        #region IDockView Members
+
+        public IDockModel Model
+        {
+            get { return null; }
+        }
+
+        public IDockView DockViewParent
+        {
+            get { return _dockViewParent; }
+        }
+
+        public void Dispose()
+        {
+            _dockViewParent = null;
+            if (ContextMenu is IDisposable)
+            {
+                (ContextMenu as IDisposable).Dispose();
+            }
+
+            ContextMenu = null;
+            Content = null;
+        }
+
+        #endregion
+
+        #region Event handlers
 
         private void OnCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -222,13 +291,19 @@ namespace YDock.View
             ele.DockControl.Hide();
         }
 
-        public void Dispose()
+        #endregion
+
+        #region Members
+
+        private void MoveTo(int src, int des, Panel parent)
         {
-            _dockViewParent = null;
-            if (ContextMenu is IDisposable)
-                (ContextMenu as IDisposable).Dispose();
-            ContextMenu = null;
-            Content = null;
+            Container.MoveTo(src, des);
+            parent.UpdateLayout();
+            _dockViewParent.SelectedIndex = des;
+            parent.Children[des].CaptureMouse();
+            _dockViewParent.UpdateChildrenBounds(parent);
         }
+
+        #endregion
     }
 }

@@ -4,36 +4,244 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Windows.Controls;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.View;
 
 namespace YDock.Model
 {
     public abstract class BaseLayoutGroup : ILayoutGroup
     {
+        protected ObservableCollection<IDockElement> _children = new ObservableCollection<IDockElement>();
+
+        protected DockMode _mode;
+
+        protected DockSide _side;
+
+        protected IDockView _view;
+
+        #region Constructors
+
         public BaseLayoutGroup()
         {
             _children.CollectionChanged += OnChildrenCollectionChanged;
         }
 
+        #endregion
+
+        #region Properties
+
+        public IEnumerable<IDockElement> Children
+        {
+            get { return _children; }
+        }
+
+        public IEnumerable<DockElement> Children_CanSelect
+        {
+            get
+            {
+                if (_children == null) yield break;
+                foreach (DockElement child in _children)
+                {
+                    if (child.CanSelect)
+                    {
+                        yield return child;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region ILayoutGroup Members
+
+        IEnumerable<IDockElement> ILayoutGroup.Children
+        {
+            get { return _children; }
+        }
+
+        public abstract DockManager DockManager { get; }
+
+        public DockSide Side
+        {
+            get { return _side; }
+            internal set
+            {
+                if (_side != value)
+                {
+                    _side = value;
+                    foreach (DockElement child in _children)
+                    {
+                        child.Side = value;
+                    }
+                }
+            }
+        }
+
+        public IDockView View
+        {
+            get { return _view; }
+
+            internal set
+            {
+                if (_view != value)
+                {
+                    _view = value;
+                }
+            }
+        }
+
+        public DockMode Mode
+        {
+            get { return _mode; }
+            internal set
+            {
+                if (_mode != value)
+                {
+                    _mode = value;
+                    foreach (DockElement child in _children)
+                    {
+                        if (child.Mode != _mode)
+                        {
+                            child.Mode = _mode;
+                        }
+                    }
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+        public int IndexOf(IDockElement child)
+        {
+            if (child == null) return -1;
+            return _children.IndexOf(child as DockElement);
+        }
+
+        public void MoveTo(int src, int des)
+        {
+            if (src < _children.Count && src >= 0
+                                      && des < _children.Count && des >= 0)
+            {
+                _children.Move(src, des);
+            }
+        }
+
+        public void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public virtual void ShowWithActive(IDockElement element, bool toActice = true)
+        {
+            if (element != null && !element.CanSelect)
+            {
+                (element as DockElement).CanSelect = true;
+            }
+
+            if (_view != null)
+            {
+                DockManager.ActiveElement = element;
+            }
+        }
+
+        public virtual void ShowWithActive(int index, bool toActive = true)
+        {
+            if (index < 0 || index >= _children.Count) throw new ArgumentOutOfRangeException("index out of range!");
+            ShowWithActive(_children[index], toActive);
+        }
+
+        public virtual void Detach(IDockElement element)
+        {
+            if (element == null || !_children.Contains(element))
+            {
+                throw new InvalidOperationException("Detach Failed!");
+            }
+
+            _children.Remove(element);
+            (element as DockElement).IsVisible = false;
+        }
+
+        public virtual void Attach(IDockElement element, int index = -1)
+        {
+            if (element == null || element.Container != null)
+            {
+                throw new InvalidOperationException("Attach Failed!");
+            }
+
+            if (index < 0)
+            {
+                _children.Add(element);
+            }
+            else
+            {
+                _children.Insert(index, element);
+            }
+
+            (element as DockElement).Mode = _mode;
+        }
+
+        public void CloseAll()
+        {
+            foreach (var child in _children.ToList())
+            {
+                child.Hide();
+            }
+        }
+
+        public void CloseAllExcept(IDockElement element)
+        {
+            foreach (var child in _children.ToList())
+            {
+                if (child != element)
+                {
+                    child.Hide();
+                }
+            }
+        }
+
+        public abstract void ToFloat();
+
+        public virtual void Dispose()
+        {
+            _children.CollectionChanged -= OnChildrenCollectionChanged;
+            foreach (var child in _children)
+            {
+                child.PropertyChanged -= OnChildrenPropertyChanged;
+                (child as DockElement).Container = null;
+            }
+
+            _children.Clear();
+            _children = null;
+            PropertyChanged = null;
+            _view?.Dispose();
+            _view = null;
+        }
+
+        #endregion
+
+        #region Event handlers
+
         protected virtual void OnChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.OldItems != null)
+            {
                 foreach (DockElement item in e.OldItems)
                 {
                     item.Container = null;
                     item.PropertyChanged -= OnChildrenPropertyChanged;
                 }
+            }
+
             if (e.NewItems != null)
+            {
                 foreach (DockElement item in e.NewItems)
                 {
                     item.Container = this;
                     item.Side = _side;
                     item.PropertyChanged += OnChildrenPropertyChanged;
                 }
+            }
+
             PropertyChanged(this, new PropertyChangedEventArgs("Children_CanSelect"));
         }
 
@@ -54,167 +262,12 @@ namespace YDock.Model
                     _children.Remove(sender as DockElement);
                     _children.Insert(0, sender as DockElement);
                 }
+
                 _children.CollectionChanged += OnChildrenCollectionChanged;
                 RaisePropertyChanged("Children_CanSelect");
             }
         }
 
-        protected ObservableCollection<IDockElement> _children = new ObservableCollection<IDockElement>();
-        public IEnumerable<IDockElement> Children
-        {
-            get { return _children; }
-        }
-
-        public IEnumerable<DockElement> Children_CanSelect
-        {
-            get
-            {
-                if (_children == null) yield break;
-                foreach (DockElement child in _children)
-                    if (child.CanSelect)
-                        yield return child;
-            }
-        }
-
-        IEnumerable<IDockElement> ILayoutGroup.Children
-        {
-            get { return _children; }
-        }
-
-        public abstract DockManager DockManager
-        {
-            get;
-        }
-
-        protected DockSide _side;
-        public DockSide Side
-        {
-            get { return _side; }
-            internal set
-            {
-                if (_side != value)
-                {
-                    _side = value;
-                    foreach (DockElement child in _children)
-                        child.Side = value;
-                }
-            }
-        }
-
-        protected IDockView _view;
-        public IDockView View
-        {
-            get
-            {
-                return _view;
-            }
-
-            internal set
-            {
-                if (_view != value)
-                    _view = value;
-            }
-        }
-
-        protected DockMode _mode;
-        public DockMode Mode
-        {
-            get
-            {
-                return _mode;
-            }
-            internal set
-            {
-                if (_mode != value)
-                {
-                    _mode = value;
-                    foreach (DockElement child in _children)
-                        if (child.Mode != _mode)
-                            child.Mode = _mode;
-                }
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
-
-        public int IndexOf(IDockElement child)
-        {
-            if (child == null) return -1;
-            return _children.IndexOf(child as DockElement);
-        }
-
-        public void MoveTo(int src, int des)
-        {
-            if (src < _children.Count && src >= 0
-                && des < _children.Count && des >= 0)
-                _children.Move(src, des);
-        }
-
-        public void RaisePropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public virtual void ShowWithActive(IDockElement element, bool toActice = true)
-        {
-            if (element != null && !element.CanSelect)
-                (element as DockElement).CanSelect = true;
-            if (_view != null)
-                DockManager.ActiveElement = element;
-        }
-
-        public virtual void ShowWithActive(int index, bool toActive = true)
-        {
-            if (index < 0 || index >= _children.Count) throw new ArgumentOutOfRangeException("index out of range!");
-            ShowWithActive(_children[index], toActive);
-        }
-
-        public virtual void Detach(IDockElement element)
-        {
-            if (element == null || !_children.Contains(element))
-                throw new InvalidOperationException("Detach Failed!");
-            _children.Remove(element);
-            (element as DockElement).IsVisible = false;
-        }
-
-        public virtual void Attach(IDockElement element, int index = -1)
-        {
-            if (element == null || element.Container != null)
-                throw new InvalidOperationException("Attach Failed!");
-            if (index < 0)
-                _children.Add(element);
-            else _children.Insert(index, element);
-            (element as DockElement).Mode = _mode;
-        }
-
-        public void CloseAll()
-        {
-            foreach (var child in _children.ToList())
-                child.Hide();
-        }
-
-        public void CloseAllExcept(IDockElement element)
-        {
-            foreach (var child in _children.ToList())
-                if (child != element)
-                    child.Hide();
-        }
-
-        public abstract void ToFloat();
-
-        public virtual void Dispose()
-        {
-            _children.CollectionChanged -= OnChildrenCollectionChanged;
-            foreach (var child in _children)
-            {
-                child.PropertyChanged -= OnChildrenPropertyChanged;
-                (child as DockElement).Container = null;
-            }
-            _children.Clear();
-            _children = null;
-            PropertyChanged = null;
-            _view?.Dispose();
-            _view = null;
-        }
+        #endregion
     }
 }

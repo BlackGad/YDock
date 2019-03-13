@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -13,37 +10,43 @@ using YDock.Model;
 
 namespace YDock.View
 {
-    public class AnchorHeaderControl : Control, IDisposable
+    public class AnchorHeaderControl : Control,
+                                       IDisposable
     {
+        private Point _mouseDown;
+
+        private ToggleButton ctb;
+        private DockMenu menu;
+
+        #region Constructors
+
         static AnchorHeaderControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(AnchorHeaderControl), new FrameworkPropertyMetadata(default(AnchorHeaderControl)));
         }
 
-        internal AnchorHeaderControl()
-        {
-        }
+        #endregion
 
-        public void Dispose()
-        {
-            DataContext = null;
-            ContextMenu = null;
-            ctb.PreviewMouseLeftButtonUp -= OnMenuOpen;
-        }
+        #region Override members
 
-        Point _mouseDown;
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             if (IsMouseCaptured)
+            {
                 ReleaseMouseCapture();
+            }
+
             base.OnMouseLeftButtonUp(e);
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             _mouseDown = e.GetPosition(this);
-            if(!IsMouseCaptured)
+            if (!IsMouseCaptured)
+            {
                 CaptureMouse();
+            }
+
             base.OnMouseLeftButtonDown(e);
         }
 
@@ -61,12 +64,27 @@ namespace YDock.View
                 if ((e.GetPosition(this) - _mouseDown).Length > Math.Max(SystemParameters.MinimumHorizontalDragDistance, SystemParameters.MinimumVerticalDragDistance))
                 {
                     ReleaseMouseCapture();
-                    IDockElement ele = DataContext as IDockElement;
+                    var ele = DataContext as IDockElement;
                     if (!ele.DockManager.DragManager.IsDragging)
                     {
                         if (ele.Mode == DockMode.DockBar)
-                            ele.DockManager.DragManager.IntoDragAction(new DragItem(ele, ele.Mode, DragMode.Anchor, _mouseDown, Rect.Empty, new Size(ele.DesiredWidth, ele.DesiredHeight)));
-                        else ele.DockManager.DragManager.IntoDragAction(new DragItem(ele.Container, ele.Mode, DragMode.Anchor, _mouseDown, Rect.Empty, new Size(ele.DesiredWidth, ele.DesiredHeight)));
+                        {
+                            ele.DockManager.DragManager.IntoDragAction(new DragItem(ele,
+                                                                                    ele.Mode,
+                                                                                    DragMode.Anchor,
+                                                                                    _mouseDown,
+                                                                                    Rect.Empty,
+                                                                                    new Size(ele.DesiredWidth, ele.DesiredHeight)));
+                        }
+                        else
+                        {
+                            ele.DockManager.DragManager.IntoDragAction(new DragItem(ele.Container,
+                                                                                    ele.Mode,
+                                                                                    DragMode.Anchor,
+                                                                                    _mouseDown,
+                                                                                    Rect.Empty,
+                                                                                    new Size(ele.DesiredWidth, ele.DesiredHeight)));
+                        }
                     }
                 }
             }
@@ -85,29 +103,11 @@ namespace YDock.View
             }
         }
 
-        ToggleButton ctb;
-        DockMenu menu;
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             ctb = (ToggleButton)GetTemplateChild("PART_DropMenu");
             ctb.PreviewMouseLeftButtonUp += OnMenuOpen;
-        }
-
-        private void OnMenuOpen(object sender, MouseButtonEventArgs e)
-        {
-            if (menu == null)
-                _ApplyMenu();
-            menu.IsOpen = true;
-        }
-
-        private void _ApplyMenu()
-        {
-            var ele = DataContext as DockElement;
-            menu = new DockMenu(ele);
-            menu.PlacementTarget = ctb;
-            menu.Placement = PlacementMode.Bottom;
-            ctb.ContextMenu = menu;
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -116,6 +116,21 @@ namespace YDock.View
             CommandBindings.Add(new CommandBinding(GlobalCommands.HideStatusCommand, OnCommandExecute, OnCommandCanExecute));
             base.OnInitialized(e);
         }
+
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            DataContext = null;
+            ContextMenu = null;
+            ctb.PreviewMouseLeftButtonUp -= OnMenuOpen;
+        }
+
+        #endregion
+
+        #region Event handlers
 
         private void OnCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -126,9 +141,39 @@ namespace YDock.View
         {
             var ele = DataContext as DockElement;
             if (e.Command == GlobalCommands.HideStatusCommand)
+            {
                 ele?.Hide();
+            }
+
             if (e.Command == GlobalCommands.SwitchAutoHideStatusCommand)
+            {
                 ele?.SwitchAutoHideStatus();
+            }
         }
+
+        private void OnMenuOpen(object sender, MouseButtonEventArgs e)
+        {
+            if (menu == null)
+            {
+                _ApplyMenu();
+            }
+
+            menu.IsOpen = true;
+        }
+
+        #endregion
+
+        #region Members
+
+        private void _ApplyMenu()
+        {
+            var ele = DataContext as DockElement;
+            menu = new DockMenu(ele);
+            menu.PlacementTarget = ctb;
+            menu.Placement = PlacementMode.Bottom;
+            ctb.ContextMenu = menu;
+        }
+
+        #endregion
     }
 }

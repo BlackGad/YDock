@@ -1,25 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace YDock.Commands
 {
     public static class GlobalCommands
     {
-        public static RoutedUICommand ToFloatCommand { get; set; }
-        public static RoutedUICommand ToFloatAllCommand { get; set; }
-        public static RoutedUICommand ToDockCommand { get; set; }
-        public static RoutedUICommand ToDockAsDocumentCommand { get; set; }
-        public static RoutedUICommand SwitchAutoHideStatusCommand { get; set; }
-        public static RoutedUICommand HideStatusCommand { get; set; }
-        public static RoutedUICommand CloseCommand { get; set; }
+        #region Static members
+
         public static RoutedUICommand CloseAllCommand { get; set; }
         public static RoutedUICommand CloseAllExceptCommand { get; set; }
-        public static RoutedUICommand RestoreCommand { get; set; }
-        public static RoutedUICommand MinimizeCommand { get; set; }
+        public static RoutedUICommand CloseCommand { get; set; }
+        public static RoutedUICommand HideStatusCommand { get; set; }
         public static RoutedUICommand MaximizeCommand { get; set; }
+        public static RoutedUICommand MinimizeCommand { get; set; }
+        public static RoutedUICommand RestoreCommand { get; set; }
+        public static RoutedUICommand SwitchAutoHideStatusCommand { get; set; }
+        public static RoutedUICommand ToDockAsDocumentCommand { get; set; }
+        public static RoutedUICommand ToDockCommand { get; set; }
+        public static RoutedUICommand ToFloatAllCommand { get; set; }
+        public static RoutedUICommand ToFloatCommand { get; set; }
+
+        #endregion
+
+        #region Constructors
+
         static GlobalCommands()
         {
             ToFloatCommand = new RoutedUICommand();
@@ -35,5 +38,7 @@ namespace YDock.Commands
             MinimizeCommand = new RoutedUICommand();
             MaximizeCommand = new RoutedUICommand();
         }
+
+        #endregion
     }
 }

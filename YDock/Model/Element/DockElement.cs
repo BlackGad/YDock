@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Xml.Linq;
 using YDock.Enum;
@@ -13,28 +10,90 @@ using YDock.View;
 
 namespace YDock.Model
 {
-    public class DockElement : DependencyObject, IDockElement, IComparable<DockElement>
+    public class DockElement : DependencyObject,
+                               IDockElement,
+                               IComparable<DockElement>
     {
+        #region Property definitions
+
+        public static readonly DependencyProperty ImageSourceProperty =
+            DependencyProperty.Register("ImageSource", typeof(ImageSource), typeof(DockElement));
+
+        public static readonly DependencyProperty SideProperty =
+            DependencyProperty.Register("Side", typeof(DockSide), typeof(DockElement));
+
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.Register("Title",
+                                        typeof(string),
+                                        typeof(DockElement),
+                                        new FrameworkPropertyMetadata(string.Empty));
+
+        #endregion
+
+        private bool _canSelect;
+
+        private ILayoutGroup _container;
+        private object _content;
+
+        private DockControl _dockControl;
+
+        private double _floatLeft;
+
+        private double _floatTop;
+        private int _id;
+        private bool _isActive;
+        private bool _isVisible;
+        private DockMode _mode;
+
+        #region Constructors
+
         internal DockElement(bool isDocument = false)
         {
-            _isDocument = isDocument;
+            IsDocument = isDocument;
         }
 
-        #region Ctrl
-        private DockControl _dockControl;
+        #endregion
+
+        #region Properties
+
         public DockControl DockControl
         {
             get { return _dockControl; }
             internal set
             {
                 if (_dockControl != value)
+                {
                     _dockControl = value;
+                }
             }
         }
+
+        public string ToolTip
+        {
+            get
+            {
+                if (Content is IDockDocSource)
+                {
+                    return (Content as IDockDocSource).FullFileName;
+                }
+
+                return Title;
+            }
+        }
+
         #endregion
 
-        #region Content
-        private object _content;
+        #region IComparable<DockElement> Members
+
+        public int CompareTo(DockElement other)
+        {
+            return Title.CompareTo(other.Title);
+        }
+
+        #endregion
+
+        #region IDockElement Members
+
         public object Content
         {
             get { return _content; }
@@ -47,75 +106,40 @@ namespace YDock.Model
                 }
             }
         }
-        #endregion
-
-        #region Title
-        public static readonly DependencyProperty TitleProperty = 
-            DependencyProperty.Register("Title", typeof(string), typeof(DockElement),
-                new FrameworkPropertyMetadata(string.Empty));
 
         public string Title
         {
             set { SetValue(TitleProperty, value); }
             get { return (string)GetValue(TitleProperty); }
         }
-        #endregion
-
-        #region ImageSource
-        public static readonly DependencyProperty ImageSourceProperty =
-            DependencyProperty.Register("ImageSource", typeof(ImageSource), typeof(DockElement));
 
         public ImageSource ImageSource
         {
             set { SetValue(ImageSourceProperty, value); }
             get { return (ImageSource)GetValue(ImageSourceProperty); }
         }
-        #endregion
-
-        #region DockSide
-        public static readonly DependencyProperty SideProperty =
-            DependencyProperty.Register("Side", typeof(DockSide), typeof(DockElement));
 
         public DockSide Side
         {
             internal set { SetValue(SideProperty, value); }
             get { return (DockSide)GetValue(SideProperty); }
         }
-        #endregion
 
-        #region ID
-        private int _id;
         public int ID
         {
             get { return _id; }
             internal set
             {
                 if (_id != value)
+                {
                     _id = value;
+                }
             }
         }
-        #endregion
 
-        #region ToolTip
-        public string ToolTip
-        {
-            get
-            {
-                if (Content is IDockDocSource)
-                    return (Content as IDockDocSource).FullFileName;
-                return Title;
-            }
-        }
-        #endregion
-
-        #region DockStatus
-        private DockMode _mode;
         public DockMode Mode
         {
-            get
-            {
-                return _mode;
-            }
+            get { return _mode; }
             internal set
             {
                 if (_mode != value)
@@ -125,12 +149,9 @@ namespace YDock.Model
                 }
             }
         }
-        #endregion
 
-        #region IsVisible
-        private bool _isVisible = false;
         /// <summary>
-        /// Content是否可见
+        ///     Content是否可见
         /// </summary>
         public bool IsVisible
         {
@@ -144,20 +165,14 @@ namespace YDock.Model
             }
             get { return _isVisible; }
         }
-        #endregion
 
-        #region IsDocument
-        private bool _isDocument;
         /// <summary>
-        /// 是否以Document模式注册，该属性将影响Dock的浮动窗口的模式
+        ///     是否以Document模式注册，该属性将影响Dock的浮动窗口的模式
         /// </summary>
-        public bool IsDocument { get { return _isDocument; } }
-        #endregion
+        public bool IsDocument { get; }
 
-        #region IsActive
-        private bool _isActive = false;
         /// <summary>
-        /// 是否为当前的活动窗口
+        ///     是否为当前的活动窗口
         /// </summary>
         public bool IsActive
         {
@@ -171,12 +186,9 @@ namespace YDock.Model
             }
             get { return _isActive; }
         }
-        #endregion
 
-        #region CanSelect
-        private bool _canSelect = false;
         /// <summary>
-        /// 是否显示在用户界面供用户点击显示，默认为false
+        ///     是否显示在用户界面供用户点击显示，默认为false
         /// </summary>
         public bool CanSelect
         {
@@ -186,139 +198,105 @@ namespace YDock.Model
                 {
                     _canSelect = value;
                     PropertyChanged(this, new PropertyChangedEventArgs("CanSelect"));
-                    if (_canSelect && _isDocument)
+                    if (_canSelect && IsDocument)
+                    {
                         DockManager.PushBackwards(_id);
+                    }
                 }
             }
             get { return _canSelect; }
         }
-        #endregion
 
-        public bool IsDocked => CanSelect && _container is LayoutGroup && Mode == DockMode.Normal;
+        public bool IsDocked
+        {
+            get { return CanSelect && _container is LayoutGroup && Mode == DockMode.Normal; }
+        }
 
-        public bool IsFloat => CanSelect && _container is LayoutGroup && Mode == DockMode.Float;
+        public bool IsFloat
+        {
+            get { return CanSelect && _container is LayoutGroup && Mode == DockMode.Float; }
+        }
 
-        public bool IsAutoHide => _container != null && this == DockManager.AutoHideElement;
+        public bool IsAutoHide
+        {
+            get { return _container != null && this == DockManager.AutoHideElement; }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
-        private ILayoutGroup _container;
         public ILayoutGroup Container
         {
-            get
-            {
-                return _container;
-            }
+            get { return _container; }
             internal set
             {
                 if (_container != value)
+                {
                     _container = value;
+                }
             }
         }
 
         public DockManager DockManager
         {
-            get
-            {
-                return _container?.DockManager;
-            }
+            get { return _container?.DockManager; }
         }
 
+        public double DesiredWidth { get; set; }
 
-        #region Size
-        private double _desiredWidth;
-        public double DesiredWidth
-        {
-            get
-            {
-                return _desiredWidth;
-            }
-            set
-            {
-                _desiredWidth = value;
-            }
-        }
+        public double DesiredHeight { get; set; }
 
-        private double _desiredHeight;
-        public double DesiredHeight
-        {
-            get
-            {
-                return _desiredHeight;
-            }
-            set
-            {
-                _desiredHeight = value;
-            }
-        }
-
-        private double _floatLeft;
         public double FloatLeft
         {
             get { return _floatLeft; }
             set
             {
                 if (_floatLeft != value)
+                {
                     _floatLeft = value;
+                }
             }
         }
 
-        private double _floatTop;
         public double FloatTop
         {
             get { return _floatTop; }
             set
             {
                 if (_floatTop != value)
+                {
                     _floatTop = value;
+                }
             }
         }
-        #endregion
 
-        #region Interface
         public bool CanFloat
         {
             get
             {
-                return _container == null ? false : (Mode != DockMode.Float || _container?.View == null || _container.Children.Count() > 1 || _container.View.DockViewParent != null || !_canSelect);
+                return _container == null
+                    ? false
+                    : Mode != DockMode.Float || _container?.View == null || _container.Children.Count() > 1 || _container.View.DockViewParent != null || !_canSelect;
             }
         }
 
         public bool CanDock
         {
-            get
-            {
-                return _container == null ? false : Mode != DockMode.Normal;
-            }
+            get { return _container == null ? false : Mode != DockMode.Normal; }
         }
 
         public bool CanDockAsDocument
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public bool CanSwitchAutoHideStatus
         {
-            get
-            {
-                return _container == null ? false : Mode != DockMode.Float;
-            }
+            get { return _container == null ? false : Mode != DockMode.Float; }
         }
 
         public bool CanHide
         {
-            get
-            {
-                return true;
-            }
-        }
-
-        public int CompareTo(DockElement other)
-        {
-            return Title.CompareTo(other.Title);
+            get { return true; }
         }
 
         public void ToFloat(bool isActive = true)
@@ -328,6 +306,7 @@ namespace YDock.Model
                 _dockControl.SetActive();
                 return;
             }
+
             if (_container != null)
             {
                 CanSelect = true;
@@ -364,11 +343,14 @@ namespace YDock.Model
                         Top = FloatTop
                     };
                 }
+
                 wnd.AttachChild(groupctrl, AttachMode.None, 0);
                 wnd.Show();
 
                 if (isActive)
+                {
                     _dockControl.SetActive();
+                }
             }
         }
 
@@ -379,6 +361,7 @@ namespace YDock.Model
                 _dockControl.SetActive();
                 return;
             }
+
             if (_container != null)
             {
                 CanSelect = true;
@@ -389,13 +372,19 @@ namespace YDock.Model
                 {
                     //默认向下停靠
                     if (Side == DockSide.None)
+                    {
                         Side = DockSide.Bottom;
+                    }
+
                     _container?.Detach(this);
                     _container = null;
                     _ToRoot(dockManager);
                 }
+
                 if (isActive)
+                {
                     _dockControl.SetActive();
+                }
             }
         }
 
@@ -413,7 +402,9 @@ namespace YDock.Model
             }
 
             if (index < 0 || index >= DockManager.DocumentTabCount)
+            {
                 return;
+            }
 
             if (_container != null)
             {
@@ -427,7 +418,9 @@ namespace YDock.Model
                 dockManager.Root.DocumentModels[index].Attach(this, 0);
 
                 if (isActive)
+                {
                     _dockControl.SetActive();
+                }
             }
         }
 
@@ -446,7 +439,9 @@ namespace YDock.Model
                     dockManager.Root.AddSideChild(this, Side);
                 }
                 else if (Mode == DockMode.DockBar)
+                {
                     _ToRoot(dockManager);
+                }
             }
         }
 
@@ -467,25 +462,73 @@ namespace YDock.Model
                 }
 
                 if (isActive)
+                {
                     _dockControl.SetActive();
+                }
             }
         }
 
         public void Hide()
         {
             if (!CanHide) return;
-            if (_isVisible && _isDocument)
+            if (_isVisible && IsDocument)
             {
                 IsVisible = false;
                 var id = DockManager.FindVisibleCtrl();
                 DockManager.PushBackwards(id);
                 DockManager.ShowByID(id);
             }
+
             if (DockManager.AutoHideElement == this)
+            {
                 DockManager.AutoHideElement = null;
+            }
+
             _dockControl.SetActive(false);
             CanSelect = false;
         }
+
+        public XElement Save()
+        {
+            var ele = new XElement("Item");
+            ele.SetAttributeValue("ID", _id);
+            ele.SetAttributeValue("DesiredWidth", DesiredWidth);
+            ele.SetAttributeValue("DesiredHeight", DesiredHeight);
+            ele.SetAttributeValue("FloatLeft", _floatLeft);
+            ele.SetAttributeValue("FloatTop", _floatTop);
+            ele.SetAttributeValue("CanSelect", _canSelect);
+            return ele;
+        }
+
+        public void Load(XElement ele)
+        {
+            DesiredWidth = double.Parse(ele.Attribute("DesiredWidth").Value);
+            DesiredHeight = double.Parse(ele.Attribute("DesiredHeight").Value);
+            _floatLeft = double.Parse(ele.Attribute("FloatLeft").Value);
+            _floatTop = double.Parse(ele.Attribute("FloatTop").Value);
+            CanSelect = bool.Parse(ele.Attribute("CanSelect").Value);
+        }
+
+        public bool IsDisposed { get; private set; }
+
+        public void Dispose()
+        {
+            if (IsDisposed) return;
+            IsDisposed = true;
+            _container?.Detach(this);
+            _dockControl = null;
+            if (_content is IDockSource)
+            {
+                (_content as IDockSource).DockControl = null;
+            }
+
+            _content = null;
+            _container = null;
+        }
+
+        #endregion
+
+        #region Members
 
         private void _ToRoot(DockManager dockManager)
         {
@@ -509,49 +552,7 @@ namespace YDock.Model
                     break;
             }
         }
-        #endregion
 
-        #region Save & Load
-        public XElement Save()
-        {
-            var ele = new XElement("Item");
-            ele.SetAttributeValue("ID", _id);
-            ele.SetAttributeValue("DesiredWidth", _desiredWidth);
-            ele.SetAttributeValue("DesiredHeight", _desiredHeight);
-            ele.SetAttributeValue("FloatLeft", _floatLeft);
-            ele.SetAttributeValue("FloatTop", _floatTop);
-            ele.SetAttributeValue("CanSelect", _canSelect);
-            return ele;
-        }
-
-        public void Load(XElement ele)
-        {
-            _desiredWidth = double.Parse(ele.Attribute("DesiredWidth").Value);
-            _desiredHeight = double.Parse(ele.Attribute("DesiredHeight").Value);
-            _floatLeft = double.Parse(ele.Attribute("FloatLeft").Value);
-            _floatTop = double.Parse(ele.Attribute("FloatTop").Value);
-            CanSelect = bool.Parse(ele.Attribute("CanSelect").Value);
-        }
-        #endregion
-
-        #region Dispose
-        private bool _isDisposed = false;
-        public bool IsDisposed
-        {
-            get { return _isDisposed; }
-        }
-
-        public void Dispose()
-        {
-            if (_isDisposed) return;
-            _isDisposed = true;
-            _container?.Detach(this);
-            _dockControl = null;
-            if (_content is IDockSource)
-                (_content as IDockSource).DockControl = null;
-            _content = null;
-            _container = null;
-        }
         #endregion
     }
 }

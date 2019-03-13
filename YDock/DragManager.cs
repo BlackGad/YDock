@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -14,119 +10,43 @@ using YDock.View;
 
 namespace YDock
 {
-    public class DragItem : IDisposable
-    {
-        internal DragItem(object relativeObj, DockMode dockMode, DragMode dragMode, Point clickPos, Rect clickRect, Size size)
-        {
-            _relativeObj = relativeObj;
-            _dockMode = dockMode;
-            _dragMode = dragMode;
-            _clickPos = clickPos;
-            _clickRect = clickRect;
-            _size = size;
-        }
-
-        private object _relativeObj;
-        public object RelativeObj
-        {
-            get { return _relativeObj; }
-        }
-        /// <summary>
-        /// 拖动前的Mode
-        /// </summary>
-        public DockMode DockMode
-        {
-            get { return _dockMode; }
-        }
-        private DockMode _dockMode;
-
-        public DragMode DragMode
-        {
-            get { return _dragMode; }
-        }
-        private DragMode _dragMode;
-
-        public Point ClickPos
-        {
-            get { return _clickPos; }
-        }
-        private Point _clickPos;
-
-        public Rect ClickRect
-        {
-            get { return _clickRect; }
-        }
-        private Rect _clickRect;
-
-        private Size _size;
-        public Size Size
-        {
-            get { return _size; }
-        }
-
-        public void Dispose()
-        {
-            _relativeObj = null;
-        }
-    }
-
     public class DragManager
     {
-        internal DragManager(DockManager dockManager)
-        {
-            _dockManager = dockManager;
-        }
+        #region Constants
 
-        #region DockManager
-        private DockManager _dockManager;
-        public DockManager DockManager
-        {
-            get { return _dockManager; }
-        }
+        internal const int ACTIVE = 0x2000;
+        internal const int BOTTOM = 0x0008;
+        internal const int CENTER = 0x0010;
+        internal const int HEAD = 0x0040;
+        internal const int LEFT = 0x0001;
+        internal const int NONE = 0x0000;
+        internal const int RIGHT = 0x0004;
+        internal const int SPLIT = 0x1000;
+        internal const int TAB = 0x0020;
+        internal const int TOP = 0x0002;
+
         #endregion
 
-        #region Drag
-        #region private field
+        internal BaseFloatWindow _dragWnd;
+        private DragItem _dragItem;
+        private IDragTarget _dragTarget;
+        private bool _isDragging;
+
         private Point _mouseP;
         private Size _rootSize;
-        private IDragTarget _dragTarget;
-        private DragItem _dragItem;
-        internal BaseFloatWindow _dragWnd;
-        private bool _isDragging = false;
+
+        #region Constructors
+
+        internal DragManager(DockManager dockManager)
+        {
+            DockManager = dockManager;
+        }
+
         #endregion
 
-        #region Property
-        internal DragItem DragItem
-        {
-            get { return _dragItem; }
-            set
-            {
-                if (_dragItem != value)
-                    _dragItem = value;
-            }
-        }
+        #region Properties
 
-        internal IDragTarget DragTarget
-        {
-            get { return _dragTarget; }
-            set
-            {
-                if (_dragTarget != value)
-                {
-                    if (_dragTarget != null)
-                        _dragTarget.HideDropWindow();
-                    _dragTarget = value;
-                    if (_dragTarget != null)
-                        _dragTarget.ShowDropWindow();
-                }
-                else if (_dragTarget != null && !_isDragOverRoot)
-                {
-                    if (_dragItem.DragMode == DragMode.Document && _dragTarget.Mode == DragMode.Anchor)
-                        return;
-                    _dragTarget.Update(_mouseP);
-                }
-            }
-        }
+        public DockManager DockManager { get; }
 
         public bool IsDragging
         {
@@ -141,17 +61,76 @@ namespace YDock
             }
         }
 
-        private bool _isDragOverRoot = false;
-        public bool IsDragOverRoot
+        public bool IsDragOverRoot { get; set; }
+
+        internal DragItem DragItem
         {
-            get { return _isDragOverRoot; }
-            set { _isDragOverRoot = value; }
+            get { return _dragItem; }
+            set
+            {
+                if (_dragItem != value)
+                {
+                    _dragItem = value;
+                }
+            }
         }
 
-        public event DragStatusChanged OnDragStatusChanged = delegate { };
+        internal IDragTarget DragTarget
+        {
+            get { return _dragTarget; }
+            set
+            {
+                if (_dragTarget != value)
+                {
+                    if (_dragTarget != null)
+                    {
+                        _dragTarget.HideDropWindow();
+                    }
+
+                    _dragTarget = value;
+                    if (_dragTarget != null)
+                    {
+                        _dragTarget.ShowDropWindow();
+                    }
+                }
+                else if (_dragTarget != null && !IsDragOverRoot)
+                {
+                    if (_dragItem.DragMode == DragMode.Document && _dragTarget.Mode == DragMode.Anchor)
+                    {
+                        return;
+                    }
+
+                    _dragTarget.Update(_mouseP);
+                }
+            }
+        }
+
         #endregion
 
-        #region Drag Action
+        #region Events
+
+        public event DragStatusChanged OnDragStatusChanged = delegate { };
+
+        #endregion
+
+        #region Members
+
+        internal void DoDragDrop()
+        {
+            if (DockManager.LayoutRootPanel.RootGroupPanel?.DropMode != DropMode.None)
+            {
+                DockManager.LayoutRootPanel.RootGroupPanel?.OnDrop(_dragItem);
+            }
+            else if (DragTarget?.DropMode != DropMode.None)
+            {
+                DragTarget?.OnDrop(_dragItem);
+            }
+
+            IsDragging = false;
+
+            AfterDrag();
+        }
+
         internal void IntoDragAction(DragItem dragItem, bool _isInvokeByFloatWnd = false)
         {
             DockManager.UpdateWindowZOrder();
@@ -162,50 +141,121 @@ namespace YDock
             {
                 IsDragging = true;
                 if (_dragWnd == null)
+                {
                     _dragWnd = _dragItem.RelativeObj as BaseFloatWindow;
+                }
             }
-            else BeforeDrag();
+            else
+            {
+                BeforeDrag();
+            }
 
             //初始化最外层的_rootTarget
             _rootSize = DockManager.LayoutRootPanel.RootGroupPanel.TransformActualSizeToAncestor();
 
             if (!_isInvokeByFloatWnd && _dragWnd is DocumentGroupWindow)
+            {
                 _dragWnd.Recreate();
+            }
         }
 
-        private void BeforeDrag()
+        internal void OnMouseMove()
         {
-            _InitDragItem();
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                DockManager.LayoutRootPanel.RootGroupPanel?.HideDropWindow();
+                DragTarget = null;
+                return;
+            }
+
+            var flag = false;
+            _mouseP = DockHelper.GetMousePosition(DockManager);
+            foreach (var wnd in DockManager.FloatWindows)
+            {
+                if (wnd != _dragWnd
+                    && wnd.RestoreBounds.Contains(_mouseP)
+                    && !(wnd is DocumentGroupWindow && _dragItem.DragMode == DragMode.Anchor)
+                    && !(wnd is AnchorGroupWindow && _dragItem.DragMode == DragMode.Document))
+                {
+                    if (wnd is DocumentGroupWindow)
+                    {
+                        if (DockManager.IsBehindToMainWindow(wnd))
+                        {
+                            continue;
+                        }
+                    }
+
+                    if (wnd != DockManager.FloatWindows.First())
+                    {
+                        DockManager.MoveFloatTo(wnd);
+                        Application.Current.Dispatcher.InvokeAsync(() =>
+                                                                   {
+                                                                       Win32Helper.BringWindowToTop(wnd.Handle);
+                                                                       Win32Helper.BringWindowToTop(_dragWnd.Handle);
+                                                                   },
+                                                                   DispatcherPriority.Background);
+                    }
+
+                    wnd.HitTest(_mouseP);
+
+                    DockManager.LayoutRootPanel.RootGroupPanel.HideDropWindow();
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (!flag)
+            {
+                var p = DockHelper.GetMousePositionRelativeTo(DockManager.LayoutRootPanel.RootGroupPanel);
+                if (p.X >= 0 && p.Y >= 0
+                             && p.X <= _rootSize.Width
+                             && p.Y <= _rootSize.Height)
+                {
+                    if (_dragItem.DragMode != DragMode.Document)
+                    {
+                        DockManager.LayoutRootPanel.RootGroupPanel?.ShowDropWindow();
+                        DockManager.LayoutRootPanel.RootGroupPanel?.Update(_mouseP);
+                    }
+
+                    VisualTreeHelper.HitTest(DockManager.LayoutRootPanel.RootGroupPanel, _HitFilter, _HitRessult, new PointHitTestParameters(p));
+                }
+                else
+                {
+                    if (_dragItem.DragMode != DragMode.Document)
+                    {
+                        DockManager.LayoutRootPanel.RootGroupPanel?.HideDropWindow();
+                    }
+
+                    DragTarget = null;
+                }
+            }
         }
 
-        internal void DoDragDrop()
+        private void _DestroyDragItem()
         {
-            if (DockManager.LayoutRootPanel.RootGroupPanel?.DropMode != DropMode.None)
-                DockManager.LayoutRootPanel.RootGroupPanel?.OnDrop(_dragItem);
-            else if (DragTarget?.DropMode != DropMode.None)
-                DragTarget?.OnDrop(_dragItem);
-
-            IsDragging = false;
-
-            AfterDrag();
+            _dragItem.Dispose();
+            _dragItem = null;
+            DragTarget = null;
         }
 
-        private void AfterDrag()
+        private HitTestFilterBehavior _HitFilter(DependencyObject potentialHitTestTarget)
         {
-            if (_dragWnd != null && _dragWnd.NeedReCreate)
-                _dragWnd.Recreate();
-            _dragWnd = null;
-            DockManager.LayoutRootPanel.RootGroupPanel.CloseDropWindow();
-            _DestroyDragItem();
+            if (potentialHitTestTarget is BaseGroupControl)
+            {
+                //设置DragTarget，以实时显示TargetWnd
+                DragTarget = potentialHitTestTarget as IDragTarget;
+                return HitTestFilterBehavior.Stop;
+            }
 
-            _isDragOverRoot = false;
-            BaseDropPanel.ActiveVisual = null;
-            BaseDropPanel.CurrentRect = null;
-            CommandManager.InvalidateRequerySuggested();
+            return HitTestFilterBehavior.Continue;
         }
-        #endregion
 
-        #region init & destroy
+        private HitTestResultBehavior _HitRessult(HitTestResult result)
+        {
+            DragTarget = null;
+            return HitTestResultBehavior.Stop;
+        }
+
         private void _InitDragItem()
         {
             LayoutGroup group;
@@ -219,21 +269,31 @@ namespace YDock
                         var _layoutGroup = _dragItem.RelativeObj as LayoutGroup;
 
                         #region AttachObj
+
                         var _parent = _layoutGroup.View.DockViewParent as LayoutGroupPanel;
                         var _mode = _parent.Direction == Direction.Horizontal ? AttachMode.Left : AttachMode.Top;
                         if (_parent.Direction == Direction.None)
-                                _mode = AttachMode.None;
+                        {
+                            _mode = AttachMode.None;
+                        }
+
                         var _index = _parent.IndexOf(_layoutGroup.View);
                         if (_parent.Children.Count - 1 > _index)
+                        {
                             _layoutGroup.AttachObj = new AttachObject(_layoutGroup, _parent.Children[_index + 2] as INotifyDisposable, _index, _mode);
-                        else _layoutGroup.AttachObj = new AttachObject(_layoutGroup, _parent.Children[_index - 2] as INotifyDisposable, _index, _mode);
+                        }
+                        else
+                        {
+                            _layoutGroup.AttachObj = new AttachObject(_layoutGroup, _parent.Children[_index - 2] as INotifyDisposable, _index, _mode);
+                        }
+
                         #endregion
 
                         //这里移动的一定是AnchorSideGroup，故将其从父级LayoutGroupPanel移走，但不Dispose留着构造浮动窗口
                         if ((_layoutGroup.View as ILayoutGroupControl).TryDeatchFromParent(false))
                         {
                             //注意重新设置Mode
-                            (_layoutGroup as BaseLayoutGroup).Mode = DockMode.Float;
+                            _layoutGroup.Mode = DockMode.Float;
                             _dragWnd = new AnchorGroupWindow(DockManager)
                             {
                                 Left = mouseP.X - _dragItem.ClickPos.X - 1,
@@ -248,17 +308,22 @@ namespace YDock
                         ele = _dragItem.RelativeObj as IDockElement;
 
                         #region AttachObj
+
                         var _parent = (ele.Container as LayoutGroup).View as BaseGroupControl;
                         var _index = ele.Container.IndexOf(ele);
+
                         #endregion
 
                         if (ele.IsDocument)
+                        {
                             group = new LayoutDocumentGroup(DockMode.Float, DockManager);
+                        }
                         else
                         {
                             group = new LayoutGroup(ele.Side, DockMode.Float, DockManager);
                             group.AttachObj = new AttachObject(group, _parent, _index);
                         }
+
                         //先从逻辑父级中移除
                         ele.Container.Detach(ele);
                         //再加入新的逻辑父级
@@ -286,10 +351,15 @@ namespace YDock
                                 _dragWnd.Left = mouseP.X - _dragItem.ClickPos.X - Constants.DocumentWindowPadding;
                             }
                         }
+
                         if (_dragWnd is DocumentGroupWindow)
+                        {
                             _dragWnd.Recreate();
+                        }
+
                         _dragWnd.Show();
                     }
+
                     break;
                 case DockMode.DockBar:
                     //这里表示从自动隐藏窗口进行的拖动，因此这里移除自动隐藏窗口
@@ -326,17 +396,22 @@ namespace YDock
                         else
                         {
                             #region AttachObj
+
                             var _parent = (ele.Container as LayoutGroup).View as BaseGroupControl;
                             var _index = ele.Container.IndexOf(ele);
+
                             #endregion
 
                             if (ele.IsDocument)
+                            {
                                 group = new LayoutDocumentGroup(DockMode.Float, DockManager);
+                            }
                             else
                             {
                                 group = new LayoutGroup(ele.Side, DockMode.Float, DockManager);
                                 group.AttachObj = new AttachObject(group, _parent, _index);
                             }
+
                             //先从逻辑父级中移除
                             ele.Container.Detach(ele);
                             //再加入新的逻辑父级
@@ -353,7 +428,9 @@ namespace YDock
                             else
                             {
                                 _dragWnd = new AnchorGroupWindow(DockManager) { NeedReCreate = _dragItem.DragMode == DragMode.Anchor };
-                                _dragWnd.AttachChild(new AnchorSideGroupControl(group) { IsDraggingFromDock = _dragItem.DragMode == DragMode.Anchor }, AttachMode.None, 0);
+                                _dragWnd.AttachChild(new AnchorSideGroupControl(group) { IsDraggingFromDock = _dragItem.DragMode == DragMode.Anchor },
+                                                     AttachMode.None,
+                                                     0);
                                 if (!_dragWnd.NeedReCreate)
                                 {
                                     _dragWnd.Top = mouseP.Y - _dragItem.ClickPos.Y;
@@ -365,8 +442,12 @@ namespace YDock
                                     _dragWnd.Left = mouseP.X - _dragItem.ClickPos.X - Constants.DocumentWindowPadding;
                                 }
                             }
+
                             if (_dragWnd is DocumentGroupWindow)
+                            {
                                 _dragWnd.Recreate();
+                            }
+
                             _dragWnd.Show();
                         }
                     }
@@ -375,18 +456,30 @@ namespace YDock
                         group = _dragItem.RelativeObj as LayoutGroup;
                         //表示此时的浮动窗口为IsSingleMode
                         if (group.View.DockViewParent == null)
+                        {
                             _dragWnd = (group.View as BaseGroupControl).Parent as BaseFloatWindow;
+                        }
                         else
                         {
                             #region AttachObj
+
                             var _parent = group.View.DockViewParent as LayoutGroupPanel;
                             var _mode = _parent.Direction == Direction.Horizontal ? AttachMode.Left : AttachMode.Top;
                             if (_parent.Direction == Direction.None)
+                            {
                                 _mode = AttachMode.None;
+                            }
+
                             var _index = _parent.IndexOf(group.View);
                             if (_parent.Children.Count - 1 > _index)
+                            {
                                 group.AttachObj = new AttachObject(group, _parent.Children[_index + 2] as INotifyDisposable, _index, _mode);
-                            else group.AttachObj = new AttachObject(group, _parent.Children[_index - 2] as INotifyDisposable, _index, _mode);
+                            }
+                            else
+                            {
+                                group.AttachObj = new AttachObject(group, _parent.Children[_index - 2] as INotifyDisposable, _index, _mode);
+                            }
+
                             #endregion
 
                             //这里移动的一定是AnchorSideGroup，故将其从父级LayoutGroupPanel移走，但不Dispose留着构造浮动窗口
@@ -402,126 +495,33 @@ namespace YDock
                             }
                         }
                     }
+
                     break;
             }
         }
 
-        private void _DestroyDragItem()
+        private void AfterDrag()
         {
-            _dragItem.Dispose();
-            _dragItem = null;
-            DragTarget = null;
-        }
-        #endregion
-
-        #endregion
-
-        #region Flag
-        internal const int NONE = 0x0000;
-        internal const int LEFT = 0x0001;
-        internal const int TOP = 0x0002;
-        internal const int RIGHT = 0x0004;
-        internal const int BOTTOM = 0x0008;
-        internal const int CENTER = 0x0010;
-        internal const int TAB = 0x0020;
-        internal const int HEAD = 0x0040;
-        internal const int SPLIT = 0x1000;
-        internal const int ACTIVE = 0x2000;
-        #endregion
-
-        #region DragEvent
-        internal void OnMouseMove()
-        {
-            if (Keyboard.Modifiers == ModifierKeys.Control)
+            if (_dragWnd != null && _dragWnd.NeedReCreate)
             {
-                DockManager.LayoutRootPanel.RootGroupPanel?.HideDropWindow();
-                DragTarget = null;
-                return;
+                _dragWnd.Recreate();
             }
-            bool flag = false;
-            _mouseP = DockHelper.GetMousePosition(DockManager);
-            foreach (var wnd in DockManager.FloatWindows)
-            {
-                if (wnd != _dragWnd
-                    && wnd.RestoreBounds.Contains(_mouseP)
-                    && !(wnd is DocumentGroupWindow && _dragItem.DragMode == DragMode.Anchor)
-                    && !(wnd is AnchorGroupWindow && _dragItem.DragMode == DragMode.Document))
-                {
-                    if (wnd is DocumentGroupWindow)
-                        if (DockManager.IsBehindToMainWindow(wnd))
-                            continue;
 
-                    if (wnd != DockManager.FloatWindows.First())
-                    {
-                        DockManager.MoveFloatTo(wnd);
-                        Application.Current.Dispatcher.InvokeAsync(() => 
-                        {
-                            Win32Helper.BringWindowToTop(wnd.Handle);
-                            Win32Helper.BringWindowToTop(_dragWnd.Handle);
-                        }, DispatcherPriority.Background);
-                    }
-                    wnd.HitTest(_mouseP);
+            _dragWnd = null;
+            DockManager.LayoutRootPanel.RootGroupPanel.CloseDropWindow();
+            _DestroyDragItem();
 
-                    DockManager.LayoutRootPanel.RootGroupPanel.HideDropWindow();
-                    flag = true;
-                    break;
-                }
-            }
-            if (!flag)
-            {
-                var p = DockHelper.GetMousePositionRelativeTo(DockManager.LayoutRootPanel.RootGroupPanel);
-                if (p.X >= 0 && p.Y >= 0
-                    && p.X <= _rootSize.Width
-                    && p.Y <= _rootSize.Height)
-                {
-                    if (_dragItem.DragMode != DragMode.Document)
-                    {
-                        DockManager.LayoutRootPanel.RootGroupPanel?.ShowDropWindow();
-                        DockManager.LayoutRootPanel.RootGroupPanel?.Update(_mouseP);
-                    }
-                    VisualTreeHelper.HitTest(DockManager.LayoutRootPanel.RootGroupPanel, _HitFilter, _HitRessult, new PointHitTestParameters(p));
-                }
-                else
-                {
-                    if (_dragItem.DragMode != DragMode.Document)
-                        DockManager.LayoutRootPanel.RootGroupPanel?.HideDropWindow();
-                    DragTarget = null;
-                }
-            }
+            IsDragOverRoot = false;
+            BaseDropPanel.ActiveVisual = null;
+            BaseDropPanel.CurrentRect = null;
+            CommandManager.InvalidateRequerySuggested();
         }
 
-        private HitTestResultBehavior _HitRessult(HitTestResult result)
+        private void BeforeDrag()
         {
-            DragTarget = null;
-            return HitTestResultBehavior.Stop;
+            _InitDragItem();
         }
 
-        private HitTestFilterBehavior _HitFilter(DependencyObject potentialHitTestTarget)
-        {
-            if (potentialHitTestTarget is BaseGroupControl)
-            {
-                //设置DragTarget，以实时显示TargetWnd
-                DragTarget = potentialHitTestTarget as IDragTarget;
-                return HitTestFilterBehavior.Stop;
-            }
-            return HitTestFilterBehavior.Continue;
-        }
         #endregion
     }
-
-    public class DragStatusChangedEventArgs : EventArgs
-    {
-        internal DragStatusChangedEventArgs(bool status)
-        {
-            _isDragging = status;
-        }
-
-        private bool _isDragging;
-        public bool IsDragging
-        {
-            get { return _isDragging; }
-        }
-    }
-
-    public delegate void DragStatusChanged(DragStatusChangedEventArgs args);
 }
