@@ -39,7 +39,6 @@ namespace YDock.View.Window
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
-            _parentWindowHandle = hwndParent.Handle;
             _innerSource = new HwndSource(new HwndSourceParameters("static")
             {
                 ParentWindow = hwndParent.Handle,
