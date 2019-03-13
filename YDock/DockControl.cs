@@ -14,7 +14,7 @@ namespace YDock
         internal DockControl(IDockElement prototype)
         {
             ProtoType = prototype;
-            (ProtoType as DockElement).DockControl = this;
+            ((DockElement)ProtoType).DockControl = this;
             prototype.PropertyChanged += OnPrototypePropertyChanged;
         }
 

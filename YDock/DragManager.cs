@@ -295,7 +295,7 @@ namespace YDock
                         #endregion
 
                         //这里移动的一定是AnchorSideGroup，故将其从父级LayoutGroupPanel移走，但不Dispose留着构造浮动窗口
-                        if ((_layoutGroup.View as ILayoutGroupControl).TryDeatchFromParent(false))
+                        if ((_layoutGroup.View as ILayoutGroupControl).TryDetachFromParent(false))
                         {
                             //注意重新设置Mode
                             _layoutGroup.Mode = DockMode.Float;
@@ -488,7 +488,7 @@ namespace YDock
                             #endregion
 
                             //这里移动的一定是AnchorSideGroup，故将其从父级LayoutGroupPanel移走，但不Dispose留着构造浮动窗口
-                            if ((group.View as ILayoutGroupControl).TryDeatchFromParent(false))
+                            if ((group.View as ILayoutGroupControl).TryDetachFromParent(false))
                             {
                                 _dragWnd = new AnchorGroupWindow(DockManager)
                                 {

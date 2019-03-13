@@ -226,7 +226,7 @@ namespace YDock.Model.Layout
 
         private void _DetachFromParent()
         {
-            if ((_view as ILayoutGroupControl).TryDeatchFromParent())
+            if ((_view as ILayoutGroupControl).TryDetachFromParent())
             {
                 _view = null;
                 if (_children.Count == 0)

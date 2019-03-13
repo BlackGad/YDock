@@ -9,7 +9,7 @@ namespace YDock.Interface
         #region Members
 
         void AttachToParent(ILayoutPanel parent, int index);
-        bool TryDeatchFromParent(bool isDispose = true);
+        bool TryDetachFromParent(bool isDispose = true);
 
         #endregion
     }

@@ -282,7 +282,7 @@ namespace YDock.View.Render
 
         #region Members
 
-        private void _DrawBottom(DrawingContext ctx, double hoffset, double voffset, bool hasGlassBorder = true)
+        private void _DrawBottom(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
         {
             if (hasGlassBorder)
             {
@@ -290,7 +290,7 @@ namespace YDock.View.Render
                 ctx.PushOpacity(Constants.DragOpacity);
                 ctx.DrawRectangle(Brushes.White,
                                   ResourceManager.BorderPen,
-                                  new Rect(hoffset, voffset - Constants.DropUnitLength, Constants.DropUnitLength, Constants.DropUnitLength));
+                                  new Rect(hOffset, vOffset - Constants.DropUnitLength, Constants.DropUnitLength, Constants.DropUnitLength));
                 ctx.Pop();
             }
 
@@ -301,24 +301,24 @@ namespace YDock.View.Render
 
             ctx.DrawRoundedRectangle(Brushes.White,
                                      null,
-                                     new Rect(hoffset += Constants.DropGlassLength,
-                                              (voffset -= Constants.DropGlassLength) - (Constants.DropUnitLength - Constants.DropGlassLength * 2),
+                                     new Rect(hOffset += Constants.DropGlassLength,
+                                              (vOffset -= Constants.DropGlassLength) - (Constants.DropUnitLength - Constants.DropGlassLength * 2),
                                               Constants.DropUnitLength - Constants.DropGlassLength * 2,
                                               Constants.DropUnitLength - Constants.DropGlassLength * 2),
                                      3,
                                      3);
-            hoffset += Constants.DropGlassLength;
-            voffset -= Constants.DropGlassLength;
+            hOffset += Constants.DropGlassLength;
+            vOffset -= Constants.DropGlassLength;
 
             ctx.DrawLine(ResourceManager.DropRectPenHeavy,
-                         new Point(hoffset - 0.5, voffset - 12),
-                         new Point(hoffset + Constants.DropUnitLength - Constants.DropGlassLength * 4 + 0.5, voffset - 12));
+                         new Point(hOffset - 0.5, vOffset - 12),
+                         new Point(hOffset + Constants.DropUnitLength - Constants.DropGlassLength * 4 + 0.5, vOffset - 12));
 
             //绘制小窗口
             var stream = new StreamGeometry();
             using (var sctx = stream.Open())
             {
-                double currentX = hoffset, currentY = voffset - 12;
+                double currentX = hOffset, currentY = vOffset - 12;
                 sctx.BeginFigure(new Point(currentX, currentY), true, false);
                 sctx.LineTo(new Point(currentX, currentY += 12), true, true);
                 sctx.LineTo(new Point(currentX += Constants.DropUnitLength - Constants.DropGlassLength * 4, currentY), true, true);
@@ -332,7 +332,7 @@ namespace YDock.View.Render
             stream = new StreamGeometry();
             using (var sctx = stream.Open())
             {
-                double currentX = hoffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2, currentY = voffset - 20;
+                double currentX = hOffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2, currentY = vOffset - 20;
                 sctx.BeginFigure(new Point(currentX, currentY), true, true);
                 sctx.LineTo(new Point(currentX += 5, currentY -= 5), true, true);
                 sctx.LineTo(new Point(currentX -= 10, currentY), true, true);
@@ -342,9 +342,9 @@ namespace YDock.View.Render
             ctx.DrawGeometry(Brushes.Black, null, stream);
         }
 
-        private void _DrawCenter(DrawingContext ctx, double hoffset, double voffset, bool withSpliterLine = false, bool isVertical = false)
+        private void _DrawCenter(DrawingContext ctx, double hOffset, double vOffset, bool withSpliterLine = false, bool isVertical = false)
         {
-            double currentX = hoffset, currentY = voffset;
+            double currentX = hOffset, currentY = vOffset;
 
             if ((Flag & DragManager.Active) == 0)
             {
@@ -384,25 +384,25 @@ namespace YDock.View.Render
                 if (isVertical)
                 {
                     ctx.DrawLine(ResourceManager.BlueDashPen,
-                                 new Point(hoffset + Constants.DropUnitLength / 2, voffset + Constants.DropGlassLength * 2 + 3),
-                                 new Point(hoffset + Constants.DropUnitLength / 2, voffset + Constants.DropUnitLength - 2 * Constants.DropGlassLength));
+                                 new Point(hOffset + Constants.DropUnitLength / 2, vOffset + Constants.DropGlassLength * 2 + 3),
+                                 new Point(hOffset + Constants.DropUnitLength / 2, vOffset + Constants.DropUnitLength - 2 * Constants.DropGlassLength));
                 }
                 else
                 {
                     ctx.DrawLine(ResourceManager.BlueDashPen,
-                                 new Point(hoffset + Constants.DropGlassLength * 2, voffset + Constants.DropUnitLength / 2),
-                                 new Point(hoffset + Constants.DropUnitLength - 2 * Constants.DropGlassLength, voffset + Constants.DropUnitLength / 2));
+                                 new Point(hOffset + Constants.DropGlassLength * 2, vOffset + Constants.DropUnitLength / 2),
+                                 new Point(hOffset + Constants.DropUnitLength - 2 * Constants.DropGlassLength, vOffset + Constants.DropUnitLength / 2));
                 }
             }
         }
 
-        private void _DrawLeft(DrawingContext ctx, double hoffset, double voffset, bool hasGlassBorder = true)
+        private void _DrawLeft(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
         {
             if (hasGlassBorder)
             {
                 //绘制玻璃外观
                 ctx.PushOpacity(Constants.DragOpacity);
-                ctx.DrawRectangle(Brushes.White, ResourceManager.BorderPen, new Rect(hoffset, voffset, Constants.DropUnitLength, Constants.DropUnitLength));
+                ctx.DrawRectangle(Brushes.White, ResourceManager.BorderPen, new Rect(hOffset, vOffset, Constants.DropUnitLength, Constants.DropUnitLength));
                 ctx.Pop();
             }
 
@@ -413,21 +413,21 @@ namespace YDock.View.Render
 
             ctx.DrawRoundedRectangle(Brushes.White,
                                      null,
-                                     new Rect(hoffset += Constants.DropGlassLength,
-                                              voffset += Constants.DropGlassLength,
+                                     new Rect(hOffset += Constants.DropGlassLength,
+                                              vOffset += Constants.DropGlassLength,
                                               Constants.DropUnitLength - Constants.DropGlassLength * 2,
                                               Constants.DropUnitLength - Constants.DropGlassLength * 2),
                                      3,
                                      3);
-            hoffset += Constants.DropGlassLength;
-            voffset += Constants.DropGlassLength;
-            ctx.DrawLine(ResourceManager.DropRectPenHeavy, new Point(hoffset - 0.5, voffset), new Point(hoffset + 12.5, voffset));
+            hOffset += Constants.DropGlassLength;
+            vOffset += Constants.DropGlassLength;
+            ctx.DrawLine(ResourceManager.DropRectPenHeavy, new Point(hOffset - 0.5, vOffset), new Point(hOffset + 12.5, vOffset));
 
             //绘制小窗口
             var stream = new StreamGeometry();
             using (var sctx = stream.Open())
             {
-                double currentX = hoffset, currentY = voffset;
+                double currentX = hOffset, currentY = vOffset;
                 sctx.BeginFigure(new Point(currentX, currentY), true, false);
                 sctx.LineTo(new Point(currentX, currentY += Constants.DropUnitLength - Constants.DropGlassLength * 4), true, true);
                 sctx.LineTo(new Point(currentX += 12, currentY), true, true);
@@ -441,7 +441,7 @@ namespace YDock.View.Render
             stream = new StreamGeometry();
             using (var sctx = stream.Open())
             {
-                double currentX = hoffset + 20, currentY = voffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2;
+                double currentX = hOffset + 20, currentY = vOffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2;
                 sctx.BeginFigure(new Point(currentX, currentY), true, true);
                 sctx.LineTo(new Point(currentX += 5, currentY -= 5), true, true);
                 sctx.LineTo(new Point(currentX, currentY += 10), true, true);
@@ -451,7 +451,7 @@ namespace YDock.View.Render
             ctx.DrawGeometry(Brushes.Black, null, stream);
         }
 
-        private void _DrawRight(DrawingContext ctx, double hoffset, double voffset, bool hasGlassBorder = true)
+        private void _DrawRight(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
         {
             if (hasGlassBorder)
             {
@@ -459,7 +459,7 @@ namespace YDock.View.Render
                 ctx.PushOpacity(Constants.DragOpacity);
                 ctx.DrawRectangle(Brushes.White,
                                   ResourceManager.BorderPen,
-                                  new Rect(hoffset - Constants.DropUnitLength, voffset, Constants.DropUnitLength, Constants.DropUnitLength));
+                                  new Rect(hOffset - Constants.DropUnitLength, vOffset, Constants.DropUnitLength, Constants.DropUnitLength));
                 ctx.Pop();
             }
 
@@ -470,21 +470,21 @@ namespace YDock.View.Render
 
             ctx.DrawRoundedRectangle(Brushes.White,
                                      null,
-                                     new Rect((hoffset -= Constants.DropGlassLength) - (Constants.DropUnitLength - Constants.DropGlassLength * 2),
-                                              voffset += Constants.DropGlassLength,
+                                     new Rect((hOffset -= Constants.DropGlassLength) - (Constants.DropUnitLength - Constants.DropGlassLength * 2),
+                                              vOffset += Constants.DropGlassLength,
                                               Constants.DropUnitLength - Constants.DropGlassLength * 2,
                                               Constants.DropUnitLength - Constants.DropGlassLength * 2),
                                      3,
                                      3);
-            hoffset -= Constants.DropGlassLength;
-            voffset += Constants.DropGlassLength;
-            ctx.DrawLine(ResourceManager.DropRectPenHeavy, new Point(hoffset + 0.5, voffset), new Point(hoffset - 12.5, voffset));
+            hOffset -= Constants.DropGlassLength;
+            vOffset += Constants.DropGlassLength;
+            ctx.DrawLine(ResourceManager.DropRectPenHeavy, new Point(hOffset + 0.5, vOffset), new Point(hOffset - 12.5, vOffset));
 
             //绘制小窗口
             var stream = new StreamGeometry();
             using (var sctx = stream.Open())
             {
-                double currentX = hoffset, currentY = voffset;
+                double currentX = hOffset, currentY = vOffset;
                 sctx.BeginFigure(new Point(currentX, currentY), true, false);
                 sctx.LineTo(new Point(currentX, currentY += Constants.DropUnitLength - Constants.DropGlassLength * 4), true, true);
                 sctx.LineTo(new Point(currentX -= 12, currentY), true, true);
@@ -498,7 +498,7 @@ namespace YDock.View.Render
             stream = new StreamGeometry();
             using (var sctx = stream.Open())
             {
-                double currentX = hoffset - 20, currentY = voffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2;
+                double currentX = hOffset - 20, currentY = vOffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2;
                 sctx.BeginFigure(new Point(currentX, currentY), true, true);
                 sctx.LineTo(new Point(currentX -= 5, currentY -= 5), true, true);
                 sctx.LineTo(new Point(currentX, currentY += 10), true, true);
@@ -508,13 +508,13 @@ namespace YDock.View.Render
             ctx.DrawGeometry(Brushes.Black, null, stream);
         }
 
-        private void _DrawTop(DrawingContext ctx, double hoffset, double voffset, bool hasGlassBorder = true)
+        private void _DrawTop(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
         {
             if (hasGlassBorder)
             {
                 //绘制玻璃外观
                 ctx.PushOpacity(Constants.DragOpacity);
-                ctx.DrawRectangle(Brushes.White, ResourceManager.BorderPen, new Rect(hoffset, voffset, Constants.DropUnitLength, Constants.DropUnitLength));
+                ctx.DrawRectangle(Brushes.White, ResourceManager.BorderPen, new Rect(hOffset, vOffset, Constants.DropUnitLength, Constants.DropUnitLength));
                 ctx.Pop();
             }
 
@@ -525,24 +525,24 @@ namespace YDock.View.Render
 
             ctx.DrawRoundedRectangle(Brushes.White,
                                      null,
-                                     new Rect(hoffset += Constants.DropGlassLength,
-                                              voffset += Constants.DropGlassLength,
+                                     new Rect(hOffset += Constants.DropGlassLength,
+                                              vOffset += Constants.DropGlassLength,
                                               Constants.DropUnitLength - Constants.DropGlassLength * 2,
                                               Constants.DropUnitLength - Constants.DropGlassLength * 2),
                                      3,
                                      3);
-            hoffset += Constants.DropGlassLength;
-            voffset += Constants.DropGlassLength;
+            hOffset += Constants.DropGlassLength;
+            vOffset += Constants.DropGlassLength;
 
             ctx.DrawLine(ResourceManager.DropRectPenHeavy,
-                         new Point(hoffset - 0.5, voffset),
-                         new Point(hoffset + Constants.DropUnitLength - Constants.DropGlassLength * 4 + 0.5, voffset));
+                         new Point(hOffset - 0.5, vOffset),
+                         new Point(hOffset + Constants.DropUnitLength - Constants.DropGlassLength * 4 + 0.5, vOffset));
 
             //绘制小窗口
             var stream = new StreamGeometry();
             using (var sctx = stream.Open())
             {
-                double currentX = hoffset, currentY = voffset;
+                double currentX = hOffset, currentY = vOffset;
                 sctx.BeginFigure(new Point(currentX, currentY), true, false);
                 sctx.LineTo(new Point(currentX, currentY += 12), true, true);
                 sctx.LineTo(new Point(currentX += Constants.DropUnitLength - Constants.DropGlassLength * 4, currentY), true, true);
@@ -556,7 +556,7 @@ namespace YDock.View.Render
             stream = new StreamGeometry();
             using (var sctx = stream.Open())
             {
-                double currentX = hoffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2, currentY = voffset + 20;
+                double currentX = hOffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2, currentY = vOffset + 20;
                 sctx.BeginFigure(new Point(currentX, currentY), true, true);
                 sctx.LineTo(new Point(currentX += 5, currentY += 5), true, true);
                 sctx.LineTo(new Point(currentX -= 10, currentY), true, true);

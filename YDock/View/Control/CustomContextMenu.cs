@@ -19,7 +19,7 @@ namespace YDock.View.Control
 
         protected override void OnOpened(RoutedEventArgs e)
         {
-            BindingOperations.GetBindingExpression(this, ItemsSourceProperty).UpdateTarget();
+            BindingOperations.GetBindingExpression(this, ItemsSourceProperty)?.UpdateTarget();
 
             base.OnOpened(e);
         }

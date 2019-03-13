@@ -16,7 +16,7 @@ namespace YDock.View.Control
 
         private static void OnTopmostChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
-            (obj as PopupNotTop).UpdateWindow();
+            ((PopupNotTop)obj).UpdateWindow();
         }
 
         [DllImport("user32", EntryPoint = "SetWindowPos")]

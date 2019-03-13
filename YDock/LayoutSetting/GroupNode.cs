@@ -47,7 +47,7 @@ namespace YDock.LayoutSetting
 
         public void Load(XElement element)
         {
-            IsDocument = bool.Parse(element.Attribute("IsDocument").Value);
+            IsDocument = bool.Parse(element.Attribute("IsDocument")?.Value);
             Side = (DockSide)System.Enum.Parse(typeof(DockSide), element.Attribute("Side").Value);
             foreach (var item in element.Elements())
             {

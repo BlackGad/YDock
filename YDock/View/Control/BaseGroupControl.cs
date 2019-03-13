@@ -339,16 +339,14 @@ namespace YDock.View.Control
             get { return _floatLeft; }
             set
             {
-                if (_floatLeft != value)
+                if (!(Math.Abs(_floatLeft - value) > double.Epsilon)) return;
+
+                _floatLeft = value;
+
+                if (_model == null) return;
+                foreach (var item in _model.Children)
                 {
-                    _floatLeft = value;
-                    if (_model != null)
-                    {
-                        foreach (var item in _model.Children)
-                        {
-                            item.FloatLeft = value;
-                        }
-                    }
+                    item.FloatLeft = value;
                 }
             }
         }
@@ -358,16 +356,14 @@ namespace YDock.View.Control
             get { return _floatTop; }
             set
             {
-                if (_floatTop != value)
+                if (!(Math.Abs(_floatTop - value) > double.Epsilon)) return;
+
+                _floatTop = value;
+
+                if (_model == null) return;
+                foreach (var item in _model.Children)
                 {
-                    _floatTop = value;
-                    if (_model != null)
-                    {
-                        foreach (var item in _model.Children)
-                        {
-                            item.FloatTop = value;
-                        }
-                    }
+                    item.FloatTop = value;
                 }
             }
         }
@@ -379,26 +375,24 @@ namespace YDock.View.Control
             get { return _model; }
             set
             {
-                if (_model != value)
-                {
-                    if (_model != null)
-                    {
-                        (_model as LayoutGroup).View = null;
-                        if (_model.DockManager != null)
-                        {
-                            _model.DockManager.DragManager.OnDragStatusChanged -= OnDragStatusChanged;
-                        }
-                    }
+                if (_model == value) return;
 
-                    _model = value as ILayoutGroup;
-                    if (_model != null)
+                if (_model != null)
+                {
+                    ((LayoutGroup)_model).View = null;
+                    if (_model.DockManager != null)
                     {
-                        (_model as LayoutGroup).View = this;
-                        if (_model.DockManager != null)
-                        {
-                            _model.DockManager.DragManager.OnDragStatusChanged += OnDragStatusChanged;
-                        }
+                        _model.DockManager.DragManager.OnDragStatusChanged -= OnDragStatusChanged;
                     }
+                }
+
+                _model = value as ILayoutGroup;
+
+                if (_model == null) return;
+                ((LayoutGroup)_model).View = this;
+                if (_model.DockManager != null)
+                {
+                    _model.DockManager.DragManager.OnDragStatusChanged += OnDragStatusChanged;
                 }
             }
         }
@@ -408,15 +402,14 @@ namespace YDock.View.Control
             get { return Parent as IDockView; }
         }
 
-        public bool TryDeatchFromParent(bool isDispose = true)
+        public bool TryDetachFromParent(bool isDispose = true)
         {
             if (Parent != null)
             {
                 if (DockViewParent is ILayoutPanel)
                 {
-                    if ((DockViewParent as ILayoutPanel).IsDocumentPanel)
+                    if (((ILayoutPanel)DockViewParent).IsDocumentPanel)
                     {
-                        var ctrl = this as LayoutDocumentGroupControl;
                         var panel = DockViewParent as LayoutGroupDocumentPanel;
                         if (panel.Children.Count > 1 || DockManager.MainWindow != System.Windows.Window.GetWindow(panel))
                         {
@@ -435,8 +428,13 @@ namespace YDock.View.Control
                 }
 
                 var parent = Parent;
-                (parent as ILayoutViewParent).DetachChild(this);
-                if (parent is System.Windows.Window) (parent as System.Windows.Window).Close();
+                ((ILayoutViewParent)parent).DetachChild(this);
+
+                if (parent is System.Windows.Window window)
+                {
+                    window.Close();
+                }
+
                 DesiredHeight = ActualHeight;
                 DesiredWidth = ActualWidth;
                 if (isDispose)
@@ -542,12 +540,12 @@ namespace YDock.View.Control
         internal void UpdateChildrenBounds(Panel parent)
         {
             _childrenBounds = new List<Rect>();
-            double hoffset = 0;
+            double hOffset = 0;
             foreach (TabItem child in parent.Children)
             {
                 var childSize = child.TransformActualSizeToAncestor();
-                _childrenBounds.Add(new Rect(new Point(hoffset, 0), childSize));
-                hoffset += childSize.Width;
+                _childrenBounds.Add(new Rect(new Point(hOffset, 0), childSize));
+                hOffset += childSize.Width;
             }
         }
 

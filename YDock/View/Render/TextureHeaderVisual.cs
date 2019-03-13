@@ -9,22 +9,22 @@ namespace YDock.View.Render
 
         public override void Update(Size size)
         {
-            var voffset = (size.Height - 4) / 2;
+            var vOffset = (size.Height - 4) / 2;
             using (var ctx = RenderOpen())
             {
-                var model = (VisualParent as FrameworkElement).DataContext as DockElement;
+                var model = ((FrameworkElement)VisualParent).DataContext as DockElement;
                 if (model == null) return;
                 if (model.IsActive)
                 {
-                    ctx.DrawLine(ResourceManager.ActiveDashPen, new Point(0, voffset), new Point(size.Width, voffset));
-                    ctx.DrawLine(ResourceManager.ActiveDashPen, new Point(2, voffset + 2), new Point(size.Width, voffset + 2));
-                    ctx.DrawLine(ResourceManager.ActiveDashPen, new Point(0, voffset + 4), new Point(size.Width, voffset + 4));
+                    ctx.DrawLine(ResourceManager.ActiveDashPen, new Point(0, vOffset), new Point(size.Width, vOffset));
+                    ctx.DrawLine(ResourceManager.ActiveDashPen, new Point(2, vOffset + 2), new Point(size.Width, vOffset + 2));
+                    ctx.DrawLine(ResourceManager.ActiveDashPen, new Point(0, vOffset + 4), new Point(size.Width, vOffset + 4));
                 }
                 else
                 {
-                    ctx.DrawLine(ResourceManager.DisActiveDashPen, new Point(0, voffset), new Point(size.Width, voffset));
-                    ctx.DrawLine(ResourceManager.DisActiveDashPen, new Point(2, voffset + 2), new Point(size.Width, voffset + 2));
-                    ctx.DrawLine(ResourceManager.DisActiveDashPen, new Point(0, voffset + 4), new Point(size.Width, voffset + 4));
+                    ctx.DrawLine(ResourceManager.DisActiveDashPen, new Point(0, vOffset), new Point(size.Width, vOffset));
+                    ctx.DrawLine(ResourceManager.DisActiveDashPen, new Point(2, vOffset + 2), new Point(size.Width, vOffset + 2));
+                    ctx.DrawLine(ResourceManager.DisActiveDashPen, new Point(0, vOffset + 4), new Point(size.Width, vOffset + 4));
                 }
             }
         }

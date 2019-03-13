@@ -15,7 +15,6 @@ namespace YDock.View.Window
         private AutoHideWindow _innerContent;
 
         private HwndSource _innerSource;
-        private IntPtr _parentWindowHandle;
 
         #region Constructors
 

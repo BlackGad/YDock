@@ -41,12 +41,10 @@ namespace YDock.Model.Layout
             get
             {
                 if (_children == null) yield break;
-                foreach (DockElement child in _children)
+                foreach (var dockElement in _children)
                 {
-                    if (child.CanSelect)
-                    {
-                        yield return child;
-                    }
+                    var child = (DockElement)dockElement;
+                    if (child.CanSelect) yield return child;
                 }
             }
         }

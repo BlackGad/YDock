@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using YDock.Enum;
 using YDock.Interface;
 using YDock.Model.Layout;
@@ -22,12 +23,12 @@ namespace YDock.View.Layout
 
         public override void AttachChild(IDockView child, AttachMode mode, int index)
         {
-            if (index < 0 || index > Count) throw new ArgumentOutOfRangeException("index out of range!");
-            if (!_AssertMode(mode)) throw new ArgumentException("mode is illegal!");
+            if (index < 0 || index > Count) throw new ArgumentOutOfRangeException("index");
+            if (!_AssertMode(mode)) throw new ArgumentException("mode is illegal");
 
             if (Count == 1 && ActualWidth > 0 && ActualHeight > 0)
             {
-                var size = Children[0] as ILayoutSize;
+                var size = (ILayoutSize)Children[0];
                 size.DesiredWidth = ActualWidth;
                 size.DesiredHeight = ActualHeight;
             }
@@ -49,15 +50,15 @@ namespace YDock.View.Layout
                 }
                 else
                 {
-                    var parent = Parent as LayoutGroupPanel;
+                    var parent = (LayoutGroupPanel)Parent;
                     switch (parent.Direction)
                     {
                         case Direction.Horizontal:
                             if (mode == AttachMode.Left || mode == AttachMode.Right)
                             {
-                                if (child is LayoutGroupPanel)
+                                if (child is LayoutGroupPanel panel)
                                 {
-                                    _AttachSubPanel(child as LayoutGroupPanel, index);
+                                    _AttachSubPanel(panel, index);
                                 }
                                 else
                                 {
@@ -66,13 +67,12 @@ namespace YDock.View.Layout
                             }
                             else
                             {
-                                var _index = parent.IndexOf(this);
                                 parent._DetachChild(this);
                                 var parentParent = new LayoutGroupPanel
                                 {
                                     Direction = Direction.Vertical 
                                 };
-                                parent._AttachChild(parentParent, _index);
+                                parent._AttachChild(parentParent, parent.IndexOf(this));
                                 parentParent._AttachChild(this, 0);
                                 parentParent._AttachChild(child, mode == AttachMode.Top ? 0 : 1);
                             }
@@ -81,9 +81,9 @@ namespace YDock.View.Layout
                         case Direction.Vertical:
                             if (mode == AttachMode.Top || mode == AttachMode.Bottom)
                             {
-                                if (child is LayoutGroupPanel)
+                                if (child is LayoutGroupPanel panel)
                                 {
-                                    _AttachSubPanel(child as LayoutGroupPanel, index);
+                                    _AttachSubPanel(panel, index);
                                 }
                                 else
                                 {
@@ -92,13 +92,14 @@ namespace YDock.View.Layout
                             }
                             else
                             {
-                                var _index = parent.IndexOf(this);
                                 parent._DetachChild(this);
-                                var pparent = new LayoutGroupPanel
-                                    { Direction = Direction.Horizontal };
-                                parent._AttachChild(pparent, _index);
-                                pparent._AttachChild(this, 0);
-                                pparent._AttachChild(child, mode == AttachMode.Left ? 0 : 1);
+                                var parentParent = new LayoutGroupPanel
+                                {
+                                    Direction = Direction.Horizontal
+                                };
+                                parent._AttachChild(parentParent, parent.IndexOf(this));
+                                parentParent._AttachChild(this, 0);
+                                parentParent._AttachChild(child, mode == AttachMode.Left ? 0 : 1);
                             }
 
                             break;
@@ -115,27 +116,17 @@ namespace YDock.View.Layout
             }
 
             _DetachChild(child);
-            if (DockViewParent != null)
-            {
-                DockManager.Root.DocumentModels.Remove(child.Model as BaseLayoutGroup);
-            }
 
-            if (Count < 2)
-            {
-                Direction = Direction.None;
-            }
+            if (DockViewParent != null) DockManager.Root.DocumentModels.Remove(child.Model as BaseLayoutGroup);
 
-            if (Count == 1)
-            {
-                if (DockViewParent == null)
-                {
-                    var _child = Children[0];
-                    var wnd = Parent as ILayoutViewParent;
-                    wnd.DetachChild(this, false);
-                    _Dispose();
-                    wnd.AttachChild(_child as IDockView, AttachMode.None, 0);
-                }
-            }
+            if (Count < 2) Direction = Direction.None;
+            if (Count != 1) return;
+            if (DockViewParent != null) return;
+
+            var wnd = (ILayoutViewParent)Parent;
+            wnd.DetachChild(this, false);
+            _Dispose();
+            wnd.AttachChild(Children[0] as IDockView, AttachMode.None, 0);
         }
 
         internal override bool _AssertMode(AttachMode mode)

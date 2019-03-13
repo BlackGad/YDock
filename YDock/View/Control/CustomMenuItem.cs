@@ -21,9 +21,9 @@ namespace YDock.View.Control
         {
             base.OnClick();
             var element = DataContext as IDockElement;
-            if (element.Container is ILayoutGroup)
+            if (element?.Container is ILayoutGroup group)
             {
-                element.Container.ShowWithActive(element);
+                group.ShowWithActive(element);
             }
         }
 

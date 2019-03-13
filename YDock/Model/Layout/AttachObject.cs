@@ -28,7 +28,7 @@ namespace YDock.Model.Layout
 
         #region Properties
 
-        internal int Index { get; } = -1;
+        internal int Index { get; }
 
         internal INotifyDisposable Parent { get; private set; }
 
@@ -74,7 +74,7 @@ namespace YDock.Model.Layout
                     var group = control.Model as ILayoutGroup;
                     var ctrl = _relativeObj.View as AnchorSideGroupControl;
                     if (ctrl == null) return false;
-                    if (ctrl.TryDeatchFromParent(false))
+                    if (ctrl.TryDetachFromParent(false))
                     {
                         var children = _relativeObj.Children.ToList();
                         children.Reverse();
@@ -101,7 +101,7 @@ namespace YDock.Model.Layout
 
                         var ctrl = _relativeObj.View as AnchorSideGroupControl;
                         if (ctrl == null) return false;
-                        if (ctrl.TryDeatchFromParent(false))
+                        if (ctrl.TryDetachFromParent(false))
                         {
                             if (targetControl.DockViewParent == null) return false;
                             switch (_mode)
@@ -146,7 +146,7 @@ namespace YDock.Model.Layout
                 if (_mode == AttachMode.None)
                 {
                     var panel = (LayoutGroupPanel)Parent;
-                    if (ctrl.TryDeatchFromParent(false))
+                    if (ctrl.TryDetachFromParent(false))
                     {
                         _relativeObj.Mode = DockMode.Normal;
                         panel.AttachChild(_relativeObj.View, _mode, Math.Min(Index, panel.Children.Count - 1));
@@ -160,7 +160,7 @@ namespace YDock.Model.Layout
                 {
                     if (((LayoutGroupPanel)Parent).DockViewParent is LayoutGroupPanel panel)
                     {
-                        if (ctrl.TryDeatchFromParent(false))
+                        if (ctrl.TryDetachFromParent(false))
                         {
                             _relativeObj.Mode = DockMode.Normal;
                             panel.AttachChild(_relativeObj.View, _mode, Math.Min(Index, panel.Children.Count - 1));
