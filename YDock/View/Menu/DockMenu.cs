@@ -5,7 +5,7 @@ using YDock.Global.Commands;
 using YDock.Global.Extension;
 using YDock.Interface;
 
-namespace YDock.View.Meun
+namespace YDock.View.Menu
 {
     public class DockMenu : ContextMenu,
                             IDisposable

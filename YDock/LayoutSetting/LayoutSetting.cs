@@ -25,18 +25,18 @@ namespace YDock.LayoutSetting
             get { return _layout; }
             set
             {
-                if (_layout != value)
+                if (_layout == value) return;
+
+                _layout = value;
+
+                var attribute = _layout.Attribute("Name");
+                if (attribute == null)
                 {
-                    _layout = value;
-                    var attribute = _layout.Attribute("Name");
-                    if (attribute == null)
-                    {
-                        _layout.SetAttributeValue("Name", Name);
-                    }
-                    else
-                    {
-                        attribute.Value = Name;
-                    }
+                    _layout.SetAttributeValue("Name", Name);
+                }
+                else
+                {
+                    attribute.Value = Name;
                 }
             }
         }

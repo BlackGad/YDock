@@ -7,7 +7,7 @@ using YDock.Global.Commands;
 using YDock.Interface;
 using YDock.Model.Element;
 using YDock.Model.Layout;
-using YDock.View.Meun;
+using YDock.View.Menu;
 
 namespace YDock.View.Control
 {

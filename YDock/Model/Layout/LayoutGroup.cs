@@ -42,8 +42,8 @@ namespace YDock.Model.Layout
         protected override void OnChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             base.OnChildrenCollectionChanged(sender, e);
-            if (_view == null) return;
-            var tab = _view as TabControl;
+            if (View == null) return;
+            var tab = View as TabControl;
             if (e.NewItems?.Count > 0 && (e.NewItems[e.NewItems.Count - 1] as IDockElement).CanSelect)
             {
                 tab.SelectedIndex = IndexOf(e.NewItems[e.NewItems.Count - 1] as IDockElement);
@@ -59,14 +59,14 @@ namespace YDock.Model.Layout
             base.OnChildrenPropertyChanged(sender, e);
             if (e.PropertyName == "CanSelect")
             {
-                if (_view == null) return;
+                if (View == null) return;
                 if ((sender as DockElement).CanSelect)
                 {
-                    (_view as TabControl).SelectedIndex = Children_CanSelect.Count() - 1;
+                    (View as TabControl).SelectedIndex = Children_CanSelect.Count() - 1;
                 }
                 else
                 {
-                    (_view as TabControl).SelectedIndex = Children_CanSelect.Any() ? 0 : -1;
+                    (View as TabControl).SelectedIndex = Children_CanSelect.Any() ? 0 : -1;
                 }
 
                 if (!Children_CanSelect.Any())
@@ -79,9 +79,9 @@ namespace YDock.Model.Layout
         public override void ShowWithActive(IDockElement element, bool activate = true)
         {
             base.ShowWithActive(element, activate);
-            if (_view != null)
+            if (View != null)
             {
-                (_view as TabControl).SelectedIndex = IndexOf(element);
+                (View as TabControl).SelectedIndex = IndexOf(element);
             }
             else //_view不存在则要创建新的_view
             {
@@ -125,9 +125,9 @@ namespace YDock.Model.Layout
         {
             base.Detach(element);
             //保存Size信息
-            if (_view != null)
+            if (View != null)
             {
-                var bgc = _view as BaseGroupControl;
+                var bgc = View as BaseGroupControl;
                 if (bgc.IsInitialized && bgc.ActualHeight >= Constants.SideLength && bgc.ActualWidth >= Constants.SideLength)
                 {
                     (element as DockElement).DesiredHeight = bgc.ActualHeight;
@@ -211,9 +211,9 @@ namespace YDock.Model.Layout
         {
             AttachObj?.Dispose();
             AttachObj = null;
-            if (_view != null)
+            if (View != null)
             {
-                _dockManager.DragManager.OnDragStatusChanged -= (_view as BaseGroupControl).OnDragStatusChanged;
+                _dockManager.DragManager.OnDragStatusChanged -= (View as BaseGroupControl).OnDragStatusChanged;
             }
 
             base.Dispose();
@@ -226,9 +226,9 @@ namespace YDock.Model.Layout
 
         private void _DetachFromParent()
         {
-            if ((_view as ILayoutGroupControl).TryDetachFromParent())
+            if ((View as ILayoutGroupControl).TryDetachFromParent())
             {
-                _view = null;
+                View = null;
                 if (_children.Count == 0)
                 {
                     Dispose();

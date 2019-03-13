@@ -9,7 +9,7 @@ namespace YDock.Interface
     {
         #region Properties
 
-        IEnumerable<IDockElement> Children { get; }
+        IReadOnlyList<IDockElement> Children { get; }
         DockMode Mode { get; }
 
         #endregion

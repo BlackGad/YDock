@@ -44,24 +44,23 @@ namespace YDock.View.Control
                 || DropMode == DropMode.Bottom)
             {
                 IDockView child;
-                if (source.RelativeObj is BaseFloatWindow)
+                if (source.RelativeObj is BaseFloatWindow window)
                 {
-                    child = (source.RelativeObj as BaseFloatWindow).Child;
-                    (source.RelativeObj as BaseFloatWindow).DetachChild(child);
+                    child = window.Child;
+                    window.DetachChild(child);
                 }
                 else
                 {
                     child = source.RelativeObj as IDockView;
                 }
 
-                DockManager.ChangeDockMode(child, (Model as ILayoutGroup).Mode);
-                //must to changside
+                DockManager.ChangeDockMode(child, ((ILayoutGroup)Model).Mode);
                 DockManager.ChangeSide(child, Model.Side);
 
                 LayoutGroupPanel panel;
                 if (DockViewParent == null)
                 {
-                    var wnd = Parent as BaseFloatWindow;
+                    var wnd = (BaseFloatWindow)Parent;
                     wnd.DetachChild(this);
                     panel = new LayoutGroupPanel(Model.Side)
                     {
@@ -86,9 +85,9 @@ namespace YDock.View.Control
                 base.OnDrop(source);
             }
 
-            if (source.RelativeObj is BaseFloatWindow)
+            if (source.RelativeObj is BaseFloatWindow floatWindow)
             {
-                (source.RelativeObj as BaseFloatWindow).Close();
+                floatWindow.Close();
             }
         }
 
@@ -104,7 +103,7 @@ namespace YDock.View.Control
                 case DropMode.Left:
                     if (panel.Direction == Direction.Vertical)
                     {
-                        var _subpanel = new LayoutGroupPanel(Model.Side)
+                        var subPanel = new LayoutGroupPanel(Model.Side)
                         {
                             Direction = Direction.Horizontal,
                             DesiredWidth = Math.Max(ActualWidth, Constants.DockDefaultWidthLength),
@@ -112,9 +111,9 @@ namespace YDock.View.Control
                             IsAnchorPanel = true
                         };
                         panel._DetachChild(this);
-                        panel._AttachChild(_subpanel, Math.Min(index, panel.Count));
-                        _subpanel._AttachChild(this, 0);
-                        _subpanel.AttachChild(source, AttachMode.Left, 0);
+                        panel._AttachChild(subPanel, Math.Min(index, panel.Count));
+                        subPanel._AttachChild(this, 0);
+                        subPanel.AttachChild(source, AttachMode.Left, 0);
                     }
                     else
                     {
@@ -125,7 +124,7 @@ namespace YDock.View.Control
                 case DropMode.Top:
                     if (panel.Direction == Direction.Horizontal)
                     {
-                        var _subpanel = new LayoutGroupPanel(Model.Side)
+                        var subPanel = new LayoutGroupPanel(Model.Side)
                         {
                             Direction = Direction.Vertical,
                             DesiredWidth = Math.Max(ActualWidth, Constants.DockDefaultWidthLength),
@@ -133,9 +132,9 @@ namespace YDock.View.Control
                             IsAnchorPanel = true
                         };
                         panel._DetachChild(this);
-                        panel._AttachChild(_subpanel, Math.Min(index, panel.Count));
-                        _subpanel._AttachChild(this, 0);
-                        _subpanel.AttachChild(source, AttachMode.Top, 0);
+                        panel._AttachChild(subPanel, Math.Min(index, panel.Count));
+                        subPanel._AttachChild(this, 0);
+                        subPanel.AttachChild(source, AttachMode.Top, 0);
                     }
                     else
                     {
@@ -146,7 +145,7 @@ namespace YDock.View.Control
                 case DropMode.Right:
                     if (panel.Direction == Direction.Vertical)
                     {
-                        var _subpanel = new LayoutGroupPanel(Model.Side)
+                        var subPanel = new LayoutGroupPanel(Model.Side)
                         {
                             Direction = Direction.Horizontal,
                             DesiredWidth = Math.Max(ActualWidth, Constants.DockDefaultWidthLength),
@@ -154,9 +153,9 @@ namespace YDock.View.Control
                             IsAnchorPanel = true
                         };
                         panel._DetachChild(this);
-                        _subpanel._AttachChild(this, 0);
-                        _subpanel.AttachChild(source, AttachMode.Right, 1);
-                        panel._AttachChild(_subpanel, Math.Min(index, panel.Count));
+                        subPanel._AttachChild(this, 0);
+                        subPanel.AttachChild(source, AttachMode.Right, 1);
+                        panel._AttachChild(subPanel, Math.Min(index, panel.Count));
                     }
                     else
                     {
@@ -167,7 +166,7 @@ namespace YDock.View.Control
                 case DropMode.Bottom:
                     if (panel.Direction == Direction.Horizontal)
                     {
-                        var _subpanel = new LayoutGroupPanel(Model.Side)
+                        var subPanel = new LayoutGroupPanel(Model.Side)
                         {
                             Direction = Direction.Vertical,
                             DesiredWidth = Math.Max(ActualWidth, Constants.DockDefaultWidthLength),
@@ -175,9 +174,9 @@ namespace YDock.View.Control
                             IsAnchorPanel = true
                         };
                         panel._DetachChild(this);
-                        _subpanel._AttachChild(this, 0);
-                        _subpanel.AttachChild(source, AttachMode.Bottom, 1);
-                        panel._AttachChild(_subpanel, Math.Min(index, panel.Count));
+                        subPanel._AttachChild(this, 0);
+                        subPanel.AttachChild(source, AttachMode.Bottom, 1);
+                        panel._AttachChild(subPanel, Math.Min(index, panel.Count));
                     }
                     else
                     {

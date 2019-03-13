@@ -50,12 +50,18 @@ namespace YDock.LayoutSetting
 
         public void Load(XElement element)
         {
-            IsDocument = bool.Parse(element.Attribute("IsDocument").Value);
-            Side = (DockSide)System.Enum.Parse(typeof(DockSide), element.Attribute("Side").Value);
-            Direction = (Direction)System.Enum.Parse(typeof(Direction), element.Attribute("Direction").Value);
+            bool.TryParse(element.Attribute("IsDocument")?.Value, out var isDocument);
+            IsDocument = isDocument;
+
+            System.Enum.TryParse(element.Attribute("Side")?.Value, out DockSide side);
+            Side = side;
+
+            System.Enum.TryParse(element.Attribute("Direction")?.Value, out Direction direction);
+            Direction = direction;
+
             foreach (var item in element.Elements())
             {
-                var node = default(ILayoutNode);
+                ILayoutNode node;
                 if (item.Name == "Panel")
                 {
                     node = new PanelNode(this);
@@ -88,84 +94,78 @@ namespace YDock.LayoutSetting
 
         public void ApplyLayout(DockManager dockManager, bool isFloat = false)
         {
-            if (Side == DockSide.None)
+            if (Side != DockSide.None)
             {
-                if (IsDocument)
-                {
-                    var node = _children.First;
-                    var relative = default(IDockControl);
-                    while (node != null)
-                    {
-                        relative = (node.Value as GroupNode).TryApplyLayoutAsDocument(dockManager, isFloat);
-                        node = node.Next;
-                        if (relative != null)
-                        {
-                            break;
-                        }
-                    }
-
-                    while (node != null)
-                    {
-                        var _relative = (node.Value as GroupNode).TryApplyLayoutAsDocument(dockManager, relative);
-                        node = node.Next;
-                        if (_relative != null)
-                        {
-                            relative = _relative;
-                        }
-                    }
-                }
-                else
-                {
-                    var panelNode = _children.FirstOrDefault(n => n.Type == LayoutNodeType.Panel && (n as PanelNode).Side == DockSide.None) as PanelNode;
-                    if (panelNode == null)
-                    {
-                        _TryCompleteLayout(dockManager, null, isFloat);
-                    }
-                    else
-                    {
-                        panelNode.ApplyLayout(dockManager);
-                        var node = _children.Find(panelNode);
-                        if (node.Previous != null)
-                        {
-                            var cur = node.Previous;
-                            while (cur != null)
-                            {
-                                if (cur.Value.Type == LayoutNodeType.Panel)
-                                {
-                                    (cur.Value as PanelNode).ApplyLayout(dockManager, isFloat);
-                                }
-                                else
-                                {
-                                    (cur.Value as GroupNode).ApplyLayout(dockManager, isFloat);
-                                }
-
-                                cur = cur.Previous;
-                            }
-                        }
-
-                        if (node.Next != null)
-                        {
-                            var cur = node.Next;
-                            while (cur != null)
-                            {
-                                if (cur.Value.Type == LayoutNodeType.Panel)
-                                {
-                                    (cur.Value as PanelNode).ApplyLayout(dockManager, isFloat);
-                                }
-                                else
-                                {
-                                    (cur.Value as GroupNode).ApplyLayout(dockManager, isFloat);
-                                }
-
-                                cur = cur.Next;
-                            }
-                        }
-                    }
-                }
+                TryCompleteLayout(dockManager, null, isFloat);
+                return;
             }
-            else
+
+            if (IsDocument)
             {
-                _TryCompleteLayout(dockManager, null, isFloat);
+                var node = _children.First;
+                var relativeDockControl = default(IDockControl);
+
+                while (node != null)
+                {
+                    relativeDockControl = ((GroupNode)node.Value).TryApplyLayoutAsDocument(dockManager, isFloat);
+                    node = node.Next;
+                    if (relativeDockControl != null) break;
+                }
+
+                while (node != null)
+                {
+                    var relative = ((GroupNode)node.Value).TryApplyLayoutAsDocument(dockManager, relativeDockControl);
+                    node = node.Next;
+                    if (relative != null) relativeDockControl = relative;
+                }
+                return;
+            }
+
+            var panelNode = _children.OfType<PanelNode>().FirstOrDefault(n => n.Type == LayoutNodeType.Panel && n.Side == DockSide.None);
+            if (panelNode == null)
+            {
+                TryCompleteLayout(dockManager, null, isFloat);
+                return;
+            }
+
+            {
+                panelNode.ApplyLayout(dockManager);
+                var node = _children.Find(panelNode);
+                if (node?.Previous != null)
+                {
+                    var cur = node.Previous;
+                    while (cur != null)
+                    {
+                        if (cur.Value.Type == LayoutNodeType.Panel)
+                        {
+                            ((PanelNode)cur.Value).ApplyLayout(dockManager, isFloat);
+                        }
+                        else
+                        {
+                            ((GroupNode)cur.Value).ApplyLayout(dockManager, isFloat);
+                        }
+
+                        cur = cur.Previous;
+                    }
+                }
+
+                if (node?.Next != null)
+                {
+                    var cur = node.Next;
+                    while (cur != null)
+                    {
+                        if (cur.Value.Type == LayoutNodeType.Panel)
+                        {
+                            ((PanelNode)cur.Value).ApplyLayout(dockManager, isFloat);
+                        }
+                        else
+                        {
+                            ((GroupNode)cur.Value).ApplyLayout(dockManager, isFloat);
+                        }
+
+                        cur = cur.Next;
+                    }
+                }
             }
         }
 
@@ -173,18 +173,18 @@ namespace YDock.LayoutSetting
         {
             if (_children.First.Value.Type == LayoutNodeType.Panel)
             {
-                return (_children.First.Value as PanelNode).TryGetFirstLevelElement(dockManager, target, dir, isFloat);
+                return ((PanelNode)_children.First.Value).TryGetFirstLevelElement(dockManager, target, dir, isFloat);
             }
 
             if (target != null)
             {
-                return (_children.First.Value as GroupNode).ApplyLayout(dockManager, target, dir);
+                return ((GroupNode)_children.First.Value).ApplyLayout(dockManager, target, dir);
             }
 
-            return (_children.First.Value as GroupNode).ApplyLayout(dockManager, isFloat);
+            return ((GroupNode)_children.First.Value).ApplyLayout(dockManager, isFloat);
         }
 
-        private void _TryCompleteLayout(DockManager dockManager, IDockControl relative, bool isFloat = false)
+        private void TryCompleteLayout(DockManager dockManager, IDockControl relative, bool isFloat = false)
         {
             var dic = new Dictionary<IDockControl, PanelNode>();
             var children = relative == null ? _children : _children.Skip(1);
@@ -200,11 +200,11 @@ namespace YDock.LayoutSetting
                 {
                     if (item.Type == LayoutNodeType.Group)
                     {
-                        relative = (item as GroupNode).ApplyLayout(dockManager, isFloat);
+                        relative = ((GroupNode)item).ApplyLayout(dockManager, isFloat);
                     }
                     else
                     {
-                        relative = (item as PanelNode).TryGetFirstLevelElement(dockManager, null, Direction.None, isFloat);
+                        relative = ((PanelNode)item).TryGetFirstLevelElement(dockManager, null, Direction.None, isFloat);
                         dic.Add(relative, item as PanelNode);
                     }
                 }
@@ -212,11 +212,11 @@ namespace YDock.LayoutSetting
                 {
                     if (item.Type == LayoutNodeType.Group)
                     {
-                        relative = (item as GroupNode).ApplyLayout(dockManager, relative, Direction);
+                        relative = ((GroupNode)item).ApplyLayout(dockManager, relative, Direction);
                     }
                     else
                     {
-                        relative = (item as PanelNode).TryGetFirstLevelElement(dockManager, relative, Direction);
+                        relative = ((PanelNode)item).TryGetFirstLevelElement(dockManager, relative, Direction);
                         dic.Add(relative, item as PanelNode);
                     }
                 }
@@ -224,7 +224,7 @@ namespace YDock.LayoutSetting
 
             foreach (var pair in dic)
             {
-                pair.Value._TryCompleteLayout(dockManager, pair.Key, isFloat);
+                pair.Value.TryCompleteLayout(dockManager, pair.Key, isFloat);
             }
         }
 

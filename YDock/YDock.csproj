@@ -102,12 +102,10 @@
     <Compile Include="Interface\IDockDocSource.cs" />
     <Compile Include="Interface\IDockElement.cs" />
     <Compile Include="Interface\IDockItem.cs" />
-    <Compile Include="Interface\IDockManager.cs" />
     <Compile Include="Interface\IDockModel.cs" />
     <Compile Include="Interface\IDockOrigin.cs" />
     <Compile Include="Interface\IDockSource.cs" />
     <Compile Include="Interface\IDragTarget.cs" />
-    <Compile Include="Interface\IDropWindow.cs" />
     <Compile Include="Interface\ILayout.cs" />
     <Compile Include="Interface\ILayoutGroup.cs" />
     <Compile Include="Interface\ILayoutGroupControl.cs" />
@@ -167,8 +165,8 @@
     <Compile Include="View\Layout\LayoutGroupPanel.cs" />
     <Compile Include="View\Layout\LayoutRootPanel.cs" />
     <Compile Include="View\Control\DockBarGroupControl.cs" />
-    <Compile Include="View\Meun\DockMenu.cs" />
-    <Compile Include="View\Meun\DocumentMenu.cs" />
+    <Compile Include="View\Menu\DockMenu.cs" />
+    <Compile Include="View\Menu\DocumentMenu.cs" />
     <Compile Include="View\Render\ActiveRectDropVisual.cs" />
     <Compile Include="View\Render\BaseDropPanel.cs" />
     <Compile Include="View\Render\BaseDropVisual.cs" />
@@ -191,7 +189,7 @@
     <Compile Include="View\Window\DropWindow.cs" />
     <Compile Include="View\Window\TransitioningContentControl.cs" />
     <Compile Include="View\Window\VisualStates.cs" />
-    <Compile Include="View\Window\_AutoHideWindow.cs" />
+    <Compile Include="View\Window\Win32Window.cs" />
     <Compile Include="Win32Helper.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -214,9 +212,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resource\Image\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

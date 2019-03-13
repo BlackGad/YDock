@@ -58,8 +58,8 @@ namespace YDock.View.Window
         public override void AttachChild(IDockView child, AttachMode mode, int index)
         {
             //后面的2是border Thickness
-            _widthEceeed += Constants.DocumentWindowPadding * 2 + 2;
-            _heightEceeed += Constants.DocumentWindowPadding * 2 + Constants.FloatWindowHeaderHeight + 2;
+            _widthExceed += Constants.DocumentWindowPadding * 2 + 2;
+            _heightExceed += Constants.DocumentWindowPadding * 2 + Constants.FloatWindowHeaderHeight + 2;
             base.AttachChild(child, mode, index);
         }
 

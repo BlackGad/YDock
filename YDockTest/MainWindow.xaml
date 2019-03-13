@@ -13,6 +13,6 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <ContentControl x:Name="ViewManagerHost"/>-->
-        <ydock:DockManager Grid.Column="1" x:Name="DockManager"/>
+        <ydock:DockManager x:Name="DockManager1"/>
     </Grid>
 </Window>

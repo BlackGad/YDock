@@ -20,7 +20,7 @@ namespace YDock.View.Window
     {
         protected DockManager _dockManager;
 
-        protected double _heightEceeed;
+        protected double _heightExceed;
         protected HwndSource _hwndSrc;
         protected HwndSourceHook _hwndSrcHook;
 
@@ -28,7 +28,7 @@ namespace YDock.View.Window
 
         protected bool _needReCreate;
 
-        protected double _widthEceeed;
+        protected double _widthExceed;
 
         #region Constructors
 
@@ -37,8 +37,8 @@ namespace YDock.View.Window
             _dockManager = dockManager;
             MinWidth = 150;
             MinHeight = 60;
-            _widthEceeed = 0;
-            _heightEceeed = 0;
+            _widthExceed = 0;
+            _heightExceed = 0;
             NeedReCreate = needReCreate;
             //AllowsTransparency = true;
             //WindowStyle = WindowStyle.None;
@@ -72,9 +72,9 @@ namespace YDock.View.Window
             get { return _hwndSrc.Handle; }
         }
 
-        internal double HeightEceeed
+        internal double HeightExceed
         {
-            get { return _heightEceeed; }
+            get { return _heightExceed; }
         }
 
         internal bool NeedReCreate
@@ -83,9 +83,9 @@ namespace YDock.View.Window
             set { _needReCreate = value; }
         }
 
-        internal double WidthEceeed
+        internal double WidthExceed
         {
-            get { return _widthEceeed; }
+            get { return _widthExceed; }
         }
 
         #endregion
@@ -154,8 +154,8 @@ namespace YDock.View.Window
             {
                 Content = child;
                 DockManager.AddFloatWindow(this);
-                Height = (child as ILayoutSize).DesiredHeight + _heightEceeed;
-                Width = (child as ILayoutSize).DesiredWidth + _widthEceeed;
+                Height = (child as ILayoutSize).DesiredHeight + _heightExceed;
+                Width = (child as ILayoutSize).DesiredWidth + _widthExceed;
             }
         }
 
@@ -259,8 +259,8 @@ namespace YDock.View.Window
             if (Content is ILayoutSize)
             {
                 var _child = Content as ILayoutSize;
-                _child.DesiredWidth = Math.Max(ActualWidth - _widthEceeed, Constants.SideLength);
-                _child.DesiredHeight = Math.Max(ActualHeight - _heightEceeed, Constants.SideLength);
+                _child.DesiredWidth = Math.Max(ActualWidth - _widthExceed, Constants.SideLength);
+                _child.DesiredHeight = Math.Max(ActualHeight - _heightExceed, Constants.SideLength);
             }
         }
 
@@ -296,18 +296,10 @@ namespace YDock.View.Window
                     else
                     {
                         _isDragging = true;
-                        if (this is AnchorGroupWindow)
-                        {
-                            DockManager.DragManager.IntoDragAction(
-                                new DragItem(this, DockMode.Float, DragMode.Anchor, new Point(), Rect.Empty, new Size(ActualWidth, ActualHeight)),
-                                true);
-                        }
-                        else
-                        {
-                            DockManager.DragManager.IntoDragAction(
-                                new DragItem(this, DockMode.Float, DragMode.Document, new Point(), Rect.Empty, new Size(ActualWidth, ActualHeight)),
-                                true);
-                        }
+                        var dragMode = DragMode.Document;
+                        if (this is AnchorGroupWindow) dragMode = DragMode.Anchor;
+                        var dragItem = new DragItem(this, DockMode.Float, dragMode, new Point(), Rect.Empty, new Size(ActualWidth, ActualHeight));
+                        DockManager.DragManager.IntoDragAction(dragItem, true);
                     }
 
                     break;
@@ -327,10 +319,11 @@ namespace YDock.View.Window
 
         private HitTestFilterBehavior _HitFilter(DependencyObject potentialHitTestTarget)
         {
-            if (potentialHitTestTarget is BaseGroupControl)
+            if (potentialHitTestTarget is BaseGroupControl target)
             {
-                //设置DragTarget，以实时显示TargetWnd
-                DockManager.DragManager.DragTarget = potentialHitTestTarget as IDragTarget;
+                //Set DragTarget to display TargetWnd in real time
+                DockManager.DragManager.DragTarget = target;
+
                 return HitTestFilterBehavior.Stop;
             }
 

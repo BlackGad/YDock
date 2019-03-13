@@ -4,7 +4,7 @@
     {
         #region Properties
 
-        IDockElement ProtoType { get; }
+        IDockElement Prototype { get; }
 
         #endregion
 

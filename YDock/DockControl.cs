@@ -13,8 +13,8 @@ namespace YDock
 
         internal DockControl(IDockElement prototype)
         {
-            ProtoType = prototype;
-            ((DockElement)ProtoType).DockControl = this;
+            Prototype = prototype;
+            ((DockElement)Prototype).DockControl = this;
             prototype.PropertyChanged += OnPrototypePropertyChanged;
         }
 
@@ -22,110 +22,110 @@ namespace YDock
 
         #region IDockControl Members
 
-        public IDockElement ProtoType { get; private set; }
+        public IDockElement Prototype { get; private set; }
 
         public int ID
         {
-            get { return ProtoType.ID; }
+            get { return Prototype.ID; }
         }
 
         public string Title
         {
-            get { return ProtoType.Title; }
-            set { ProtoType.Title = value; }
+            get { return Prototype.Title; }
+            set { Prototype.Title = value; }
         }
 
         public ImageSource ImageSource
         {
-            get { return ProtoType.ImageSource; }
+            get { return Prototype.ImageSource; }
         }
 
         public object Content
         {
-            get { return ProtoType.Content; }
+            get { return Prototype.Content; }
         }
 
         public DockSide Side
         {
-            get { return ProtoType.Side; }
+            get { return Prototype.Side; }
         }
 
         public DockManager DockManager
         {
-            get { return ProtoType.DockManager; }
+            get { return Prototype.DockManager; }
         }
 
         public double DesiredWidth
         {
-            get { return ProtoType.DesiredWidth; }
+            get { return Prototype.DesiredWidth; }
 
-            set { ProtoType.DesiredWidth = value; }
+            set { Prototype.DesiredWidth = value; }
         }
 
         public double DesiredHeight
         {
-            get { return ProtoType.DesiredHeight; }
+            get { return Prototype.DesiredHeight; }
 
-            set { ProtoType.DesiredHeight = value; }
+            set { Prototype.DesiredHeight = value; }
         }
 
         public double FloatLeft
         {
-            get { return ProtoType.FloatLeft; }
+            get { return Prototype.FloatLeft; }
 
-            set { ProtoType.FloatLeft = value; }
+            set { Prototype.FloatLeft = value; }
         }
 
         public double FloatTop
         {
-            get { return ProtoType.FloatTop; }
+            get { return Prototype.FloatTop; }
 
-            set { ProtoType.FloatTop = value; }
+            set { Prototype.FloatTop = value; }
         }
 
         public bool IsDocument
         {
-            get { return ProtoType.IsDocument; }
+            get { return Prototype.IsDocument; }
         }
 
         public DockMode Mode
         {
-            get { return ProtoType.Mode; }
+            get { return Prototype.Mode; }
         }
 
         public bool IsVisible
         {
-            get { return ProtoType.IsVisible; }
+            get { return Prototype.IsVisible; }
         }
 
         public bool IsActive
         {
-            get { return ProtoType.IsActive; }
+            get { return Prototype.IsActive; }
         }
 
         public bool CanSelect
         {
-            get { return ProtoType.CanSelect; }
+            get { return Prototype.CanSelect; }
         }
 
         public ILayoutGroup Container
         {
-            get { return ProtoType.Container; }
+            get { return Prototype.Container; }
         }
 
         public bool IsDocked
         {
-            get { return ProtoType.IsDocked; }
+            get { return Prototype.IsDocked; }
         }
 
         public bool IsFloat
         {
-            get { return ProtoType.IsFloat; }
+            get { return Prototype.IsFloat; }
         }
 
         public bool IsAutoHide
         {
-            get { return ProtoType.IsAutoHide; }
+            get { return Prototype.IsAutoHide; }
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace YDock
         /// </summary>
         public bool CanFloat
         {
-            get { return ProtoType != null && ProtoType.CanFloat; }
+            get { return Prototype != null && Prototype.CanFloat; }
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace YDock
         /// </summary>
         public bool CanDock
         {
-            get { return ProtoType != null && ProtoType.CanDock; }
+            get { return Prototype != null && Prototype.CanDock; }
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace YDock
         /// </summary>
         public bool CanDockAsDocument
         {
-            get { return ProtoType != null && ProtoType.CanDockAsDocument; }
+            get { return Prototype != null && Prototype.CanDockAsDocument; }
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace YDock
         /// </summary>
         public bool CanSwitchAutoHideStatus
         {
-            get { return ProtoType != null && ProtoType.CanSwitchAutoHideStatus; }
+            get { return Prototype != null && Prototype.CanSwitchAutoHideStatus; }
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace YDock
         /// </summary>
         public bool CanHide
         {
-            get { return ProtoType != null && ProtoType.CanHide; }
+            get { return Prototype != null && Prototype.CanHide; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
@@ -190,7 +190,7 @@ namespace YDock
             }
             else
             {
-                Container.ShowWithActive(ProtoType, activate);
+                Container.ShowWithActive(Prototype, activate);
             }
         }
 
@@ -205,7 +205,7 @@ namespace YDock
                 return;
             }
 
-            ProtoType?.Hide();
+            Prototype?.Hide();
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace YDock
         /// </summary>
         public void ToFloat(bool isActive = true)
         {
-            ProtoType?.ToFloat(isActive);
+            Prototype?.ToFloat(isActive);
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace YDock
         /// </summary>
         public void ToDock(bool isActive = true)
         {
-            ProtoType?.ToDock(isActive);
+            Prototype?.ToDock(isActive);
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace YDock
         /// </summary>
         public void ToDockAsDocument(bool isActive = true)
         {
-            ProtoType?.ToDockAsDocument(isActive);
+            Prototype?.ToDockAsDocument(isActive);
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace YDock
         /// </summary>
         public void ToDockAsDocument(int index, bool isActive = true)
         {
-            ProtoType?.ToDockAsDocument(index, isActive);
+            Prototype?.ToDockAsDocument(index, isActive);
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace YDock
         /// </summary>
         public void SwitchAutoHideStatus()
         {
-            ProtoType?.SwitchAutoHideStatus();
+            Prototype?.SwitchAutoHideStatus();
         }
 
         /// <summary>
@@ -261,9 +261,9 @@ namespace YDock
         {
             if (isActive)
             {
-                ProtoType.Container.ShowWithActive(ProtoType);
+                Prototype.Container.ShowWithActive(Prototype);
             }
-            else if (DockManager.ActiveElement == ProtoType)
+            else if (DockManager.ActiveElement == Prototype)
             {
                 DockManager.ActiveElement = null;
             }
@@ -276,9 +276,9 @@ namespace YDock
             if (IsDisposed) return;
             IsDisposed = true;
             DockManager.RemoveDockControl(this);
-            ProtoType.PropertyChanged -= OnPrototypePropertyChanged;
-            ProtoType.Dispose();
-            ProtoType = null;
+            Prototype.PropertyChanged -= OnPrototypePropertyChanged;
+            Prototype.Dispose();
+            Prototype = null;
         }
 
         #endregion
@@ -287,7 +287,7 @@ namespace YDock
 
         private void OnPrototypePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            PropertyChanged(ProtoType, new PropertyChangedEventArgs(e.PropertyName));
+            PropertyChanged(Prototype, new PropertyChangedEventArgs(e.PropertyName));
         }
 
         #endregion

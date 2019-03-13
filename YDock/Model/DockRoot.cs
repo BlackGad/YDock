@@ -243,28 +243,28 @@ namespace YDock.Model
             {
                 var id = int.Parse(item.Value);
                 var element = _dockManager.GetDockControl(id);
-                element.ProtoType.ToDockSide(DockSide.Left);
+                element.Prototype.ToDockSide(DockSide.Left);
             }
 
             foreach (var item in root.Element("TopBar").Elements())
             {
                 var id = int.Parse(item.Value);
                 var element = _dockManager.GetDockControl(id);
-                element.ProtoType.ToDockSide(DockSide.Top);
+                element.Prototype.ToDockSide(DockSide.Top);
             }
 
             foreach (var item in root.Element("RightBar").Elements())
             {
                 var id = int.Parse(item.Value);
                 var element = _dockManager.GetDockControl(id);
-                element.ProtoType.ToDockSide(DockSide.Right);
+                element.Prototype.ToDockSide(DockSide.Right);
             }
 
             foreach (var item in root.Element("BottomBar").Elements())
             {
                 var id = int.Parse(item.Value);
                 var element = _dockManager.GetDockControl(id);
-                element.ProtoType.ToDockSide(DockSide.Bottom);
+                element.Prototype.ToDockSide(DockSide.Bottom);
             }
         }
 

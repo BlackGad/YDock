@@ -8,8 +8,8 @@ using YDock.Model.Element;
 
 namespace YDock.View.Window
 {
-    public class _AutoHideWindow : HwndHost,
-                                   ILayout
+    public class Win32Window : HwndHost,
+                               ILayout
     {
         private bool _contentRendered;
         private AutoHideWindow _innerContent;
@@ -18,7 +18,7 @@ namespace YDock.View.Window
 
         #region Constructors
 
-        public _AutoHideWindow()
+        public Win32Window()
         {
             _innerContent = new AutoHideWindow();
         }
@@ -48,10 +48,13 @@ namespace YDock.View.Window
             });
 
             _contentRendered = false;
-            _innerSource.ContentRendered += _OnContentRendered;
+            _innerSource.ContentRendered += OnContentRendered;
             _innerSource.RootVisual = _innerContent;
+
             AddLogicalChild(_innerContent);
+
             Win32Helper.BringWindowToTop(_innerSource.Handle);
+
             return new HandleRef(this, _innerSource.Handle);
         }
 
@@ -86,7 +89,7 @@ namespace YDock.View.Window
         {
             if (disposing)
             {
-                _innerSource.ContentRendered -= _OnContentRendered;
+                _innerSource.ContentRendered -= OnContentRendered;
                 _innerContent.Dispose();
                 _innerContent = null;
             }
@@ -112,7 +115,7 @@ namespace YDock.View.Window
 
         #region Event handlers
 
-        private void _OnContentRendered(object sender, EventArgs e)
+        private void OnContentRendered(object sender, EventArgs e)
         {
             _contentRendered = true;
         }

@@ -47,8 +47,12 @@ namespace YDock.LayoutSetting
 
         public void Load(XElement element)
         {
-            IsDocument = bool.Parse(element.Attribute("IsDocument")?.Value);
-            Side = (DockSide)System.Enum.Parse(typeof(DockSide), element.Attribute("Side").Value);
+            bool.TryParse(element.Attribute("IsDocument")?.Value, out var isDocument);
+            IsDocument = isDocument;
+
+            System.Enum.TryParse(element.Attribute("Side")?.Value, out DockSide side);
+            Side = side;
+
             foreach (var item in element.Elements())
             {
                 var itemNode = new ItemNode(this);
@@ -84,7 +88,7 @@ namespace YDock.LayoutSetting
                     relative = element;
                     if (!isFloat)
                     {
-                        element.ProtoType.ToDockSide(Side);
+                        element.Prototype.ToDockSide(Side);
                         element.ToDock(false);
                     }
                     else

@@ -18,8 +18,6 @@ namespace YDock.Model.Layout
 
         protected DockSide _side;
 
-        protected IDockView _view;
-
         #region Constructors
 
         protected BaseLayoutGroup()
@@ -53,7 +51,7 @@ namespace YDock.Model.Layout
 
         #region ILayoutGroup Members
 
-        IEnumerable<IDockElement> ILayoutGroup.Children
+        IReadOnlyList<IDockElement> ILayoutGroup.Children
         {
             get { return _children; }
         }
@@ -68,7 +66,7 @@ namespace YDock.Model.Layout
                 if (_side != value)
                 {
                     _side = value;
-                    foreach (DockElement child in _children)
+                    foreach (var child in _children.OfType<DockElement>())
                     {
                         child.Side = value;
                     }
@@ -76,18 +74,7 @@ namespace YDock.Model.Layout
             }
         }
 
-        public IDockView View
-        {
-            get { return _view; }
-
-            internal set
-            {
-                if (_view != value)
-                {
-                    _view = value;
-                }
-            }
-        }
+        public IDockView View { get; protected internal set; }
 
         public DockMode Mode
         {
@@ -97,7 +84,7 @@ namespace YDock.Model.Layout
                 if (_mode != value)
                 {
                     _mode = value;
-                    foreach (DockElement child in _children)
+                    foreach (var child in _children.OfType<DockElement>())
                     {
                         if (child.Mode != _mode)
                         {
@@ -137,7 +124,7 @@ namespace YDock.Model.Layout
                 (element as DockElement).CanSelect = true;
             }
 
-            if (_view != null)
+            if (View != null)
             {
                 DockManager.ActiveElement = element;
             }
@@ -212,8 +199,8 @@ namespace YDock.Model.Layout
             _children.Clear();
             _children = null;
             PropertyChanged = null;
-            _view?.Dispose();
-            _view = null;
+            View?.Dispose();
+            View = null;
         }
 
         #endregion

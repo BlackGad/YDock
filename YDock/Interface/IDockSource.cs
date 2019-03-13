@@ -7,17 +7,17 @@ namespace YDock.Interface
         #region Properties
 
         /// <summary>
-        ///     布局管理器，包含控制Dock布局的一些操作，例如Show，Hide之类
+        ///     The layout manager, which contains some operations that control the layout of the Dock, such as Show, Hide, etc.
         /// </summary>
         IDockControl DockControl { get; set; }
 
         /// <summary>
-        ///     显示用的标题
+        ///     Display title
         /// </summary>
         string Header { get; }
 
         /// <summary>
-        ///     显示用的图标
+        ///     Display icon
         /// </summary>
         ImageSource Icon { get; }
 

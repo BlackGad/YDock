@@ -90,20 +90,20 @@ namespace YDockTest
             top_1 = new Doc("top_1");
             bottom_1 = new Doc("bottom_1");
 
-            DockManager.RegisterDocument(doc_0);
-            DockManager.RegisterDocument(doc_1);
-            DockManager.RegisterDocument(doc_2);
-            DockManager.RegisterDocument(doc_3);
+            DockManager1.RegisterDocument(doc_0);
+            DockManager1.RegisterDocument(doc_1);
+            DockManager1.RegisterDocument(doc_2);
+            DockManager1.RegisterDocument(doc_3);
 
-            DockManager.RegisterDock(left);
-            DockManager.RegisterDock(right, DockSide.Right);
-            DockManager.RegisterDock(top, DockSide.Top);
-            DockManager.RegisterDock(bottom, DockSide.Bottom);
+            DockManager1.RegisterDock(left);
+            DockManager1.RegisterDock(right, DockSide.Right);
+            DockManager1.RegisterDock(top, DockSide.Top);
+            DockManager1.RegisterDock(bottom, DockSide.Bottom);
 
-            DockManager.RegisterDock(left_1);
-            DockManager.RegisterDock(right_1, DockSide.Right);
-            DockManager.RegisterDock(top_1, DockSide.Top);
-            DockManager.RegisterDock(bottom_1, DockSide.Bottom);
+            DockManager1.RegisterDock(left_1);
+            DockManager1.RegisterDock(right_1, DockSide.Right);
+            DockManager1.RegisterDock(top_1, DockSide.Top);
+            DockManager1.RegisterDock(bottom_1, DockSide.Bottom);
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -114,12 +114,12 @@ namespace YDockTest
                 foreach (var item in layout.Root.Elements())
                 {
                     var name = item.Attribute("Name").Value;
-                    if (DockManager.Layouts.ContainsKey(name))
-                        DockManager.Layouts[name].Load(item);
-                    else DockManager.Layouts[name] = new YDock.LayoutSetting.LayoutSetting(name, item);
+                    if (DockManager1.Layouts.ContainsKey(name))
+                        DockManager1.Layouts[name].Load(item);
+                    else DockManager1.Layouts[name] = new YDock.LayoutSetting.LayoutSetting(name, item);
                 }
 
-                DockManager.ApplyLayout("MainWindow");
+                DockManager1.ApplyLayout("MainWindow");
             }
             else
             {
@@ -140,21 +140,21 @@ namespace YDockTest
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
-            DockManager.SaveCurrentLayout("MainWindow");
+            DockManager1.SaveCurrentLayout("MainWindow");
 
             var doc = new XDocument();
             var rootNode = new XElement("Layouts");
-            foreach (var layout in DockManager.Layouts.Values)
+            foreach (var layout in DockManager1.Layouts.Values)
                 layout.Save(rootNode);
             doc.Add(rootNode);
 
             doc.Save(SettingFileName);
 
-            DockManager.Dispose();
+            DockManager1.Dispose();
         }
     }
 
-    public class Doc : TextBlock, IDockSource
+    public class Doc : Button, IDockSource
     {
         public Doc(string header)
         {

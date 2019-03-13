@@ -21,7 +21,7 @@ namespace YDock
 {
     [ContentProperty("Root")]
     public class DockManager : Control,
-                               IDockManager
+                               IDockView
     {
         #region Property definitions
 
@@ -195,6 +195,14 @@ namespace YDock
 
         #region Properties
 
+        /// <summary>
+        ///     当前活动的DockControl
+        /// </summary>
+        public IDockControl ActiveControl
+        {
+            get { return _activeElement?.DockControl; }
+        }
+
         public DockBarGroupControl BottomSide
         {
             get { return (DockBarGroupControl)GetValue(BottomSideProperty); }
@@ -211,10 +219,47 @@ namespace YDock
             get { return forwards.Count > 0; }
         }
 
+        /// <summary>
+        ///     all registed DockControl
+        /// </summary>
+        public IEnumerable<IDockControl> DockControls
+        {
+            get
+            {
+                foreach (var ctrl in _dockControls)
+                {
+                    yield return ctrl.Value;
+                }
+            }
+        }
+
+        /// <summary>
+        ///     用于浮动窗口显示，一般用作应用程序的图标
+        /// </summary>
+        public ImageSource DockImageSource
+        {
+            set { SetValue(DockImageSourceProperty, value); }
+            get { return (ImageSource)GetValue(DockImageSourceProperty); }
+        }
+
+        /// <summary>
+        ///     用于浮动窗口显示，一般用作应用程序的Title
+        /// </summary>
+        public string DockTitle
+        {
+            set { SetValue(DockTitleProperty, value); }
+            get { return (string)GetValue(DockTitleProperty); }
+        }
+
         public ControlTemplate DocumentHeaderTemplate
         {
             internal set { SetValue(DocumentHeaderTemplateProperty, value); }
             get { return (ControlTemplate)GetValue(DocumentHeaderTemplateProperty); }
+        }
+
+        public int DocumentTabCount
+        {
+            get { return _root.DocumentModels.Count; }
         }
 
         public IEnumerable<BaseFloatWindow> FloatWindows
@@ -253,6 +298,21 @@ namespace YDock
         {
             get { return (DockBarGroupControl)GetValue(RightSideProperty); }
             set { SetValue(RightSideProperty, value); }
+        }
+
+        /// <summary>
+        ///     当前选中的文档
+        /// </summary>
+        public IDockControl SelectedDocument
+        {
+            get
+            {
+                //优先返回活跃的文档
+                if (ActiveControl != null && ActiveControl.IsDocument) return ActiveControl;
+                if (_root == null) return null;
+                var element = (_root?.DocumentModels[0].View as TabControl).SelectedItem as DockElement;
+                return element?.DockControl;
+            }
         }
 
         public DockBarGroupControl TopSide
@@ -356,6 +416,8 @@ namespace YDock
 
         #region Events
 
+        public event EventHandler ActiveDockChanged = delegate { };
+
         public event RoutedEventHandler DocumentToEmpty = delegate { };
 
         public event EventHandler SelectedDocumentChanged = delegate { };
@@ -380,55 +442,7 @@ namespace YDock
 
         #endregion
 
-        #region IDockManager Members
-
-        public int DocumentTabCount
-        {
-            get { return _root.DocumentModels.Count; }
-        }
-
-        /// <summary>
-        ///     用于浮动窗口显示，一般用作应用程序的图标
-        /// </summary>
-        public ImageSource DockImageSource
-        {
-            set { SetValue(DockImageSourceProperty, value); }
-            get { return (ImageSource)GetValue(DockImageSourceProperty); }
-        }
-
-        /// <summary>
-        ///     用于浮动窗口显示，一般用作应用程序的Title
-        /// </summary>
-        public string DockTitle
-        {
-            set { SetValue(DockTitleProperty, value); }
-            get { return (string)GetValue(DockTitleProperty); }
-        }
-
-        public event EventHandler ActiveDockChanged = delegate { };
-
-        /// <summary>
-        ///     当前活动的DockControl
-        /// </summary>
-        public IDockControl ActiveControl
-        {
-            get { return _activeElement?.DockControl; }
-        }
-
-        /// <summary>
-        ///     当前选中的文档
-        /// </summary>
-        public IDockControl SelectedDocument
-        {
-            get
-            {
-                //优先返回活跃的文档
-                if (ActiveControl != null && ActiveControl.IsDocument) return ActiveControl;
-                if (_root == null) return null;
-                var element = (_root?.DocumentModels[0].View as TabControl).SelectedItem as DockElement;
-                return element?.DockControl;
-            }
-        }
+        #region IDockView Members
 
         public IDockModel Model
         {
@@ -440,55 +454,169 @@ namespace YDock
             get { return this; }
         }
 
-        /// <summary>
-        ///     all registed DockControl
-        /// </summary>
-        public IEnumerable<IDockControl> DockControls
+        public void Dispose()
         {
-            get
+            foreach (var ctrl in new List<IDockControl>(_dockControls.Values))
             {
-                foreach (var ctrl in _dockControls)
+                ctrl.Dispose();
+            }
+
+            _dockControls.Clear();
+            _dockControls = null;
+            foreach (var wnd in new List<BaseFloatWindow>(_floatWindows))
+            {
+                wnd.Close();
+            }
+
+            _floatWindows.Clear();
+            _floatWindows = null;
+            _mainWindow = null;
+            Root = null;
+            _windows.Clear();
+            _windows = null;
+            backwards.Clear();
+            backwards = null;
+            forwards.Clear();
+            forwards = null;
+        }
+
+        #endregion
+
+        #region Members
+
+        public bool ApplyLayout(string name)
+        {
+            if (_layouts.ContainsKey(name))
+            {
+                _ApplyLayout(_layouts[name]);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///     attach source to target by <see cref="AttachMode" />
+        /// </summary>
+        /// <param name="source">源</param>
+        /// <param name="target">目标</param>
+        /// <param name="mode">附加模式</param>
+        public void AttachTo(IDockControl source, IDockControl target, AttachMode mode, double ratio = -1)
+        {
+            if (target.Container.View == null) throw new InvalidOperationException("target must be visible!");
+            if (target.IsDisposed) throw new InvalidOperationException("target is disposed!");
+            if (source == target) throw new InvalidOperationException("source can not be target!");
+            if (source == null || target == null) throw new ArgumentNullException("source or target is null!");
+            if (target.Mode == DockMode.DockBar) throw new ArgumentNullException("target is DockBar Mode!");
+            if (source.Container != null)
+            {
+                //DockBar模式下无法合并，故先转换为Normal模式
+                //if (target.Mode == DockMode.DockBar)
+                //    target.ToDock();
+
+                source.Container.Detach(source.Prototype);
+
+                double width = (target.Container.View as ILayoutViewWithSize).DesiredWidth, height = (target.Container.View as ILayoutViewWithSize).DesiredHeight;
+
+                if (ratio > 0)
                 {
-                    yield return ctrl.Value;
+                    if (mode == AttachMode.Right
+                        || mode == AttachMode.Left
+                        || mode == AttachMode.Left_WithSplit
+                        || mode == AttachMode.Right_WithSplit)
+                    {
+                        width = (target.Container.View as ILayoutViewWithSize).DesiredWidth * ratio;
+                    }
+
+                    if (mode == AttachMode.Top
+                        || mode == AttachMode.Bottom
+                        || mode == AttachMode.Top_WithSplit
+                        || mode == AttachMode.Bottom_WithSplit)
+                    {
+                        height = (target.Container.View as ILayoutViewWithSize).DesiredHeight * ratio;
+                    }
+                }
+
+                BaseLayoutGroup group;
+                BaseGroupControl ctrl;
+                if (source.IsDocument)
+                {
+                    group = new LayoutDocumentGroup(DockMode.Normal, this);
+                    ctrl = new LayoutDocumentGroupControl(group, ratio > 0 ? width : source.DesiredWidth, ratio > 0 ? height : source.DesiredHeight);
+                }
+                else
+                {
+                    group = new LayoutGroup(source.Side, DockMode.Normal, this);
+                    ctrl = new AnchorSideGroupControl(group, ratio > 0 ? width : source.DesiredWidth, ratio > 0 ? height : source.DesiredHeight);
+                }
+
+                group.Attach(source.Prototype);
+                var _atsource = target.Prototype.Container.View as IAttach;
+                _atsource.AttachWith(ctrl, mode);
+                source.SetActive();
+            }
+            else
+            {
+                throw new ArgumentNullException("the container of source is null!");
+            }
+        }
+
+        public int GetDocumentTabIndex(IDockControl dockControl)
+        {
+            var index = -1;
+            foreach (var model in _root.DocumentModels)
+            {
+                index++;
+                foreach (var item in model.Children)
+                {
+                    if (item == dockControl.Prototype)
+                    {
+                        return index;
+                    }
+                }
+            }
+
+            return -1;
+        }
+
+        public void HideAll()
+        {
+            foreach (var dockControl in _dockControls.Values)
+            {
+                dockControl.Hide();
+            }
+        }
+
+        /// <summary>
+        ///     向后导航
+        /// </summary>
+        public void NavigateBackward()
+        {
+            while (CanNavigateBackward)
+            {
+                forwards.Push(backwards.Pop());
+                var id = backwards.Peek();
+                if (_dockControls.ContainsKey(id))
+                {
+                    _dockControls[id].ToDockAsDocument();
                 }
             }
         }
 
         /// <summary>
-        ///     以选项卡模式向DockManager注册一个DockElement
+        ///     向前导航
         /// </summary>
-        /// <param name="title">标题栏文字</param>
-        /// <param name="content">内容</param>
-        /// <param name="imageSource">标题栏图标</param>
-        /// <param name="canSelect">是否直接停靠在选项栏中供用户选择(默认为False)</param>
-        /// <param name="desiredWidth">期望的宽度</param>
-        /// <param name="desiredHeight">期望的高度</param>
-        /// <returns></returns>
-        public void RegisterDocument(IDockSource content,
-                                     bool canSelect = false,
-                                     double desiredWidth = Constants.DockDefaultWidthLength,
-                                     double desiredHeight = Constants.DockDefaultHeightLength,
-                                     double floatLeft = 0.0,
-                                     double floatTop = 0.0)
+        public void NavigateForward()
         {
-            var element = new DockElement(true)
+            while (CanNavigateForward)
             {
-                ID = id++,
-                Title = content.Header,
-                Content = content,
-                ImageSource = content.Icon,
-                Side = DockSide.None,
-                Mode = DockMode.Normal,
-                CanSelect = canSelect,
-                DesiredWidth = desiredWidth,
-                DesiredHeight = desiredHeight,
-                FloatLeft = floatLeft,
-                FloatTop = floatTop
-            };
-            var ctrl = new DockControl(element);
-            AddDockControl(ctrl);
-            _root.DocumentModels[0].Attach(element);
-            content.DockControl = ctrl;
+                var id = forwards.Pop();
+                if (_dockControls.ContainsKey(id))
+                {
+                    backwards.Push(id);
+                    _dockControls[id].ToDockAsDocument();
+                }
+            }
         }
 
         /// <summary>
@@ -543,6 +671,43 @@ namespace YDock
         }
 
         /// <summary>
+        ///     以选项卡模式向DockManager注册一个DockElement
+        /// </summary>
+        /// <param name="title">标题栏文字</param>
+        /// <param name="content">内容</param>
+        /// <param name="imageSource">标题栏图标</param>
+        /// <param name="canSelect">是否直接停靠在选项栏中供用户选择(默认为False)</param>
+        /// <param name="desiredWidth">期望的宽度</param>
+        /// <param name="desiredHeight">期望的高度</param>
+        /// <returns></returns>
+        public void RegisterDocument(IDockSource content,
+                                     bool canSelect = false,
+                                     double desiredWidth = Constants.DockDefaultWidthLength,
+                                     double desiredHeight = Constants.DockDefaultHeightLength,
+                                     double floatLeft = 0.0,
+                                     double floatTop = 0.0)
+        {
+            var element = new DockElement(true)
+            {
+                ID = id++,
+                Title = content.Header,
+                Content = content,
+                ImageSource = content.Icon,
+                Side = DockSide.None,
+                Mode = DockMode.Normal,
+                CanSelect = canSelect,
+                DesiredWidth = desiredWidth,
+                DesiredHeight = desiredHeight,
+                FloatLeft = floatLeft,
+                FloatTop = floatTop
+            };
+            var ctrl = new DockControl(element);
+            AddDockControl(ctrl);
+            _root.DocumentModels[0].Attach(element);
+            content.DockControl = ctrl;
+        }
+
+        /// <summary>
         ///     以Float模式向DockManager注册一个DockElement
         /// </summary>
         /// <param name="title">标题栏文字</param>
@@ -579,109 +744,6 @@ namespace YDock
             content.DockControl = ctrl;
         }
 
-        public void HideAll()
-        {
-            foreach (var dockControl in _dockControls.Values)
-            {
-                dockControl.Hide();
-            }
-        }
-
-        public void UpdateTitleAll()
-        {
-            foreach (var dockControl in _dockControls.Values)
-            {
-                if (dockControl.Content is IDockSource source)
-                {
-                    dockControl.Title = source.Header;
-                }
-            }
-        }
-
-        public int GetDocumentTabIndex(IDockControl dockControl)
-        {
-            var index = -1;
-            foreach (var model in _root.DocumentModels)
-            {
-                index++;
-                foreach (var item in model.Children)
-                {
-                    if (item == dockControl.ProtoType)
-                    {
-                        return index;
-                    }
-                }
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        ///     attach source to target by <see cref="AttachMode" />
-        /// </summary>
-        /// <param name="source">源</param>
-        /// <param name="target">目标</param>
-        /// <param name="mode">附加模式</param>
-        public void AttachTo(IDockControl source, IDockControl target, AttachMode mode, double ratio = -1)
-        {
-            if (target.Container.View == null) throw new InvalidOperationException("target must be visible!");
-            if (target.IsDisposed) throw new InvalidOperationException("target is disposed!");
-            if (source == target) throw new InvalidOperationException("source can not be target!");
-            if (source == null || target == null) throw new ArgumentNullException("source or target is null!");
-            if (target.Mode == DockMode.DockBar) throw new ArgumentNullException("target is DockBar Mode!");
-            if (source.Container != null)
-            {
-                //DockBar模式下无法合并，故先转换为Normal模式
-                //if (target.Mode == DockMode.DockBar)
-                //    target.ToDock();
-
-                source.Container.Detach(source.ProtoType);
-
-                double width = (target.Container.View as ILayoutViewWithSize).DesiredWidth, height = (target.Container.View as ILayoutViewWithSize).DesiredHeight;
-
-                if (ratio > 0)
-                {
-                    if (mode == AttachMode.Right
-                        || mode == AttachMode.Left
-                        || mode == AttachMode.Left_WithSplit
-                        || mode == AttachMode.Right_WithSplit)
-                    {
-                        width = (target.Container.View as ILayoutViewWithSize).DesiredWidth * ratio;
-                    }
-
-                    if (mode == AttachMode.Top
-                        || mode == AttachMode.Bottom
-                        || mode == AttachMode.Top_WithSplit
-                        || mode == AttachMode.Bottom_WithSplit)
-                    {
-                        height = (target.Container.View as ILayoutViewWithSize).DesiredHeight * ratio;
-                    }
-                }
-
-                BaseLayoutGroup group;
-                BaseGroupControl ctrl;
-                if (source.IsDocument)
-                {
-                    group = new LayoutDocumentGroup(DockMode.Normal, this);
-                    ctrl = new LayoutDocumentGroupControl(group, ratio > 0 ? width : source.DesiredWidth, ratio > 0 ? height : source.DesiredHeight);
-                }
-                else
-                {
-                    group = new LayoutGroup(source.Side, DockMode.Normal, this);
-                    ctrl = new AnchorSideGroupControl(group, ratio > 0 ? width : source.DesiredWidth, ratio > 0 ? height : source.DesiredHeight);
-                }
-
-                group.Attach(source.ProtoType);
-                var _atsource = target.ProtoType.Container.View as IAttach;
-                _atsource.AttachWith(ctrl, mode);
-                source.SetActive();
-            }
-            else
-            {
-                throw new ArgumentNullException("the container of source is null!");
-            }
-        }
-
         /// <summary>
         ///     If name has exist, it will override the current layout,otherwise create a new layout.
         /// </summary>
@@ -695,79 +757,6 @@ namespace YDock
             else
             {
                 _layouts[name] = new LayoutSetting.LayoutSetting(name, _GenerateCurrentLayout());
-            }
-        }
-
-        public bool ApplyLayout(string name)
-        {
-            if (_layouts.ContainsKey(name))
-            {
-                _ApplyLayout(_layouts[name]);
-                return true;
-            }
-
-            return false;
-        }
-
-        public void Dispose()
-        {
-            foreach (var ctrl in new List<IDockControl>(_dockControls.Values))
-            {
-                ctrl.Dispose();
-            }
-
-            _dockControls.Clear();
-            _dockControls = null;
-            foreach (var wnd in new List<BaseFloatWindow>(_floatWindows))
-            {
-                wnd.Close();
-            }
-
-            _floatWindows.Clear();
-            _floatWindows = null;
-            _mainWindow = null;
-            Root = null;
-            _windows.Clear();
-            _windows = null;
-            backwards.Clear();
-            backwards = null;
-            forwards.Clear();
-            forwards = null;
-        }
-
-        #endregion
-
-        #region Members
-
-        /// <summary>
-        ///     向后导航
-        /// </summary>
-        public void NavigateBackward()
-        {
-            while (CanNavigateBackward)
-            {
-                forwards.Push(backwards.Pop());
-                var id = backwards.Peek();
-                if (_dockControls.ContainsKey(id))
-                {
-                    _dockControls[id].ToDockAsDocument();
-                }
-            }
-        }
-
-        /// <summary>
-        ///     向前导航
-        /// </summary>
-        public void NavigateForward()
-        {
-            while (CanNavigateForward)
-            {
-                var id = forwards.Pop();
-                if (_dockControls.ContainsKey(id))
-                {
-                    backwards.Push(id);
-                    _dockControls[id].ToDockAsDocument();
-                }
             }
         }
 
@@ -788,6 +777,17 @@ namespace YDock
             else
             {
                 source.DockControl.Show();
+            }
+        }
+
+        public void UpdateTitleAll()
+        {
+            foreach (var dockControl in _dockControls.Values)
+            {
+                if (dockControl.Content is IDockSource source)
+                {
+                    dockControl.Title = source.Header;
+                }
             }
         }
 
@@ -968,7 +968,7 @@ namespace YDock
                 id = int.Parse(item.Attribute("ID").Value);
                 if (_dockControls.ContainsKey(id))
                 {
-                    _dockControls[id].ProtoType.Load(item);
+                    _dockControls[id].Prototype.Load(item);
                 }
             }
 
@@ -1003,7 +1003,7 @@ namespace YDock
 
             // Elements
             var node = new XElement("Elements");
-            foreach (var item in _dockControls.Values.Select(dc => dc.ProtoType))
+            foreach (var item in _dockControls.Values.Select(dc => dc.Prototype))
             {
                 node.Add(item.Save());
             }

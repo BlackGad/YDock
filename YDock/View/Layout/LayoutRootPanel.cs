@@ -15,7 +15,7 @@ namespace YDock.View.Layout
                                    IDockView,
                                    ILayoutViewParent
     {
-        private _AutoHideWindow _ahWindow;
+        private Win32Window _ahWindow;
 
         private IDockModel _model;
 
@@ -38,7 +38,7 @@ namespace YDock.View.Layout
 
         #region Properties
 
-        public _AutoHideWindow AHWindow
+        public Win32Window AHWindow
         {
             get { return _ahWindow; }
             set
@@ -291,7 +291,7 @@ namespace YDock.View.Layout
 
         private void _InitContent()
         {
-            AHWindow = new _AutoHideWindow();
+            AHWindow = new Win32Window();
             //先初始化Document区域
             RootGroupPanel = new LayoutGroupDocumentPanel();
             var _documentControl = new LayoutDocumentGroupControl((_model as DockRoot).DocumentModels[0]);

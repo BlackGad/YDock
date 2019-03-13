@@ -9,7 +9,6 @@ using YDock.View.Render;
 namespace YDock.View.Window
 {
     public class DropWindow : Popup,
-                              IDropWindow,
                               IDisposable
     {
         #region Constructors
@@ -100,9 +99,9 @@ namespace YDock.View.Window
             IsOpen = false;
         }
 
-        public void Update(Point mouseP)
+        public void Update(Point position)
         {
-            DropPanel.Update(mouseP);
+            DropPanel.Update(position);
         }
 
         #endregion

@@ -9,7 +9,7 @@ using YDock.Enum;
 using YDock.Interface;
 using YDock.Model.Layout;
 using YDock.View.Control;
-using YDock.View.Meun;
+using YDock.View.Menu;
 
 namespace YDock.View.Window
 {
@@ -58,7 +58,7 @@ namespace YDock.View.Window
         {
             if (child is ILayoutPanel)
             {
-                _heightEceeed += Constants.FloatWindowHeaderHeight;
+                _heightExceed += Constants.FloatWindowHeaderHeight;
             }
 
             Owner = DockManager.MainWindow;
@@ -196,11 +196,11 @@ namespace YDock.View.Window
         {
             if (IsSingleMode)
             {
-                _heightEceeed = 0;
+                _heightExceed = 0;
             }
             else
             {
-                _heightEceeed = Constants.FloatWindowHeaderHeight;
+                _heightExceed = Constants.FloatWindowHeaderHeight;
             }
         }
 

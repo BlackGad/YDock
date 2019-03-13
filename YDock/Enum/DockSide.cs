@@ -10,10 +10,6 @@ namespace YDock.Enum
         Right = 0x0002,
         Top = 0x0004,
         Bottom = 0x0008,
-        LeftRight = Left | Right,
-        TopBottom = Top | Bottom,
-        LeftBottom = Left | Bottom,
-        TopRight = Top | Right,
-        All = LeftRight | TopBottom
+        All = Left | Right | Top | Bottom
     }
 }

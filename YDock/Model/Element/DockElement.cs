@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Xml.Linq;
@@ -19,10 +18,14 @@ namespace YDock.Model.Element
         #region Property definitions
 
         public static readonly DependencyProperty ImageSourceProperty =
-            DependencyProperty.Register("ImageSource", typeof(ImageSource), typeof(DockElement));
+            DependencyProperty.Register("ImageSource",
+                                        typeof(ImageSource),
+                                        typeof(DockElement));
 
         public static readonly DependencyProperty SideProperty =
-            DependencyProperty.Register("Side", typeof(DockSide), typeof(DockElement));
+            DependencyProperty.Register("Side",
+                                        typeof(DockSide),
+                                        typeof(DockElement));
 
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register("Title",
@@ -34,15 +37,10 @@ namespace YDock.Model.Element
 
         private bool _canSelect;
 
-        private ILayoutGroup _container;
         private object _content;
 
         private DockControl _dockControl;
 
-        private double _floatLeft;
-
-        private double _floatTop;
-        private int _id;
         private bool _isActive;
         private bool _isVisible;
         private DockMode _mode;
@@ -63,7 +61,7 @@ namespace YDock.Model.Element
             get { return _dockControl; }
             internal set
             {
-                if (_dockControl != value)
+                if (_dockControl != null && _dockControl != value)
                 {
                     _dockControl = value;
                 }
@@ -74,11 +72,7 @@ namespace YDock.Model.Element
         {
             get
             {
-                if (Content is IDockDocSource)
-                {
-                    return (Content as IDockDocSource).FullFileName;
-                }
-
+                if (Content is IDockDocSource dockDocSource) return dockDocSource.FullFileName;
                 return Title;
             }
         }
@@ -127,17 +121,7 @@ namespace YDock.Model.Element
             get { return (DockSide)GetValue(SideProperty); }
         }
 
-        public int ID
-        {
-            get { return _id; }
-            internal set
-            {
-                if (_id != value)
-                {
-                    _id = value;
-                }
-            }
-        }
+        public int ID { get; internal set; }
 
         public DockMode Mode
         {
@@ -153,7 +137,7 @@ namespace YDock.Model.Element
         }
 
         /// <summary>
-        ///     Content是否可见
+        ///     Whether Content is visible
         /// </summary>
         public bool IsVisible
         {
@@ -169,12 +153,12 @@ namespace YDock.Model.Element
         }
 
         /// <summary>
-        ///     是否以Document模式注册，该属性将影响Dock的浮动窗口的模式
+        ///     Whether to register in Document mode, this property will affect the mode of Dock's floating window
         /// </summary>
         public bool IsDocument { get; }
 
         /// <summary>
-        ///     是否为当前的活动窗口
+        ///     Is current window active
         /// </summary>
         public bool IsActive
         {
@@ -190,7 +174,7 @@ namespace YDock.Model.Element
         }
 
         /// <summary>
-        ///     是否显示在用户界面供用户点击显示，默认为false
+        ///     Whether it is displayed in the user interface for the user to click to display, the default is false
         /// </summary>
         public bool CanSelect
         {
@@ -202,7 +186,7 @@ namespace YDock.Model.Element
                     PropertyChanged(this, new PropertyChangedEventArgs("CanSelect"));
                     if (_canSelect && IsDocument)
                     {
-                        DockManager.PushBackwards(_id);
+                        DockManager.PushBackwards(ID);
                     }
                 }
             }
@@ -211,82 +195,52 @@ namespace YDock.Model.Element
 
         public bool IsDocked
         {
-            get { return CanSelect && _container is LayoutGroup && Mode == DockMode.Normal; }
+            get { return CanSelect && Container is LayoutGroup && Mode == DockMode.Normal; }
         }
 
         public bool IsFloat
         {
-            get { return CanSelect && _container is LayoutGroup && Mode == DockMode.Float; }
+            get { return CanSelect && Container is LayoutGroup && Mode == DockMode.Float; }
         }
 
         public bool IsAutoHide
         {
-            get { return _container != null && this == DockManager.AutoHideElement; }
+            get { return Container != null && this == DockManager.AutoHideElement; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
-        public ILayoutGroup Container
-        {
-            get { return _container; }
-            internal set
-            {
-                if (_container != value)
-                {
-                    _container = value;
-                }
-            }
-        }
+        public ILayoutGroup Container { get; internal set; }
 
         public DockManager DockManager
         {
-            get { return _container?.DockManager; }
+            get { return Container?.DockManager; }
         }
 
         public double DesiredWidth { get; set; }
 
         public double DesiredHeight { get; set; }
 
-        public double FloatLeft
-        {
-            get { return _floatLeft; }
-            set
-            {
-                if (_floatLeft != value)
-                {
-                    _floatLeft = value;
-                }
-            }
-        }
+        public double FloatLeft { get; set; }
 
-        public double FloatTop
-        {
-            get { return _floatTop; }
-            set
-            {
-                if (_floatTop != value)
-                {
-                    _floatTop = value;
-                }
-            }
-        }
+        public double FloatTop { get; set; }
 
         public bool CanFloat
         {
             get
             {
-                if (_container == null) return false;
-                return Mode != DockMode.Float ||
-                       _container?.View == null ||
-                       _container.Children.Count() > 1 ||
-                       _container.View.DockViewParent != null ||
-                       !_canSelect;
+                if (Container == null) return false;
+                if (Mode != DockMode.Float) return true;
+                if (Container.View == null) return true;
+                if (Container.Children.Count > 1) return true;
+                if (Container.View.DockViewParent != null) return true;
+                return !_canSelect;
             }
         }
 
         public bool CanDock
         {
-            get { return _container != null && Mode != DockMode.Normal; }
+            get { return Container != null && Mode != DockMode.Normal; }
         }
 
         public bool CanDockAsDocument
@@ -296,7 +250,7 @@ namespace YDock.Model.Element
 
         public bool CanSwitchAutoHideStatus
         {
-            get { return _container != null && Mode != DockMode.Float; }
+            get { return Container != null && Mode != DockMode.Float; }
         }
 
         public bool CanHide
@@ -312,21 +266,21 @@ namespace YDock.Model.Element
                 return;
             }
 
-            if (_container != null)
+            if (Container != null)
             {
                 CanSelect = true;
-                //注意切换模式
+                //Note switching mode
                 Mode = DockMode.Float;
                 var dockManager = DockManager;
-                _container.Detach(this);
-                _container = null;
+                Container.Detach(this);
+                Container = null;
                 BaseFloatWindow wnd;
-                BaseGroupControl groupctrl;
+                BaseGroupControl groupControl;
                 if (!IsDocument)
                 {
                     var group = new LayoutGroup(Side, Mode, dockManager);
                     group.Attach(this);
-                    groupctrl = new AnchorSideGroupControl(group) { DesiredHeight = DesiredHeight, DesiredWidth = DesiredWidth };
+                    groupControl = new AnchorSideGroupControl(group) { DesiredHeight = DesiredHeight, DesiredWidth = DesiredWidth };
                     wnd = new AnchorGroupWindow(dockManager)
                     {
                         Height = DesiredHeight,
@@ -339,7 +293,7 @@ namespace YDock.Model.Element
                 {
                     var group = new LayoutDocumentGroup(Mode, dockManager);
                     group.Attach(this);
-                    groupctrl = new LayoutDocumentGroupControl(group) { DesiredHeight = DesiredHeight, DesiredWidth = DesiredWidth };
+                    groupControl = new LayoutDocumentGroupControl(group) { DesiredHeight = DesiredHeight, DesiredWidth = DesiredWidth };
                     wnd = new DocumentGroupWindow(dockManager)
                     {
                         Height = DesiredHeight,
@@ -349,7 +303,7 @@ namespace YDock.Model.Element
                     };
                 }
 
-                wnd.AttachChild(groupctrl, AttachMode.None, 0);
+                wnd.AttachChild(groupControl, AttachMode.None, 0);
                 wnd.Show();
 
                 if (isActive)
@@ -367,12 +321,12 @@ namespace YDock.Model.Element
                 return;
             }
 
-            if (_container != null)
+            if (Container != null)
             {
                 CanSelect = true;
                 Mode = DockMode.Normal;
                 var dockManager = DockManager;
-                var group = _container as LayoutGroup;
+                var group = Container as LayoutGroup;
                 if (group?.AttachObj == null || !group.AttachObj.AttachTo())
                 {
                     //默认向下停靠
@@ -381,8 +335,8 @@ namespace YDock.Model.Element
                         Side = DockSide.Bottom;
                     }
 
-                    _container?.Detach(this);
-                    _container = null;
+                    Container?.Detach(this);
+                    Container = null;
                     _ToRoot(dockManager);
                 }
 
@@ -411,12 +365,12 @@ namespace YDock.Model.Element
                 return;
             }
 
-            if (_container != null)
+            if (Container != null)
             {
                 CanSelect = true;
                 var dockManager = DockManager;
-                _container.Detach(this);
-                _container = null;
+                Container.Detach(this);
+                Container = null;
                 Side = DockSide.None;
                 Mode = DockMode.Normal;
 
@@ -432,11 +386,11 @@ namespace YDock.Model.Element
         public void SwitchAutoHideStatus()
         {
             if (!CanSwitchAutoHideStatus) return;
-            if (_container != null)
+            if (Container != null)
             {
                 var dockManager = DockManager;
-                _container.Detach(this);
-                _container = null;
+                Container.Detach(this);
+                Container = null;
 
                 if (Mode == DockMode.Normal)
                 {
@@ -453,13 +407,13 @@ namespace YDock.Model.Element
         public void ToDockSide(DockSide side, bool isActive = false)
         {
             if (side != DockSide.Left && side != DockSide.Top && side != DockSide.Right && side != DockSide.Bottom) return;
-            if (_container != null)
+            if (Container != null)
             {
                 if (side != Side || Mode != DockMode.DockBar)
                 {
                     var dockManager = DockManager;
-                    _container.Detach(this);
-                    _container = null;
+                    Container.Detach(this);
+                    Container = null;
 
                     Mode = DockMode.DockBar;
                     Side = side;
@@ -484,10 +438,7 @@ namespace YDock.Model.Element
                 DockManager.ShowByID(id);
             }
 
-            if (DockManager.AutoHideElement == this)
-            {
-                DockManager.AutoHideElement = null;
-            }
+            if (Equals(DockManager.AutoHideElement, this)) DockManager.AutoHideElement = null;
 
             _dockControl.SetActive(false);
             CanSelect = false;
@@ -496,22 +447,31 @@ namespace YDock.Model.Element
         public XElement Save()
         {
             var element = new XElement("Item");
-            element.SetAttributeValue("ID", _id);
+            element.SetAttributeValue("ID", ID);
             element.SetAttributeValue("DesiredWidth", DesiredWidth);
             element.SetAttributeValue("DesiredHeight", DesiredHeight);
-            element.SetAttributeValue("FloatLeft", _floatLeft);
-            element.SetAttributeValue("FloatTop", _floatTop);
+            element.SetAttributeValue("FloatLeft", FloatLeft);
+            element.SetAttributeValue("FloatTop", FloatTop);
             element.SetAttributeValue("CanSelect", _canSelect);
             return element;
         }
 
         public void Load(XElement element)
         {
-            DesiredWidth = double.Parse(element.Attribute("DesiredWidth").Value);
-            DesiredHeight = double.Parse(element.Attribute("DesiredHeight").Value);
-            _floatLeft = double.Parse(element.Attribute("FloatLeft").Value);
-            _floatTop = double.Parse(element.Attribute("FloatTop").Value);
-            CanSelect = bool.Parse(element.Attribute("CanSelect").Value);
+            double.TryParse(element.Attribute("DesiredWidth")?.Value, out var desiredWidth);
+            DesiredWidth = desiredWidth;
+
+            double.TryParse(element.Attribute("DesiredHeight")?.Value, out var desiredHeight);
+            DesiredHeight = desiredHeight;
+
+            double.TryParse(element.Attribute("FloatLeft")?.Value, out var floatLeft);
+            FloatLeft = floatLeft;
+
+            double.TryParse(element.Attribute("FloatTop")?.Value, out var floatTop);
+            FloatTop = floatTop;
+
+            bool.TryParse(element.Attribute("CanSelect")?.Value, out var canSelect);
+            CanSelect = canSelect;
         }
 
         public bool IsDisposed { get; private set; }
@@ -520,15 +480,13 @@ namespace YDock.Model.Element
         {
             if (IsDisposed) return;
             IsDisposed = true;
-            _container?.Detach(this);
+            Container?.Detach(this);
             _dockControl = null;
-            if (_content is IDockSource)
-            {
-                (_content as IDockSource).DockControl = null;
-            }
+
+            if (_content is IDockSource source) source.DockControl = null;
 
             _content = null;
-            _container = null;
+            Container = null;
         }
 
         #endregion
@@ -540,20 +498,20 @@ namespace YDock.Model.Element
             Mode = DockMode.Normal;
             var group = new LayoutGroup(Side, Mode, dockManager);
             group.Attach(this);
-            var groupctrl = new AnchorSideGroupControl(group) { DesiredHeight = DesiredHeight, DesiredWidth = DesiredWidth };
+            var groupControl = new AnchorSideGroupControl(group) { DesiredHeight = DesiredHeight, DesiredWidth = DesiredWidth };
             switch (Side)
             {
                 case DockSide.Left:
-                    dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(groupctrl, AttachMode.Left, 0);
+                    dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(groupControl, AttachMode.Left, 0);
                     break;
                 case DockSide.Right:
-                    dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(groupctrl, AttachMode.Right, dockManager.LayoutRootPanel.RootGroupPanel.Count);
+                    dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(groupControl, AttachMode.Right, dockManager.LayoutRootPanel.RootGroupPanel.Count);
                     break;
                 case DockSide.Top:
-                    dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(groupctrl, AttachMode.Top, 0);
+                    dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(groupControl, AttachMode.Top, 0);
                     break;
                 case DockSide.Bottom:
-                    dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(groupctrl, AttachMode.Bottom, dockManager.LayoutRootPanel.RootGroupPanel.Count);
+                    dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(groupControl, AttachMode.Bottom, dockManager.LayoutRootPanel.RootGroupPanel.Count);
                     break;
             }
         }

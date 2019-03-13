@@ -55,7 +55,7 @@ namespace YDock.Global.Extension
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             var target = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
-            var setter = target.TargetObject as Setter;
+            var setter = target?.TargetObject as Setter;
             if (setter == null)
             {
                 return new Binding("Value") { Source = this, Mode = BindingMode.OneWay };
