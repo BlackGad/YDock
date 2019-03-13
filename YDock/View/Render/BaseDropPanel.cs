@@ -19,14 +19,14 @@ namespace YDock.View.Render
                 {
                     if (_activeVisual != null)
                     {
-                        _activeVisual.Flag &= ~DragManager.ACTIVE;
+                        _activeVisual.Flag &= ~DragManager.Active;
                         _activeVisual.Update();
                     }
 
                     _activeVisual = value;
                     if (_activeVisual != null)
                     {
-                        _activeVisual.Flag |= DragManager.ACTIVE;
+                        _activeVisual.Flag |= DragManager.Active;
                         _activeVisual.Update();
                     }
                 }
@@ -123,9 +123,8 @@ namespace YDock.View.Render
         {
             var p = this.PointToScreenDPIWithoutFlowDirection(new Point());
             var result = VisualTreeHelper.HitTest(this, new Point(mouseP.X - p.X, mouseP.Y - p.Y));
-            if (result?.VisualHit != null && result?.VisualHit is UnitDropVisual)
+            if (result?.VisualHit is UnitDropVisual visual)
             {
-                var visual = result?.VisualHit as UnitDropVisual;
                 ActiveVisual = visual;
                 var mode = _GetMode(visual.Flag);
                 if (mode == _target.DropMode)
@@ -141,15 +140,12 @@ namespace YDock.View.Render
             else
             {
                 ActiveVisual = null;
-                if (_target is BaseGroupControl)
+                if (_target is BaseGroupControl control)
                 {
-                    (_target as BaseGroupControl).HitTest(mouseP, ActiveRect);
-                    if (!(_target as BaseGroupControl).canUpdate)
-                    {
-                        return;
-                    }
+                    control.HitTest(mouseP, ActiveRect);
+                    if (!control.canUpdate) return;
 
-                    _target.DropMode = _GetMode(ActiveRect.Flag);
+                    control.DropMode = _GetMode(ActiveRect.Flag);
                 }
                 else
                 {
@@ -179,14 +175,14 @@ namespace YDock.View.Render
 
         private DropMode _GetMode(int flag)
         {
-            if ((flag & DragManager.HEAD) != 0)
+            if ((flag & DragManager.Head) != 0)
             {
                 return DropMode.Header;
             }
 
             if ((flag & DragManager.LEFT) != 0)
             {
-                if ((flag & DragManager.SPLIT) != 0)
+                if ((flag & DragManager.Split) != 0)
                 {
                     return DropMode.Left_WithSplit;
                 }
@@ -194,9 +190,9 @@ namespace YDock.View.Render
                 return DropMode.Left;
             }
 
-            if ((flag & DragManager.RIGHT) != 0)
+            if ((flag & DragManager.Right) != 0)
             {
-                if ((flag & DragManager.SPLIT) != 0)
+                if ((flag & DragManager.Split) != 0)
                 {
                     return DropMode.Right_WithSplit;
                 }
@@ -204,9 +200,9 @@ namespace YDock.View.Render
                 return DropMode.Right;
             }
 
-            if ((flag & DragManager.TOP) != 0)
+            if ((flag & DragManager.Top) != 0)
             {
-                if ((flag & DragManager.SPLIT) != 0)
+                if ((flag & DragManager.Split) != 0)
                 {
                     return DropMode.Top_WithSplit;
                 }
@@ -214,9 +210,9 @@ namespace YDock.View.Render
                 return DropMode.Top;
             }
 
-            if ((flag & DragManager.BOTTOM) != 0)
+            if ((flag & DragManager.Bottom) != 0)
             {
-                if ((flag & DragManager.SPLIT) != 0)
+                if ((flag & DragManager.Split) != 0)
                 {
                     return DropMode.Bottom_WithSplit;
                 }
@@ -224,7 +220,7 @@ namespace YDock.View.Render
                 return DropMode.Bottom;
             }
 
-            if ((flag & DragManager.CENTER) != 0)
+            if ((flag & DragManager.Center) != 0)
             {
                 return DropMode.Center;
             }

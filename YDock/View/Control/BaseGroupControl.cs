@@ -593,7 +593,7 @@ namespace YDock.View.Control
                     return HitTestFilterBehavior.Stop;
                 }
 
-                _activeRect.Flag = DragManager.HEAD;
+                _activeRect.Flag = DragManager.Head;
                 _activeRect.Rect = new Rect(0, 0, 60, 20);
                 _index = -1;
             }
@@ -636,7 +636,7 @@ namespace YDock.View.Control
                     _index = index;
                 }
 
-                _activeRect.Flag = DragManager.HEAD;
+                _activeRect.Flag = DragManager.Head;
                 _activeRect.Rect = new Rect(rect.X, 0, this is AnchorSideGroupControl ? 60 : 120, rect.Height);
 
                 return HitTestFilterBehavior.Stop;

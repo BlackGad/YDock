@@ -47,11 +47,12 @@ namespace YDock.View.Control
 
         private void UpdateWindow()
         {
-            var hwnd = ((HwndSource)PresentationSource.FromDependencyObject(this)).Handle;
-            RECT rect;
-            if (GetWindowRect(hwnd, out rect))
+            var hwnd = ((HwndSource)PresentationSource.FromDependencyObject(this))?.Handle;
+            if(hwnd == null) return;
+
+            if (GetWindowRect(hwnd.Value, out var rect))
             {
-                SetWindowPos(hwnd, Topmost ? -1 : -2, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, 0);
+                SetWindowPos(hwnd.Value, Topmost ? -1 : -2, rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top, 0);
             }
         }
 

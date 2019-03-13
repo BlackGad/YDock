@@ -13,7 +13,6 @@ using YDock.LayoutSetting;
 using YDock.Model;
 using YDock.Model.Element;
 using YDock.Model.Layout;
-using YDock.View;
 using YDock.View.Control;
 using YDock.View.Layout;
 using YDock.View.Window;
@@ -157,6 +156,8 @@ namespace YDock
 
         #endregion
 
+        private readonly SortedDictionary<string, LayoutSetting.LayoutSetting> _layouts;
+
         internal List<Window> _windows = new List<Window>();
 
         internal Stack<int> backwards;
@@ -166,7 +167,6 @@ namespace YDock
         private SortedDictionary<int, IDockControl> _dockControls;
 
         private List<BaseFloatWindow> _floatWindows;
-        private readonly SortedDictionary<string, LayoutSetting.LayoutSetting> _layouts;
         private Window _mainWindow;
         private DockRoot _root;
         private IDockControl _selectedDocument;
@@ -246,15 +246,7 @@ namespace YDock
 
         public Window MainWindow
         {
-            get
-            {
-                if (_mainWindow == null)
-                {
-                    _mainWindow = Window.GetWindow(this);
-                }
-
-                return _mainWindow;
-            }
+            get { return _mainWindow ?? (_mainWindow = Window.GetWindow(this)); }
         }
 
         public DockBarGroupControl RightSide

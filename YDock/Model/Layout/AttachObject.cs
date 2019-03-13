@@ -145,7 +145,7 @@ namespace YDock.Model.Layout
                 if (ctrl == null) return false;
                 if (_mode == AttachMode.None)
                 {
-                    var panel = Parent as LayoutGroupPanel;
+                    var panel = (LayoutGroupPanel)Parent;
                     if (ctrl.TryDeatchFromParent(false))
                     {
                         _relativeObj.Mode = DockMode.Normal;
@@ -158,8 +158,7 @@ namespace YDock.Model.Layout
                 }
                 else
                 {
-                    var panel = (Parent as LayoutGroupPanel).DockViewParent as LayoutGroupPanel;
-                    if (panel != null)
+                    if (((LayoutGroupPanel)Parent).DockViewParent is LayoutGroupPanel panel)
                     {
                         if (ctrl.TryDeatchFromParent(false))
                         {

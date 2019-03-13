@@ -19,14 +19,14 @@ namespace YDock.View.Render
         protected override void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             base.OnDataContextChanged(sender, e);
-            if (e.OldValue != null && e.OldValue is IDockElement)
+            if (e.OldValue is IDockElement element)
             {
-                (e.OldValue as IDockElement).PropertyChanged -= OnModelPropertyChanged;
+                element.PropertyChanged -= OnModelPropertyChanged;
             }
 
-            if (e.NewValue != null && e.NewValue is IDockElement)
+            if (e.NewValue is IDockElement dockElement)
             {
-                (e.NewValue as IDockElement).PropertyChanged += OnModelPropertyChanged;
+                dockElement.PropertyChanged += OnModelPropertyChanged;
                 UpdateChildren();
             }
         }

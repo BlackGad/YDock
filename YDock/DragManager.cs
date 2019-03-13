@@ -19,16 +19,16 @@ namespace YDock
     {
         #region Constants
 
-        internal const int ACTIVE = 0x2000;
-        internal const int BOTTOM = 0x0008;
-        internal const int CENTER = 0x0010;
-        internal const int HEAD = 0x0040;
+        internal const int Active = 0x2000;
+        internal const int Bottom = 0x0008;
+        internal const int Center = 0x0010;
+        internal const int Head = 0x0040;
         internal const int LEFT = 0x0001;
         internal const int NONE = 0x0000;
-        internal const int RIGHT = 0x0004;
-        internal const int SPLIT = 0x1000;
-        internal const int TAB = 0x0020;
-        internal const int TOP = 0x0002;
+        internal const int Right = 0x0004;
+        internal const int Split = 0x1000;
+        internal const int Tab = 0x0020;
+        internal const int Top = 0x0002;
 
         #endregion
 

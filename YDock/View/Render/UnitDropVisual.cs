@@ -23,30 +23,30 @@ namespace YDock.View.Render
             if (DropPanel.Target == null) return;
             using (var ctx = RenderOpen())
             {
-                double hoffset = DropPanel.InnerRect.Left + DropPanel.OuterRect.Left, voffset = DropPanel.InnerRect.Top + DropPanel.OuterRect.Top;
+                double hOffset = DropPanel.InnerRect.Left + DropPanel.OuterRect.Left, vOffset = DropPanel.InnerRect.Top + DropPanel.OuterRect.Top;
                 if (DropPanel is RootDropPanel)
                 {
                     if ((Flag & DragManager.LEFT) != 0)
                     {
-                        _DrawLeft(ctx, hoffset + Constants.DropGlassLength, voffset + (size.Height - Constants.DropUnitLength) / 2);
+                        _DrawLeft(ctx, hOffset + Constants.DropGlassLength, vOffset + (size.Height - Constants.DropUnitLength) / 2);
                     }
-                    else if ((Flag & DragManager.TOP) != 0)
+                    else if ((Flag & DragManager.Top) != 0)
                     {
-                        _DrawTop(ctx, hoffset + (size.Width - Constants.DropUnitLength) / 2, voffset + Constants.DropGlassLength);
+                        _DrawTop(ctx, hOffset + (size.Width - Constants.DropUnitLength) / 2, vOffset + Constants.DropGlassLength);
                     }
-                    else if ((Flag & DragManager.RIGHT) != 0)
+                    else if ((Flag & DragManager.Right) != 0)
                     {
-                        _DrawRight(ctx, hoffset + size.Width - Constants.DropGlassLength, voffset + (size.Height - Constants.DropUnitLength) / 2);
+                        _DrawRight(ctx, hOffset + size.Width - Constants.DropGlassLength, vOffset + (size.Height - Constants.DropUnitLength) / 2);
                     }
-                    else if ((Flag & DragManager.BOTTOM) != 0)
+                    else if ((Flag & DragManager.Bottom) != 0)
                     {
-                        _DrawBottom(ctx, hoffset + (size.Width - Constants.DropUnitLength) / 2, voffset + size.Height - Constants.DropGlassLength);
+                        _DrawBottom(ctx, hOffset + (size.Width - Constants.DropUnitLength) / 2, vOffset + size.Height - Constants.DropGlassLength);
                     }
                 }
                 else
                 {
                     var flag = false;
-                    if ((Flag & DragManager.CENTER) != 0)
+                    if ((Flag & DragManager.Center) != 0)
                     {
                         if (DropPanel.Target.Mode == DragMode.Document)
                         {
@@ -62,33 +62,33 @@ namespace YDock.View.Render
                         if (flag)
                         {
                             _DrawCenter(ctx,
-                                        hoffset + (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2,
-                                        voffset + (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2);
+                                        hOffset + (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2,
+                                        vOffset + (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2);
                         }
                     }
 
                     flag = true;
-                    LayoutDocumentGroupControl layoutCrtl;
-                    LayoutGroupPanel layoutpanel;
+                    LayoutDocumentGroupControl layoutControl;
+                    LayoutGroupPanel layoutPanel;
 
                     if ((Flag & DragManager.LEFT) != 0)
                     {
-                        if ((Flag & DragManager.SPLIT) != 0)
+                        if ((Flag & DragManager.Split) != 0)
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutCrtl = DropPanel.Target as LayoutDocumentGroupControl;
-                                if (layoutCrtl.DockViewParent != null)
+                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutpanel = layoutCrtl.DockViewParent as LayoutGroupPanel;
-                                    flag &= layoutpanel.Direction != Direction.Vertical && layoutCrtl.ChildrenCount > 0;
+                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    flag &= layoutPanel.Direction != Direction.Vertical && layoutControl.ChildrenCount > 0;
                                 }
 
                                 if (flag)
                                 {
-                                    hoffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2 - Constants.DropUnitLength;
-                                    voffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
-                                    _DrawCenter(ctx, hoffset, voffset, true, true);
+                                    hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2 - Constants.DropUnitLength;
+                                    vOffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
+                                    _DrawCenter(ctx, hOffset, vOffset, true, true);
                                 }
                             }
                         }
@@ -96,50 +96,50 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutCrtl = DropPanel.Target as LayoutDocumentGroupControl;
-                                if (layoutCrtl.DockViewParent != null)
+                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutpanel = layoutCrtl.DockViewParent as LayoutGroupPanel;
-                                    if (layoutpanel.Direction == Direction.Horizontal)
+                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    if (layoutPanel.Direction == Direction.Horizontal)
                                     {
-                                        flag &= layoutCrtl.IndexOf() == 0;
+                                        flag &= layoutControl.IndexOf() == 0;
                                     }
                                 }
 
-                                hoffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2 - Constants.DropUnitLength * 2;
-                                voffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
+                                hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2 - Constants.DropUnitLength * 2;
+                                vOffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
                             }
                             else
                             {
-                                hoffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2 - Constants.DropUnitLength;
-                                voffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
+                                hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2 - Constants.DropUnitLength;
+                                vOffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
                             }
 
                             if (DropPanel.Source.DragMode == DragMode.Anchor && flag)
                             {
-                                _DrawLeft(ctx, hoffset, voffset, false);
+                                _DrawLeft(ctx, hOffset, vOffset, false);
                             }
                         }
                     }
 
-                    if ((Flag & DragManager.RIGHT) != 0)
+                    if ((Flag & DragManager.Right) != 0)
                     {
-                        if ((Flag & DragManager.SPLIT) != 0)
+                        if ((Flag & DragManager.Split) != 0)
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutCrtl = DropPanel.Target as LayoutDocumentGroupControl;
-                                if (layoutCrtl.DockViewParent != null)
+                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutpanel = layoutCrtl.DockViewParent as LayoutGroupPanel;
-                                    flag &= layoutpanel.Direction != Direction.Vertical && layoutCrtl.ChildrenCount > 0;
+                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    flag &= layoutPanel.Direction != Direction.Vertical && layoutControl.ChildrenCount > 0;
                                 }
 
                                 if (flag)
                                 {
-                                    hoffset += (DropPanel.InnerRect.Size.Width + Constants.DropUnitLength) / 2;
-                                    voffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
-                                    _DrawCenter(ctx, hoffset, voffset, true, true);
+                                    hOffset += (DropPanel.InnerRect.Size.Width + Constants.DropUnitLength) / 2;
+                                    vOffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
+                                    _DrawCenter(ctx, hOffset, vOffset, true, true);
                                 }
                             }
                         }
@@ -147,50 +147,50 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutCrtl = DropPanel.Target as LayoutDocumentGroupControl;
-                                if (layoutCrtl.DockViewParent != null)
+                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutpanel = layoutCrtl.DockViewParent as LayoutGroupPanel;
-                                    if (layoutpanel.Direction == Direction.Horizontal)
+                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    if (layoutPanel.Direction == Direction.Horizontal)
                                     {
-                                        flag &= layoutCrtl.IndexOf() == layoutpanel.Count - 1;
+                                        flag &= layoutControl.IndexOf() == layoutPanel.Count - 1;
                                     }
                                 }
 
-                                hoffset += DropPanel.InnerRect.Size.Width / 2 + Constants.DropUnitLength * 2.5;
-                                voffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
+                                hOffset += DropPanel.InnerRect.Size.Width / 2 + Constants.DropUnitLength * 2.5;
+                                vOffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
                             }
                             else
                             {
-                                hoffset += DropPanel.InnerRect.Size.Width / 2 + Constants.DropUnitLength * 1.5;
-                                voffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
+                                hOffset += DropPanel.InnerRect.Size.Width / 2 + Constants.DropUnitLength * 1.5;
+                                vOffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
                             }
 
                             if (DropPanel.Source.DragMode == DragMode.Anchor && flag)
                             {
-                                _DrawRight(ctx, hoffset, voffset, false);
+                                _DrawRight(ctx, hOffset, vOffset, false);
                             }
                         }
                     }
 
-                    if ((Flag & DragManager.TOP) != 0)
+                    if ((Flag & DragManager.Top) != 0)
                     {
-                        if ((Flag & DragManager.SPLIT) != 0)
+                        if ((Flag & DragManager.Split) != 0)
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutCrtl = DropPanel.Target as LayoutDocumentGroupControl;
-                                if (layoutCrtl.DockViewParent != null)
+                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutpanel = layoutCrtl.DockViewParent as LayoutGroupPanel;
-                                    flag &= layoutpanel.Direction != Direction.Horizontal && layoutCrtl.ChildrenCount > 0;
+                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    flag &= layoutPanel.Direction != Direction.Horizontal && layoutControl.ChildrenCount > 0;
                                 }
 
                                 if (flag)
                                 {
-                                    hoffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
-                                    voffset += DropPanel.InnerRect.Size.Height / 2 - Constants.DropUnitLength * 1.5;
-                                    _DrawCenter(ctx, hoffset, voffset, true);
+                                    hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
+                                    vOffset += DropPanel.InnerRect.Size.Height / 2 - Constants.DropUnitLength * 1.5;
+                                    _DrawCenter(ctx, hOffset, vOffset, true);
                                 }
                             }
                         }
@@ -198,50 +198,50 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutCrtl = DropPanel.Target as LayoutDocumentGroupControl;
-                                if (layoutCrtl.DockViewParent != null)
+                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutpanel = layoutCrtl.DockViewParent as LayoutGroupPanel;
-                                    if (layoutpanel.Direction == Direction.Vertical)
+                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    if (layoutPanel.Direction == Direction.Vertical)
                                     {
-                                        flag &= layoutCrtl.IndexOf() == 0;
+                                        flag &= layoutControl.IndexOf() == 0;
                                     }
                                 }
 
-                                hoffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
-                                voffset += DropPanel.InnerRect.Size.Height / 2 - Constants.DropUnitLength * 2.5;
+                                hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
+                                vOffset += DropPanel.InnerRect.Size.Height / 2 - Constants.DropUnitLength * 2.5;
                             }
                             else
                             {
-                                hoffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
-                                voffset += DropPanel.InnerRect.Size.Height / 2 - Constants.DropUnitLength * 1.5;
+                                hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
+                                vOffset += DropPanel.InnerRect.Size.Height / 2 - Constants.DropUnitLength * 1.5;
                             }
 
                             if (DropPanel.Source.DragMode == DragMode.Anchor && flag)
                             {
-                                _DrawTop(ctx, hoffset, voffset, false);
+                                _DrawTop(ctx, hOffset, vOffset, false);
                             }
                         }
                     }
 
-                    if ((Flag & DragManager.BOTTOM) != 0)
+                    if ((Flag & DragManager.Bottom) != 0)
                     {
-                        if ((Flag & DragManager.SPLIT) != 0)
+                        if ((Flag & DragManager.Split) != 0)
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutCrtl = DropPanel.Target as LayoutDocumentGroupControl;
-                                if (layoutCrtl.DockViewParent != null)
+                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutpanel = layoutCrtl.DockViewParent as LayoutGroupPanel;
-                                    flag &= layoutpanel.Direction != Direction.Horizontal && layoutCrtl.ChildrenCount > 0;
+                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    flag &= layoutPanel.Direction != Direction.Horizontal && layoutControl.ChildrenCount > 0;
                                 }
 
                                 if (flag)
                                 {
-                                    hoffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
-                                    voffset += (DropPanel.InnerRect.Size.Height + Constants.DropUnitLength) / 2;
-                                    _DrawCenter(ctx, hoffset, voffset, true);
+                                    hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
+                                    vOffset += (DropPanel.InnerRect.Size.Height + Constants.DropUnitLength) / 2;
+                                    _DrawCenter(ctx, hOffset, vOffset, true);
                                 }
                             }
                         }
@@ -249,28 +249,28 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutCrtl = DropPanel.Target as LayoutDocumentGroupControl;
-                                if (layoutCrtl.DockViewParent != null)
+                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutpanel = layoutCrtl.DockViewParent as LayoutGroupPanel;
-                                    if (layoutpanel.Direction == Direction.Vertical)
+                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    if (layoutPanel.Direction == Direction.Vertical)
                                     {
-                                        flag &= layoutCrtl.IndexOf() == layoutpanel.Count - 1;
+                                        flag &= layoutControl.IndexOf() == layoutPanel.Count - 1;
                                     }
                                 }
 
-                                hoffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
-                                voffset += DropPanel.InnerRect.Size.Height / 2 + Constants.DropUnitLength * 2.5;
+                                hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
+                                vOffset += DropPanel.InnerRect.Size.Height / 2 + Constants.DropUnitLength * 2.5;
                             }
                             else
                             {
-                                hoffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
-                                voffset += DropPanel.InnerRect.Size.Height / 2 + Constants.DropUnitLength * 1.5;
+                                hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
+                                vOffset += DropPanel.InnerRect.Size.Height / 2 + Constants.DropUnitLength * 1.5;
                             }
 
                             if (DropPanel.Source.DragMode == DragMode.Anchor && flag)
                             {
-                                _DrawBottom(ctx, hoffset, voffset, false);
+                                _DrawBottom(ctx, hOffset, vOffset, false);
                             }
                         }
                     }
@@ -294,7 +294,7 @@ namespace YDock.View.Render
                 ctx.Pop();
             }
 
-            if ((Flag & DragManager.ACTIVE) == 0)
+            if ((Flag & DragManager.Active) == 0)
             {
                 ctx.PushOpacity(Constants.DragOpacity * 1.8);
             }
@@ -346,7 +346,7 @@ namespace YDock.View.Render
         {
             double currentX = hoffset, currentY = voffset;
 
-            if ((Flag & DragManager.ACTIVE) == 0)
+            if ((Flag & DragManager.Active) == 0)
             {
                 ctx.PushOpacity(Constants.DragOpacity * 1.8);
             }
@@ -406,7 +406,7 @@ namespace YDock.View.Render
                 ctx.Pop();
             }
 
-            if ((Flag & DragManager.ACTIVE) == 0)
+            if ((Flag & DragManager.Active) == 0)
             {
                 ctx.PushOpacity(Constants.DragOpacity * 1.8);
             }
@@ -463,7 +463,7 @@ namespace YDock.View.Render
                 ctx.Pop();
             }
 
-            if ((Flag & DragManager.ACTIVE) == 0)
+            if ((Flag & DragManager.Active) == 0)
             {
                 ctx.PushOpacity(Constants.DragOpacity * 1.8);
             }
@@ -518,7 +518,7 @@ namespace YDock.View.Render
                 ctx.Pop();
             }
 
-            if ((Flag & DragManager.ACTIVE) == 0)
+            if ((Flag & DragManager.Active) == 0)
             {
                 ctx.PushOpacity(Constants.DragOpacity * 1.8);
             }

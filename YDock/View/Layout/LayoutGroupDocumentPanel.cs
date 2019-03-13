@@ -68,11 +68,13 @@ namespace YDock.View.Layout
                             {
                                 var _index = parent.IndexOf(this);
                                 parent._DetachChild(this);
-                                var pparent = new LayoutGroupPanel
-                                    { Direction = Direction.Vertical };
-                                parent._AttachChild(pparent, _index);
-                                pparent._AttachChild(this, 0);
-                                pparent._AttachChild(child, mode == AttachMode.Top ? 0 : 1);
+                                var parentParent = new LayoutGroupPanel
+                                {
+                                    Direction = Direction.Vertical 
+                                };
+                                parent._AttachChild(parentParent, _index);
+                                parentParent._AttachChild(this, 0);
+                                parentParent._AttachChild(child, mode == AttachMode.Top ? 0 : 1);
                             }
 
                             break;

@@ -39,7 +39,7 @@ namespace YDock.View.Window
         /// </summary>
         public bool IsSingleMode
         {
-            get { return Content != null && Content is ILayoutGroupControl; }
+            get { return Content is ILayoutGroupControl; }
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace YDock.View.Window
         /// </summary>
         public bool NoBorder
         {
-            get { return IsSingleMode && (Content as BaseGroupControl).Items.Count == 1; }
+            get { return IsSingleMode && ((BaseGroupControl)Content).Items.Count == 1; }
         }
 
         #endregion

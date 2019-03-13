@@ -35,7 +35,7 @@ namespace YDock.View.Render
                             var innerTop = DropPanel.InnerRect.Top + DropPanel.OuterRect.Top;
                             if ((Flag & DragManager.LEFT) != 0)
                             {
-                                if ((Flag & DragManager.SPLIT) != 0)
+                                if ((Flag & DragManager.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -52,9 +52,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.TOP) != 0)
+                            if ((Flag & DragManager.Top) != 0)
                             {
-                                if ((Flag & DragManager.SPLIT) != 0)
+                                if ((Flag & DragManager.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -71,9 +71,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.RIGHT) != 0)
+                            if ((Flag & DragManager.Right) != 0)
                             {
-                                if ((Flag & DragManager.SPLIT) != 0)
+                                if ((Flag & DragManager.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -94,9 +94,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.BOTTOM) != 0)
+                            if ((Flag & DragManager.Bottom) != 0)
                             {
-                                if ((Flag & DragManager.SPLIT) != 0)
+                                if ((Flag & DragManager.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -121,7 +121,7 @@ namespace YDock.View.Render
                         {
                             if ((Flag & DragManager.LEFT) != 0)
                             {
-                                if ((Flag & DragManager.SPLIT) != 0)
+                                if ((Flag & DragManager.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -141,9 +141,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.TOP) != 0)
+                            if ((Flag & DragManager.Top) != 0)
                             {
-                                if ((Flag & DragManager.SPLIT) != 0)
+                                if ((Flag & DragManager.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -163,9 +163,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.RIGHT) != 0)
+                            if ((Flag & DragManager.Right) != 0)
                             {
-                                if ((Flag & DragManager.SPLIT) != 0)
+                                if ((Flag & DragManager.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -186,9 +186,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.BOTTOM) != 0)
+                            if ((Flag & DragManager.Bottom) != 0)
                             {
-                                if ((Flag & DragManager.SPLIT) != 0)
+                                if ((Flag & DragManager.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -210,7 +210,7 @@ namespace YDock.View.Render
                             }
                         }
 
-                        if ((Flag & DragManager.CENTER) != 0)
+                        if ((Flag & DragManager.Center) != 0)
                         {
                             var stream = new StreamGeometry();
                             using (var sctx = stream.Open())

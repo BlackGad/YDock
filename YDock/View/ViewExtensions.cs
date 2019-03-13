@@ -85,7 +85,7 @@ namespace YDock.View
             return element.PointToScreenDPI(point);
         }
 
-        public static GeneralTransform TansformToAncestor(this FrameworkElement element)
+        public static GeneralTransform TransformToAncestor(this FrameworkElement element)
         {
             if (PresentationSource.FromVisual(element) == null)
             {
