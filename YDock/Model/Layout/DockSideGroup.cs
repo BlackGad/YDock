@@ -8,8 +8,6 @@ namespace YDock.Model.Layout
     [ContentProperty("Children")]
     public class DockSideGroup : BaseLayoutGroup
     {
-        private DockRoot _root;
-
         #region Constructors
 
         public DockSideGroup()
@@ -23,20 +21,10 @@ namespace YDock.Model.Layout
 
         public override DockManager DockManager
         {
-            get { return _root.DockManager; }
+            get { return Root.DockManager; }
         }
 
-        public DockRoot Root
-        {
-            get { return _root; }
-            set
-            {
-                if (_root != value)
-                {
-                    _root = value;
-                }
-            }
-        }
+        public DockRoot Root { get; set; }
 
         #endregion
 
@@ -68,7 +56,7 @@ namespace YDock.Model.Layout
         public override void Dispose()
         {
             base.Dispose();
-            _root = null;
+            Root = null;
         }
 
         #endregion

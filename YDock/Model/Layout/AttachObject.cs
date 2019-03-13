@@ -67,108 +67,76 @@ namespace YDock.Model.Layout
 
         internal bool AttachTo()
         {
+            var anchorSideGroupControl = _relativeObj.View as AnchorSideGroupControl;
+            if (anchorSideGroupControl?.TryDetachFromParent(false) != true) return false;
+
             if (Parent is BaseGroupControl control)
             {
                 if (_mode == AttachMode.None)
                 {
-                    var group = control.Model as ILayoutGroup;
-                    var ctrl = _relativeObj.View as AnchorSideGroupControl;
-                    if (ctrl == null) return false;
-                    if (ctrl.TryDetachFromParent(false))
+                    var group = (ILayoutGroup)control.Model;
+
+                    _relativeObj.Dispose();
+
+                    foreach (var child in _relativeObj.Children.Reverse())
                     {
-                        var children = _relativeObj.Children.ToList();
-                        children.Reverse();
-                        _relativeObj.Dispose();
-                        foreach (var child in children)
-                        {
-                            group.Attach(child, Math.Min(Index, group.Children.Count() - 1));
-                        }
+                        group.Attach(child, Math.Min(Index, group.Children.Count - 1));
                     }
-                    else
+
+                    return true;
+                }
+
+                var targetControl = (AnchorSideGroupControl)control;
+                if (targetControl.DockViewParent != null)
+                {
+                    if (_relativeObj.View == null)
                     {
-                        return false;
+                        _relativeObj.View = new AnchorSideGroupControl(_relativeObj);
+                    }
+
+                    if (targetControl.DockViewParent == null) return false;
+                    switch (_mode)
+                    {
+                        case AttachMode.Left:
+                            targetControl.AttachTo(targetControl.DockViewParent as LayoutGroupPanel, anchorSideGroupControl, DropMode.Left);
+                            break;
+                        case AttachMode.Top:
+                            targetControl.AttachTo(targetControl.DockViewParent as LayoutGroupPanel, anchorSideGroupControl, DropMode.Top);
+                            break;
+                        case AttachMode.Right:
+                            targetControl.AttachTo(targetControl.DockViewParent as LayoutGroupPanel, anchorSideGroupControl, DropMode.Right);
+                            break;
+                        case AttachMode.Bottom:
+                            targetControl.AttachTo(targetControl.DockViewParent as LayoutGroupPanel, anchorSideGroupControl, DropMode.Bottom);
+                            break;
                     }
                 }
                 else
                 {
-                    var targetControl = (AnchorSideGroupControl)control;
-                    if (targetControl.DockViewParent != null)
-                    {
-                        if (_relativeObj.View == null)
-                        {
-                            _relativeObj.View = new AnchorSideGroupControl(_relativeObj);
-                        }
-
-                        var ctrl = _relativeObj.View as AnchorSideGroupControl;
-                        if (ctrl == null) return false;
-                        if (ctrl.TryDetachFromParent(false))
-                        {
-                            if (targetControl.DockViewParent == null) return false;
-                            switch (_mode)
-                            {
-                                case AttachMode.Left:
-                                    targetControl.AttachTo(targetControl.DockViewParent as LayoutGroupPanel, ctrl, DropMode.Left);
-                                    break;
-                                case AttachMode.Top:
-                                    targetControl.AttachTo(targetControl.DockViewParent as LayoutGroupPanel, ctrl, DropMode.Top);
-                                    break;
-                                case AttachMode.Right:
-                                    targetControl.AttachTo(targetControl.DockViewParent as LayoutGroupPanel, ctrl, DropMode.Right);
-                                    break;
-                                case AttachMode.Bottom:
-                                    targetControl.AttachTo(targetControl.DockViewParent as LayoutGroupPanel, ctrl, DropMode.Bottom);
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
-                    Dispose();
+                    return false;
                 }
+
+                Dispose();
             }
 
-            if (Parent is LayoutGroupPanel)
+            if (Parent is LayoutGroupPanel parentPanel)
             {
                 if (_relativeObj.View == null)
                 {
                     _relativeObj.View = new AnchorSideGroupControl(_relativeObj);
                 }
 
-                var ctrl = _relativeObj.View as AnchorSideGroupControl;
-                if (ctrl == null) return false;
                 if (_mode == AttachMode.None)
                 {
-                    var panel = (LayoutGroupPanel)Parent;
-                    if (ctrl.TryDetachFromParent(false))
-                    {
-                        _relativeObj.Mode = DockMode.Normal;
-                        panel.AttachChild(_relativeObj.View, _mode, Math.Min(Index, panel.Children.Count - 1));
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    _relativeObj.Mode = DockMode.Normal;
+                    parentPanel.AttachChild(_relativeObj.View, _mode, Math.Min(Index, parentPanel.Children.Count - 1));
                 }
                 else
                 {
-                    if (((LayoutGroupPanel)Parent).DockViewParent is LayoutGroupPanel panel)
+                    if (parentPanel.DockViewParent is LayoutGroupPanel panel)
                     {
-                        if (ctrl.TryDetachFromParent(false))
-                        {
-                            _relativeObj.Mode = DockMode.Normal;
-                            panel.AttachChild(_relativeObj.View, _mode, Math.Min(Index, panel.Children.Count - 1));
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        _relativeObj.Mode = DockMode.Normal;
+                        panel.AttachChild(_relativeObj.View, _mode, Math.Min(Index, panel.Children.Count - 1));
                     }
                     else
                     {

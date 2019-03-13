@@ -14,15 +14,9 @@ namespace YDock.Model
     {
         private DockSideGroup _bottomSide;
         private DockManager _dockManager;
-        private List<BaseLayoutGroup> _documentModels;
-
         private DockSideGroup _leftSide;
-
         private DockSideGroup _rightSide;
-
         private DockSideGroup _topSide;
-
-        private IDockView _view;
 
         #region Constructors
 
@@ -35,22 +29,19 @@ namespace YDock.Model
             get { return _bottomSide; }
             set
             {
-                if (_bottomSide != value)
+                if (_bottomSide == value) return;
+
+                _bottomSide?.Dispose();
+
+                _bottomSide = value;
+
+                if (_bottomSide != null)
                 {
-                    if (_bottomSide != null)
-                    {
-                        _bottomSide.Dispose();
-                    }
-
-                    _bottomSide = value;
-                    if (_bottomSide != null)
-                    {
-                        _bottomSide.Root = this;
-                        _bottomSide.Side = DockSide.Bottom;
-                    }
-
-                    PropertyChanged(this, new PropertyChangedEventArgs("BottomSide"));
+                    _bottomSide.Root = this;
+                    _bottomSide.Side = DockSide.Bottom;
                 }
+
+                PropertyChanged(this, new PropertyChangedEventArgs("BottomSide"));
             }
         }
 
@@ -59,22 +50,19 @@ namespace YDock.Model
             get { return _leftSide; }
             set
             {
-                if (_leftSide != value)
+                if (_leftSide == value) return;
+
+                _leftSide?.Dispose();
+
+                _leftSide = value;
+
+                if (_leftSide != null)
                 {
-                    if (_leftSide != null)
-                    {
-                        _leftSide.Dispose();
-                    }
-
-                    _leftSide = value;
-                    if (_leftSide != null)
-                    {
-                        _leftSide.Root = this;
-                        _leftSide.Side = DockSide.Left;
-                    }
-
-                    PropertyChanged(this, new PropertyChangedEventArgs("LeftSide"));
+                    _leftSide.Root = this;
+                    _leftSide.Side = DockSide.Left;
                 }
+
+                PropertyChanged(this, new PropertyChangedEventArgs("LeftSide"));
             }
         }
 
@@ -83,22 +71,19 @@ namespace YDock.Model
             get { return _rightSide; }
             set
             {
-                if (_rightSide != value)
+                if (_rightSide == value) return;
+
+                _rightSide?.Dispose();
+
+                _rightSide = value;
+
+                if (_rightSide != null)
                 {
-                    if (_rightSide != null)
-                    {
-                        _rightSide.Dispose();
-                    }
-
-                    _rightSide = value;
-                    if (_rightSide != null)
-                    {
-                        _rightSide.Root = this;
-                        _rightSide.Side = DockSide.Right;
-                    }
-
-                    PropertyChanged(this, new PropertyChangedEventArgs("RightSide"));
+                    _rightSide.Root = this;
+                    _rightSide.Side = DockSide.Right;
                 }
+
+                PropertyChanged(this, new PropertyChangedEventArgs("RightSide"));
             }
         }
 
@@ -107,36 +92,23 @@ namespace YDock.Model
             get { return _topSide; }
             set
             {
-                if (_topSide != value)
+                if (_topSide == value) return;
+
+                _topSide?.Dispose();
+
+                _topSide = value;
+
+                if (_topSide != null)
                 {
-                    if (_topSide != null)
-                    {
-                        _topSide.Dispose();
-                    }
-
-                    _topSide = value;
-                    if (_topSide != null)
-                    {
-                        _topSide.Root = this;
-                        _topSide.Side = DockSide.Top;
-                    }
-
-                    PropertyChanged(this, new PropertyChangedEventArgs("TopSide"));
+                    _topSide.Root = this;
+                    _topSide.Side = DockSide.Top;
                 }
+
+                PropertyChanged(this, new PropertyChangedEventArgs("TopSide"));
             }
         }
 
-        internal List<BaseLayoutGroup> DocumentModels
-        {
-            get { return _documentModels; }
-            set
-            {
-                if (_documentModels != value)
-                {
-                    _documentModels = value;
-                }
-            }
-        }
+        internal List<BaseLayoutGroup> DocumentModels { get; set; }
 
         #endregion
 
@@ -155,17 +127,7 @@ namespace YDock.Model
             }
         }
 
-        public IDockView View
-        {
-            get { return _view; }
-            internal set
-            {
-                if (_view != value)
-                {
-                    _view = value;
-                }
-            }
-        }
+        public IDockView View { get; internal set; }
 
         public DockSide Side
         {
@@ -174,8 +136,8 @@ namespace YDock.Model
 
         public void Dispose()
         {
-            _documentModels.Clear();
-            _documentModels = null;
+            DocumentModels.Clear();
+            DocumentModels = null;
             LeftSide = null;
             RightSide = null;
             TopSide = null;
@@ -293,8 +255,8 @@ namespace YDock.Model
             RightSide = new DockSideGroup();
             TopSide = new DockSideGroup();
             BottomSide = new DockSideGroup();
-            _documentModels = new List<BaseLayoutGroup>();
-            _documentModels.Add(new LayoutDocumentGroup(DockMode.Normal, _dockManager));
+            DocumentModels = new List<BaseLayoutGroup>();
+            DocumentModels.Add(new LayoutDocumentGroup(DockMode.Normal, _dockManager));
         }
 
         #endregion

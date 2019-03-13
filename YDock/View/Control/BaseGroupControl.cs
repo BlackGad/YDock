@@ -50,7 +50,7 @@ namespace YDock.View.Control
         internal BaseGroupControl(ILayoutGroup model, double desiredWidth = Constants.DockDefaultWidthLength, double desiredHeight = Constants.DockDefaultHeightLength)
         {
             Model = model;
-            SetBinding(ItemsSourceProperty, new Binding("Model.Children_CanSelect") { Source = this });
+            SetBinding(ItemsSourceProperty, new Binding("Model.SelectableChildren") { Source = this });
             if (model.Children.Any())
             {
                 DesiredWidth = model.Children.First().DesiredWidth;
@@ -69,7 +69,7 @@ namespace YDock.View.Control
 
         public int ChildrenCount
         {
-            get { return ((LayoutGroup)_model).Children_CanSelect.Count(); }
+            get { return ((LayoutGroup)_model).SelectableChildren.Count(); }
         }
 
         public bool IsDraggingFromDock

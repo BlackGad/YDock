@@ -173,8 +173,8 @@ namespace YDock.View.Layout
                     group.Attach(_child);
                 }
 
-                var ctrl = new LayoutDocumentGroupControl(group);
-                _AttachChild(ctrl, index);
+                var control = new LayoutDocumentGroupControl(group);
+                _AttachChild(control, index);
                 child.Dispose();
             }
 

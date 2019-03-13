@@ -363,14 +363,14 @@ namespace YDock
                     if (DragItem.RelativeObj is IDockElement)
                     {
                         element = DragItem.RelativeObj as IDockElement;
-                        var ctrl = element.Container.View as BaseGroupControl;
-                        if (ctrl.Items.Count == 1 && ctrl.Parent is BaseFloatWindow)
+                        var control = element.Container.View as BaseGroupControl;
+                        if (control.Items.Count == 1 && control.Parent is BaseFloatWindow)
                         {
-                            _dragWnd = ctrl.Parent as BaseFloatWindow;
-                            _dragWnd.DetachChild(ctrl);
+                            _dragWnd = control.Parent as BaseFloatWindow;
+                            _dragWnd.DetachChild(control);
                             _dragWnd.Close();
                             _dragWnd = new DocumentGroupWindow(DockManager);
-                            _dragWnd.AttachChild(ctrl, AttachMode.None, 0);
+                            _dragWnd.AttachChild(control, AttachMode.None, 0);
                             _dragWnd.Top = mouseP.Y - DragItem.ClickPos.Y;
                             _dragWnd.Left = mouseP.X - DragItem.ClickPos.X - DragItem.ClickRect.Left - Constants.DocumentWindowPadding;
                             _dragWnd.Recreate();

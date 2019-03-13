@@ -226,9 +226,9 @@ namespace YDock
         {
             get
             {
-                foreach (var ctrl in _dockControls)
+                foreach (var control in _dockControls)
                 {
-                    yield return ctrl.Value;
+                    yield return control.Value;
                 }
             }
         }
@@ -456,9 +456,9 @@ namespace YDock
 
         public void Dispose()
         {
-            foreach (var ctrl in new List<IDockControl>(_dockControls.Values))
+            foreach (var control in new List<IDockControl>(_dockControls.Values))
             {
-                ctrl.Dispose();
+                control.Dispose();
             }
 
             _dockControls.Clear();
@@ -538,21 +538,21 @@ namespace YDock
                 }
 
                 BaseLayoutGroup group;
-                BaseGroupControl ctrl;
+                BaseGroupControl control;
                 if (source.IsDocument)
                 {
                     group = new LayoutDocumentGroup(DockMode.Normal, this);
-                    ctrl = new LayoutDocumentGroupControl(group, ratio > 0 ? width : source.DesiredWidth, ratio > 0 ? height : source.DesiredHeight);
+                    control = new LayoutDocumentGroupControl(group, ratio > 0 ? width : source.DesiredWidth, ratio > 0 ? height : source.DesiredHeight);
                 }
                 else
                 {
                     group = new LayoutGroup(source.Side, DockMode.Normal, this);
-                    ctrl = new AnchorSideGroupControl(group, ratio > 0 ? width : source.DesiredWidth, ratio > 0 ? height : source.DesiredHeight);
+                    control = new AnchorSideGroupControl(group, ratio > 0 ? width : source.DesiredWidth, ratio > 0 ? height : source.DesiredHeight);
                 }
 
                 group.Attach(source.Prototype);
                 var _atsource = target.Prototype.Container.View as IAttach;
-                _atsource.AttachWith(ctrl, mode);
+                _atsource.AttachWith(control, mode);
                 source.SetActive();
             }
             else
@@ -665,9 +665,9 @@ namespace YDock
                     break;
             }
 
-            var ctrl = new DockControl(element);
-            AddDockControl(ctrl);
-            content.DockControl = ctrl;
+            var control = new DockControl(element);
+            AddDockControl(control);
+            content.DockControl = control;
         }
 
         /// <summary>
@@ -701,10 +701,10 @@ namespace YDock
                 FloatLeft = floatLeft,
                 FloatTop = floatTop
             };
-            var ctrl = new DockControl(element);
-            AddDockControl(ctrl);
+            var control = new DockControl(element);
+            AddDockControl(control);
             _root.DocumentModels[0].Attach(element);
-            content.DockControl = ctrl;
+            content.DockControl = control;
         }
 
         /// <summary>
@@ -737,11 +737,11 @@ namespace YDock
                 FloatLeft = floatLeft,
                 FloatTop = floatTop
             };
-            var ctrl = new DockControl(element);
+            var control = new DockControl(element);
             var group = new LayoutGroup(side, element.Mode, this);
             group.Attach(element);
-            AddDockControl(ctrl);
-            content.DockControl = ctrl;
+            AddDockControl(control);
+            content.DockControl = control;
         }
 
         /// <summary>
@@ -856,11 +856,11 @@ namespace YDock
             }
         }
 
-        internal void AddDockControl(IDockControl ctrl)
+        internal void AddDockControl(IDockControl control)
         {
-            if (!_dockControls.ContainsKey(ctrl.ID))
+            if (!_dockControls.ContainsKey(control.ID))
             {
-                _dockControls.Add(ctrl.ID, ctrl);
+                _dockControls.Add(control.ID, control);
             }
         }
 
@@ -925,11 +925,11 @@ namespace YDock
             DocumentToEmpty(this, new RoutedEventArgs());
         }
 
-        internal void RemoveDockControl(IDockControl ctrl)
+        internal void RemoveDockControl(IDockControl control)
         {
-            if (_dockControls.ContainsKey(ctrl.ID))
+            if (_dockControls.ContainsKey(control.ID))
             {
-                _dockControls.Remove(ctrl.ID);
+                _dockControls.Remove(control.ID);
             }
         }
 

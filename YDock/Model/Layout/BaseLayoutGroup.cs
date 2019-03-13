@@ -29,21 +29,17 @@ namespace YDock.Model.Layout
 
         #region Properties
 
-        public IEnumerable<IDockElement> Children
+        public IReadOnlyList<IDockElement> Children
         {
             get { return _children; }
         }
 
-        public IEnumerable<DockElement> Children_CanSelect
+        public IReadOnlyList<IDockElement> SelectableChildren
         {
             get
             {
-                if (_children == null) yield break;
-                foreach (var dockElement in _children)
-                {
-                    var child = (DockElement)dockElement;
-                    if (child.CanSelect) yield return child;
-                }
+                if (_children == null) return Enumerable.Empty<IDockElement>().ToList();
+                return _children.Where(c => c.CanSelect).ToList();
             }
         }
 
@@ -121,7 +117,7 @@ namespace YDock.Model.Layout
         {
             if (element != null && !element.CanSelect)
             {
-                (element as DockElement).CanSelect = true;
+                ((DockElement)element).CanSelect = true;
             }
 
             if (View != null)
@@ -132,7 +128,7 @@ namespace YDock.Model.Layout
 
         public virtual void ShowWithActive(int index, bool toActive = true)
         {
-            if (index < 0 || index >= _children.Count) throw new ArgumentOutOfRangeException("index out of range!");
+            if (index < 0 || index >= _children.Count) throw new ArgumentOutOfRangeException("index");
             ShowWithActive(_children[index], toActive);
         }
 
@@ -144,7 +140,7 @@ namespace YDock.Model.Layout
             }
 
             _children.Remove(element);
-            (element as DockElement).IsVisible = false;
+            ((DockElement)element).IsVisible = false;
         }
 
         public virtual void Attach(IDockElement element, int index = -1)
@@ -163,7 +159,7 @@ namespace YDock.Model.Layout
                 _children.Insert(index, element);
             }
 
-            (element as DockElement).Mode = _mode;
+            ((DockElement)element).Mode = _mode;
         }
 
         public void CloseAll()
@@ -193,7 +189,7 @@ namespace YDock.Model.Layout
             foreach (var child in _children)
             {
                 child.PropertyChanged -= OnChildrenPropertyChanged;
-                (child as DockElement).Container = null;
+                ((DockElement)child).Container = null;
             }
 
             _children.Clear();
@@ -228,29 +224,30 @@ namespace YDock.Model.Layout
                 }
             }
 
-            PropertyChanged(this, new PropertyChangedEventArgs("Children_CanSelect"));
+            PropertyChanged(this, new PropertyChangedEventArgs("SelectableChildren"));
         }
 
         protected virtual void OnChildrenPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "CanSelect")
+            if (e.PropertyName == "CanSelect" && sender is DockElement dockElement)
             {
                 _children.CollectionChanged -= OnChildrenCollectionChanged;
-                if (!(sender as DockElement).CanSelect)
+
+                if (dockElement.CanSelect)
                 {
-                    //移出的元素排到最后一个
-                    _children.Remove(sender as DockElement);
-                    _children.Add(sender as DockElement);
+                    //Re-add the element to the first
+                    _children.Remove(dockElement);
+                    _children.Insert(0, dockElement);
+                    RaisePropertyChanged("SelectableChildren");
                 }
                 else
                 {
-                    //重新进入的元素排到第一个
-                    _children.Remove(sender as DockElement);
-                    _children.Insert(0, sender as DockElement);
+                    //Re-add the element to the last one
+                    _children.Remove(dockElement);
+                    _children.Add(dockElement);
                 }
 
                 _children.CollectionChanged += OnChildrenCollectionChanged;
-                RaisePropertyChanged("Children_CanSelect");
             }
         }
 

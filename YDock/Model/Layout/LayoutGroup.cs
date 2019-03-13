@@ -42,36 +42,39 @@ namespace YDock.Model.Layout
         protected override void OnChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             base.OnChildrenCollectionChanged(sender, e);
-            if (View == null) return;
-            var tab = View as TabControl;
-            if (e.NewItems?.Count > 0 && (e.NewItems[e.NewItems.Count - 1] as IDockElement).CanSelect)
+            if (View is TabControl tab)
             {
-                tab.SelectedIndex = IndexOf(e.NewItems[e.NewItems.Count - 1] as IDockElement);
-            }
-            else
-            {
-                tab.SelectedIndex = Math.Max(0, tab.SelectedIndex);
+                if (e.NewItems?.Count > 0 && ((IDockElement)e.NewItems[e.NewItems.Count - 1]).CanSelect)
+                {
+                    tab.SelectedIndex = IndexOf(e.NewItems[e.NewItems.Count - 1] as IDockElement);
+                }
+                else
+                {
+                    tab.SelectedIndex = Math.Max(0, tab.SelectedIndex);
+                }
             }
         }
 
         protected override void OnChildrenPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             base.OnChildrenPropertyChanged(sender, e);
-            if (e.PropertyName == "CanSelect")
+
+            if (e.PropertyName == "CanSelect" && sender is DockElement dockElement)
             {
                 if (View == null) return;
-                if ((sender as DockElement).CanSelect)
+                var tabControl = (TabControl)View;
+                if (dockElement.CanSelect)
                 {
-                    (View as TabControl).SelectedIndex = Children_CanSelect.Count() - 1;
+                    tabControl.SelectedIndex = SelectableChildren.Count - 1;
                 }
                 else
                 {
-                    (View as TabControl).SelectedIndex = Children_CanSelect.Any() ? 0 : -1;
+                    tabControl.SelectedIndex = SelectableChildren.Any() ? 0 : -1;
                 }
 
-                if (!Children_CanSelect.Any())
+                if (!SelectableChildren.Any())
                 {
-                    _DetachFromParent();
+                    DetachFromParent();
                 }
             }
         }
@@ -79,44 +82,42 @@ namespace YDock.Model.Layout
         public override void ShowWithActive(IDockElement element, bool activate = true)
         {
             base.ShowWithActive(element, activate);
-            if (View != null)
+            if (View is TabControl tabControl)
             {
-                (View as TabControl).SelectedIndex = IndexOf(element);
+                tabControl.SelectedIndex = IndexOf(element);
+                return;
             }
-            else //_view不存在则要创建新的_view
+
+            if (AttachObj != null && AttachObj.AttachTo()) return;
+
+            //If view does not exist, create a new view
+            if (this is LayoutDocumentGroup)
             {
-                if (AttachObj == null || !AttachObj.AttachTo())
+                var dockManager = _dockManager;
+                Dispose();
+
+                foreach (var child in Children.Reverse())
                 {
-                    if (this is LayoutDocumentGroup)
-                    {
-                        var _children = Children.ToList();
-                        _children.Reverse();
-                        var dockManager = _dockManager;
-                        Dispose();
-                        foreach (var child in _children)
-                        {
-                            dockManager.Root.DocumentModels[0].Attach(child);
-                        }
-                    }
-                    else
-                    {
-                        var ctrl = new AnchorSideGroupControl(this);
-                        switch (Side)
-                        {
-                            case DockSide.Left:
-                                _dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(ctrl, AttachMode.Left, 0);
-                                break;
-                            case DockSide.Right:
-                                _dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(ctrl, AttachMode.Right, _dockManager.LayoutRootPanel.RootGroupPanel.Count);
-                                break;
-                            case DockSide.Top:
-                                _dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(ctrl, AttachMode.Top, 0);
-                                break;
-                            case DockSide.Bottom:
-                                _dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(ctrl, AttachMode.Bottom, _dockManager.LayoutRootPanel.RootGroupPanel.Count);
-                                break;
-                        }
-                    }
+                    dockManager.Root.DocumentModels[0].Attach(child);
+                }
+            }
+            else
+            {
+                var control = new AnchorSideGroupControl(this);
+                switch (Side)
+                {
+                    case DockSide.Left:
+                        _dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(control, AttachMode.Left, 0);
+                        break;
+                    case DockSide.Right:
+                        _dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(control, AttachMode.Right, _dockManager.LayoutRootPanel.RootGroupPanel.Count);
+                        break;
+                    case DockSide.Top:
+                        _dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(control, AttachMode.Top, 0);
+                        break;
+                    case DockSide.Bottom:
+                        _dockManager.LayoutRootPanel.RootGroupPanel.AttachChild(control, AttachMode.Bottom, _dockManager.LayoutRootPanel.RootGroupPanel.Count);
+                        break;
                 }
             }
         }
@@ -124,21 +125,25 @@ namespace YDock.Model.Layout
         public override void Detach(IDockElement element)
         {
             base.Detach(element);
-            //保存Size信息
-            if (View != null)
-            {
-                var bgc = View as BaseGroupControl;
-                if (bgc.IsInitialized && bgc.ActualHeight >= Constants.SideLength && bgc.ActualWidth >= Constants.SideLength)
-                {
-                    (element as DockElement).DesiredHeight = bgc.ActualHeight;
-                    (element as DockElement).DesiredWidth = bgc.ActualWidth;
-                }
 
-                //如果Children_CanSelect数量为0，且Container不是LayoutDocumentGroup，则尝试将view从界面移除
-                if (!Children_CanSelect.Any()) //如果Children_CanSelect数量为0
-                {
-                    _DetachFromParent();
-                }
+            if (View == null) return;
+
+            //Save Size information
+            if (View is BaseGroupControl groupControl &&
+                groupControl.IsInitialized &&
+                groupControl.ActualHeight >= Constants.SideLength &&
+                groupControl.ActualWidth >= Constants.SideLength)
+            {
+                element.DesiredHeight = groupControl.ActualHeight;
+                element.DesiredWidth = groupControl.ActualWidth;
+            }
+
+            //If the Number of Children Can Select is 0
+            //and the Container is not a LayoutDocument Group,
+            //try removing the view from the interface.
+            if (!SelectableChildren.Any()) //If the number of Children Can Select is 0
+            {
+                DetachFromParent();
             }
         }
 
@@ -155,7 +160,7 @@ namespace YDock.Model.Layout
         public override void ToFloat()
         {
             BaseFloatWindow wnd;
-            BaseGroupControl ctrl;
+            BaseGroupControl control;
             BaseLayoutGroup group;
             var dockManager = _dockManager;
             var children = _children.ToList();
@@ -174,7 +179,7 @@ namespace YDock.Model.Layout
                     group.Attach(child);
                 }
 
-                ctrl = new LayoutDocumentGroupControl(group) { DesiredHeight = element.DesiredHeight, DesiredWidth = element.DesiredWidth };
+                control = new LayoutDocumentGroupControl(group) { DesiredHeight = element.DesiredHeight, DesiredWidth = element.DesiredWidth };
                 wnd = new DocumentGroupWindow(dockManager)
                 {
                     Height = element.DesiredHeight,
@@ -191,7 +196,7 @@ namespace YDock.Model.Layout
                     group.Attach(child);
                 }
 
-                ctrl = new AnchorSideGroupControl(group) { DesiredHeight = element.DesiredHeight, DesiredWidth = element.DesiredWidth };
+                control = new AnchorSideGroupControl(group) { DesiredHeight = element.DesiredHeight, DesiredWidth = element.DesiredWidth };
                 wnd = new AnchorGroupWindow(dockManager)
                 {
                     Height = element.DesiredHeight,
@@ -201,7 +206,7 @@ namespace YDock.Model.Layout
                 };
             }
 
-            wnd.AttachChild(ctrl, AttachMode.None, 0);
+            wnd.AttachChild(control, AttachMode.None, 0);
             wnd.Show();
 
             dockManager.ActiveControl.SetActive();
@@ -211,9 +216,9 @@ namespace YDock.Model.Layout
         {
             AttachObj?.Dispose();
             AttachObj = null;
-            if (View != null)
+            if (View is BaseGroupControl groupControl)
             {
-                _dockManager.DragManager.OnDragStatusChanged -= (View as BaseGroupControl).OnDragStatusChanged;
+                _dockManager.DragManager.OnDragStatusChanged -= groupControl.OnDragStatusChanged;
             }
 
             base.Dispose();
@@ -224,15 +229,12 @@ namespace YDock.Model.Layout
 
         #region Members
 
-        private void _DetachFromParent()
+        private void DetachFromParent()
         {
-            if ((View as ILayoutGroupControl).TryDetachFromParent())
+            if (View is ILayoutGroupControl layoutGroupControl && layoutGroupControl.TryDetachFromParent())
             {
                 View = null;
-                if (_children.Count == 0)
-                {
-                    Dispose();
-                }
+                if (!_children.Any()) Dispose();
             }
         }
 

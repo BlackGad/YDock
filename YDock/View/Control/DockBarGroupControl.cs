@@ -28,7 +28,7 @@ namespace YDock.View.Control
         {
             Model = model;
 
-            SetBinding(ItemsSourceProperty, new Binding("Model.Children_CanSelect") { Source = this });
+            SetBinding(ItemsSourceProperty, new Binding("Model.SelectableChildren") { Source = this });
 
             var transform = new RotateTransform();
             switch (Model.Side)

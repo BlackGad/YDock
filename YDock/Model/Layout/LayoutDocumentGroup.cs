@@ -21,11 +21,11 @@ namespace YDock.Model.Layout
 
         #region Properties
 
-        public IEnumerable<IDockElement> ChildrenSorted
+        public IReadOnlyList<IDockElement> ChildrenSorted
         {
             get
             {
-                var listSorted = Children_CanSelect.ToList();
+                var listSorted = SelectableChildren.ToList();
                 listSorted.Sort();
                 return listSorted;
             }
@@ -53,7 +53,7 @@ namespace YDock.Model.Layout
             base.OnChildrenPropertyChanged(sender, e);
             if (e.PropertyName == "IsActive")
             {
-                IsActive = (sender as IDockElement).IsActive;
+                IsActive = ((IDockElement)sender).IsActive;
             }
         }
 

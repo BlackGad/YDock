@@ -239,10 +239,10 @@ namespace YDock.View.Control
         protected override void OnDragOver(DragEventArgs e)
         {
             base.OnDragOver(e);
-            var ctrl = _dockViewParent;
-            if (ctrl != null)
+            var control = _dockViewParent;
+            if (control != null)
             {
-                ctrl.SelectedItem = Content;
+                control.SelectedItem = Content;
             }
         }
 
