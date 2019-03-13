@@ -34,10 +34,7 @@ namespace YDock.View.Window
         public static VisualStateGroup TryGetVisualStateGroup(DependencyObject dependencyObject, string groupName)
         {
             var root = GetImplementationRoot(dependencyObject);
-            if (root == null)
-            {
-                return null;
-            }
+            if (root == null) return null;
 
             return VisualStateManager.GetVisualStateGroups(root)
                                      .OfType<VisualStateGroup>()

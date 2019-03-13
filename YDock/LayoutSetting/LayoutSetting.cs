@@ -28,14 +28,14 @@ namespace YDock.LayoutSetting
                 if (_layout != value)
                 {
                     _layout = value;
-                    var name_attr = _layout.Attribute("Name");
-                    if (name_attr == null)
+                    var attribute = _layout.Attribute("Name");
+                    if (attribute == null)
                     {
                         _layout.SetAttributeValue("Name", Name);
                     }
                     else
                     {
-                        name_attr.Value = Name;
+                        attribute.Value = Name;
                     }
                 }
             }

@@ -35,7 +35,7 @@ namespace YDock.View.Layout
         private bool _isAnchorPanel;
 
         private DockSide _side;
-        private Point pToScreen;
+        private Point _pointToScreen;
 
         #region Constructors
 
@@ -491,7 +491,7 @@ namespace YDock.View.Layout
 
         private void OnDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            var delta = Direction == Direction.Horizontal ? _dragPopup.HorizontalOffset - pToScreen.X : _dragPopup.VerticalOffset - pToScreen.Y;
+            var delta = Direction == Direction.Horizontal ? _dragPopup.HorizontalOffset - _pointToScreen.X : _dragPopup.VerticalOffset - _pointToScreen.Y;
             double span1 = 0, span2 = 0;
             var index = Children.IndexOf(sender as UIElement);
             span1 = _GetMinLength(Children[index - 1]);
@@ -509,13 +509,13 @@ namespace YDock.View.Layout
                     {
                         if (delta > 0)
                         {
-                            (Children[index - 1] as ILayoutSize).DesiredWidth += _dragBound2 - span2 - pToScreen.X;
-                            (Children[index + 1] as ILayoutSize).DesiredWidth -= _dragBound2 - span2 - pToScreen.X;
+                            (Children[index - 1] as ILayoutSize).DesiredWidth += _dragBound2 - span2 - _pointToScreen.X;
+                            (Children[index + 1] as ILayoutSize).DesiredWidth -= _dragBound2 - span2 - _pointToScreen.X;
                         }
                         else
                         {
-                            (Children[index - 1] as ILayoutSize).DesiredWidth += _dragBound1 + span1 - pToScreen.X;
-                            (Children[index + 1] as ILayoutSize).DesiredWidth -= _dragBound1 + span1 - pToScreen.X;
+                            (Children[index - 1] as ILayoutSize).DesiredWidth += _dragBound1 + span1 - _pointToScreen.X;
+                            (Children[index + 1] as ILayoutSize).DesiredWidth -= _dragBound1 + span1 - _pointToScreen.X;
                         }
                     }
                 }
@@ -530,13 +530,13 @@ namespace YDock.View.Layout
                     {
                         if (delta > 0)
                         {
-                            (Children[index - 1] as ILayoutSize).DesiredHeight += _dragBound2 - span2 - pToScreen.Y;
-                            (Children[index + 1] as ILayoutSize).DesiredHeight -= _dragBound2 - span2 - pToScreen.Y;
+                            (Children[index - 1] as ILayoutSize).DesiredHeight += _dragBound2 - span2 - _pointToScreen.Y;
+                            (Children[index + 1] as ILayoutSize).DesiredHeight -= _dragBound2 - span2 - _pointToScreen.Y;
                         }
                         else
                         {
-                            (Children[index - 1] as ILayoutSize).DesiredHeight += _dragBound1 + span1 - pToScreen.Y;
-                            (Children[index + 1] as ILayoutSize).DesiredHeight -= _dragBound1 + span1 - pToScreen.Y;
+                            (Children[index - 1] as ILayoutSize).DesiredHeight += _dragBound1 + span1 - _pointToScreen.Y;
+                            (Children[index + 1] as ILayoutSize).DesiredHeight -= _dragBound1 + span1 - _pointToScreen.Y;
                         }
                     }
                 }
@@ -553,7 +553,7 @@ namespace YDock.View.Layout
             {
                 if (e.HorizontalChange != 0)
                 {
-                    var newPos = pToScreen.X + e.HorizontalChange;
+                    var newPos = _pointToScreen.X + e.HorizontalChange;
                     if (_dragBound1 + Constants.SideLength >= _dragBound2 - Constants.SideLength) return;
                     if (newPos >= _dragBound1 + Constants.SideLength && newPos <= _dragBound2 - Constants.SideLength)
                     {
@@ -573,14 +573,14 @@ namespace YDock.View.Layout
                 }
                 else
                 {
-                    _dragPopup.HorizontalOffset = pToScreen.X;
+                    _dragPopup.HorizontalOffset = _pointToScreen.X;
                 }
             }
             else
             {
                 if (e.VerticalChange != 0)
                 {
-                    var newPos = pToScreen.Y + e.VerticalChange;
+                    var newPos = _pointToScreen.Y + e.VerticalChange;
                     if (_dragBound1 + Constants.SideLength >= _dragBound2 - Constants.SideLength) return;
                     if (newPos >= _dragBound1 + Constants.SideLength && newPos <= _dragBound2 - Constants.SideLength)
                     {
@@ -600,7 +600,7 @@ namespace YDock.View.Layout
                 }
                 else
                 {
-                    _dragPopup.VerticalOffset = pToScreen.Y;
+                    _dragPopup.VerticalOffset = _pointToScreen.Y;
                 }
             }
         }
@@ -1362,11 +1362,11 @@ namespace YDock.View.Layout
 
         private void _CreateDragPopup(LayoutDragSplitter splitter)
         {
-            pToScreen = this.PointToScreenDPIWithoutFlowDirection(new Point());
+            _pointToScreen = this.PointToScreenDPIWithoutFlowDirection(new Point());
             var transfrom = splitter.TransformToAncestor(this);
             var _pToInterPanel = transfrom.Transform(new Point(0, 0));
-            pToScreen.X += _pToInterPanel.X;
-            pToScreen.Y += _pToInterPanel.Y;
+            _pointToScreen.X += _pToInterPanel.X;
+            _pointToScreen.Y += _pToInterPanel.Y;
 
             var index = Children.IndexOf(splitter);
             switch (Direction)
@@ -1392,12 +1392,12 @@ namespace YDock.View.Layout
                     IsHitTestVisible = false
                 },
                 Placement = PlacementMode.Absolute,
-                HorizontalOffset = pToScreen.X,
-                VerticalOffset = pToScreen.Y,
+                HorizontalOffset = _pointToScreen.X,
+                VerticalOffset = _pointToScreen.Y,
                 AllowsTransparency = true
             };
 
-            DockHelper.ComputeSpliterLocation(_dragPopup, pToScreen, new Size(splitter.ActualWidth, splitter.ActualHeight));
+            DockHelper.ComputeSpliterLocation(_dragPopup, _pointToScreen, new Size(splitter.ActualWidth, splitter.ActualHeight));
             _dragPopup.IsOpen = true;
         }
 

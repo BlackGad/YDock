@@ -222,7 +222,7 @@ namespace YDock
                         DockManager.LayoutRootPanel.RootGroupPanel?.Update(_mouseP);
                     }
 
-                    VisualTreeHelper.HitTest(DockManager.LayoutRootPanel.RootGroupPanel, _HitFilter, _HitRessult, new PointHitTestParameters(p));
+                    VisualTreeHelper.HitTest(DockManager.LayoutRootPanel.RootGroupPanel, _HitFilter, _HitResult, new PointHitTestParameters(p));
                 }
                 else
                 {
@@ -255,7 +255,7 @@ namespace YDock
             return HitTestFilterBehavior.Continue;
         }
 
-        private HitTestResultBehavior _HitRessult(HitTestResult result)
+        private HitTestResultBehavior _HitResult(HitTestResult result)
         {
             DragTarget = null;
             return HitTestResultBehavior.Stop;

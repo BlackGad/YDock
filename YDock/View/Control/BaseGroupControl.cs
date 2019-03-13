@@ -17,9 +17,9 @@ using YDock.View.Window;
 
 namespace YDock.View.Control
 {
-    public class BaseGroupControl : TabControl,
-                                    ILayoutGroupControl,
-                                    IDragTarget
+    public abstract class BaseGroupControl : TabControl,
+                                             ILayoutGroupControl,
+                                             IDragTarget
     {
         internal IList<Rect> _childrenBounds;
         internal IDockElement _dragItem;
@@ -69,7 +69,7 @@ namespace YDock.View.Control
 
         public int ChildrenCount
         {
-            get { return (_model as LayoutGroup).Children_CanSelect.Count(); }
+            get { return ((LayoutGroup)_model).Children_CanSelect.Count(); }
         }
 
         public bool IsDraggingFromDock
@@ -89,11 +89,7 @@ namespace YDock.View.Control
         {
             get
             {
-                if (DockViewParent is LayoutGroupPanel)
-                {
-                    return (DockViewParent as LayoutGroupPanel).Count;
-                }
-
+                if (DockViewParent is LayoutGroupPanel panel) return panel.Count;
                 return 1;
             }
         }
@@ -160,7 +156,7 @@ namespace YDock.View.Control
 
         #region IDragTarget Members
 
-        public virtual DragMode Mode { get; }
+        public abstract DragMode Mode { get; }
 
         public DockManager DockManager
         {
@@ -172,10 +168,10 @@ namespace YDock.View.Control
         public virtual void OnDrop(DragItem source)
         {
             IDockView child;
-            if (source.RelativeObj is BaseFloatWindow)
+            if (source.RelativeObj is BaseFloatWindow window)
             {
-                child = (source.RelativeObj as BaseFloatWindow).Child;
-                (source.RelativeObj as BaseFloatWindow).DetachChild(child);
+                child = window.Child;
+                window.DetachChild(child);
             }
             else
             {
@@ -183,7 +179,7 @@ namespace YDock.View.Control
             }
 
             DockManager.FormatChildSize(child as ILayoutSize, new Size(ActualWidth, ActualHeight));
-            DockManager.ChangeDockMode(child, (Model as ILayoutGroup).Mode);
+            DockManager.ChangeDockMode(child, ((ILayoutGroup)Model).Mode);
             DockManager.ChangeSide(child, Model.Side);
             //取消AttachObj信息
             DockManager.ClearAttachObj(child);
@@ -235,7 +231,7 @@ namespace YDock.View.Control
                 }
                 else
                 {
-                    var panel = DockViewParent as LayoutGroupDocumentPanel;
+                    var panel = (LayoutGroupDocumentPanel)DockViewParent;
                     var p1 = panel.PointToScreenDPIWithoutFlowDirection(new Point());
                     _dragWnd.DropPanel.InnerRect = new Rect(p.X - p1.X, p.Y - p1.Y, ActualWidth, ActualHeight);
                     DockHelper.UpdateLocation(_dragWnd, p1.X, p1.Y, panel.ActualWidth, panel.ActualHeight);
@@ -521,7 +517,7 @@ namespace YDock.View.Control
             _activeRect.Flag = DragManager.NONE;
             var p = this.PointToScreenDPIWithoutFlowDirection(new Point());
             p = new Point(mouseP.X - p.X, mouseP.Y - p.Y);
-            VisualTreeHelper.HitTest(this, _HitFilter, _HitRessult, new PointHitTestParameters(p));
+            VisualTreeHelper.HitTest(this, _HitFilter, _HitResult, new PointHitTestParameters(p));
             _activeRect = null;
         }
 
@@ -557,28 +553,27 @@ namespace YDock.View.Control
 
         private void _AttachDockView(UIElement view, LayoutGroup target)
         {
-            if (view is LayoutGroupPanel)
+            if (view is LayoutGroupPanel panel)
             {
-                foreach (UIElement item in (view as LayoutGroupPanel).Children)
+                foreach (UIElement item in panel.Children)
                 {
                     _AttachDockView(item, target);
                 }
             }
 
-            if (view is BaseGroupControl)
+            if (view is BaseGroupControl control && control.Model is LayoutGroup model)
             {
-                var model = (view as BaseGroupControl).Model as LayoutGroup;
-                var _children = new List<IDockElement>(model.Children.Reverse());
+                var children = new List<IDockElement>(model.Children.Reverse());
                 model.Dispose();
-                foreach (var item in _children)
+                foreach (var item in children)
                 {
                     target.Attach(item, _index);
                 }
             }
 
-            if (view is IDisposable)
+            if (view is IDisposable disposable)
             {
-                (view as IDisposable).Dispose();
+                disposable.Dispose();
             }
         }
 
@@ -600,8 +595,8 @@ namespace YDock.View.Control
             else if (potentialHitTestTarget is AnchorSidePanel
                      || potentialHitTestTarget is DocumentPanel)
             {
-                UpdateChildrenBounds(potentialHitTestTarget as Panel);
-                var p = (potentialHitTestTarget as Panel).PointToScreenDPIWithoutFlowDirection(new Point());
+                UpdateChildrenBounds((Panel)potentialHitTestTarget);
+                var p = ((Panel)potentialHitTestTarget).PointToScreenDPIWithoutFlowDirection(new Point());
                 var index = _childrenBounds.FindIndex(new Point(_mouseP.X - p.X, _mouseP.Y - p.Y));
                 Rect rect;
                 if (index < 0)
@@ -645,7 +640,7 @@ namespace YDock.View.Control
             return HitTestFilterBehavior.Continue;
         }
 
-        private HitTestResultBehavior _HitRessult(HitTestResult result)
+        private HitTestResultBehavior _HitResult(HitTestResult result)
         {
             return HitTestResultBehavior.Stop;
         }

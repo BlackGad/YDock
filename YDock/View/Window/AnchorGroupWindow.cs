@@ -16,7 +16,7 @@ namespace YDock.View.Window
     public class AnchorGroupWindow : BaseFloatWindow,
                                      INotifyPropertyChanged
     {
-        private DockMenu menu;
+        private DockMenu _menu;
 
         #region Constructors
 
@@ -103,12 +103,12 @@ namespace YDock.View.Window
                     ActiveSelf();
                     if (IsSingleMode && msg == Win32Helper.WM_NCRBUTTONDOWN)
                     {
-                        if (menu == null)
+                        if (_menu == null)
                         {
                             _ApplyMenu((Child as BaseGroupControl).SelectedItem as IDockItem);
                         }
 
-                        menu.IsOpen = true;
+                        _menu.IsOpen = true;
                     }
 
                     break;
@@ -120,12 +120,12 @@ namespace YDock.View.Window
         protected override void OnPreviewMouseRightButtonDown(MouseButtonEventArgs e)
         {
             base.OnPreviewMouseRightButtonDown(e);
-            if (menu != null)
+            if (_menu != null)
             {
                 var p = e.GetPosition(this);
                 if (p.Y < 20)
                 {
-                    menu.IsOpen = true;
+                    _menu.IsOpen = true;
                 }
             }
         }
@@ -210,17 +210,17 @@ namespace YDock.View.Window
             PropertyChanged(this, new PropertyChangedEventArgs("NoBorder"));
             CommandManager.InvalidateRequerySuggested();
 
-            if (menu != null)
+            if (_menu != null)
             {
-                menu.Dispose();
-                menu = null;
+                _menu.Dispose();
+                _menu = null;
             }
         }
 
         private void _ApplyMenu(IDockItem item)
         {
-            menu = new DockMenu(item);
-            menu.Placement = PlacementMode.MousePoint;
+            _menu = new DockMenu(item);
+            _menu.Placement = PlacementMode.MousePoint;
         }
 
         private void ActiveSelf()

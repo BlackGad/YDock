@@ -13,7 +13,7 @@ namespace YDock
         public static readonly Pen DisActiveDashPen;
         public static readonly SolidColorBrush DropRectBrush;
         public static readonly Pen DropRectPen;
-        public static readonly Pen DropRectPen_Heavy;
+        public static readonly Pen DropRectPenHeavy;
         public static readonly Pen RectBorderPen;
         public static readonly SolidColorBrush RectBrush;
         public static readonly SolidColorBrush SplitterBrushHorizontal;
@@ -78,7 +78,7 @@ namespace YDock
                 Thickness = 6
             };
 
-            DropRectPen_Heavy = new Pen
+            DropRectPenHeavy = new Pen
             {
                 Brush = DropRectBrush,
                 Thickness = 3

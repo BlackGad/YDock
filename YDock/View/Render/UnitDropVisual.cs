@@ -310,7 +310,7 @@ namespace YDock.View.Render
             hoffset += Constants.DropGlassLength;
             voffset -= Constants.DropGlassLength;
 
-            ctx.DrawLine(ResourceManager.DropRectPen_Heavy,
+            ctx.DrawLine(ResourceManager.DropRectPenHeavy,
                          new Point(hoffset - 0.5, voffset - 12),
                          new Point(hoffset + Constants.DropUnitLength - Constants.DropGlassLength * 4 + 0.5, voffset - 12));
 
@@ -362,7 +362,7 @@ namespace YDock.View.Render
             currentX += Constants.DropGlassLength;
             currentY += Constants.DropGlassLength + 2;
 
-            ctx.DrawLine(ResourceManager.DropRectPen_Heavy,
+            ctx.DrawLine(ResourceManager.DropRectPenHeavy,
                          new Point(currentX - 0.5, currentY),
                          new Point(currentX + Constants.DropUnitLength - Constants.DropGlassLength * 4 + 0.5, currentY));
 
@@ -421,7 +421,7 @@ namespace YDock.View.Render
                                      3);
             hoffset += Constants.DropGlassLength;
             voffset += Constants.DropGlassLength;
-            ctx.DrawLine(ResourceManager.DropRectPen_Heavy, new Point(hoffset - 0.5, voffset), new Point(hoffset + 12.5, voffset));
+            ctx.DrawLine(ResourceManager.DropRectPenHeavy, new Point(hoffset - 0.5, voffset), new Point(hoffset + 12.5, voffset));
 
             //绘制小窗口
             var stream = new StreamGeometry();
@@ -478,7 +478,7 @@ namespace YDock.View.Render
                                      3);
             hoffset -= Constants.DropGlassLength;
             voffset += Constants.DropGlassLength;
-            ctx.DrawLine(ResourceManager.DropRectPen_Heavy, new Point(hoffset + 0.5, voffset), new Point(hoffset - 12.5, voffset));
+            ctx.DrawLine(ResourceManager.DropRectPenHeavy, new Point(hoffset + 0.5, voffset), new Point(hoffset - 12.5, voffset));
 
             //绘制小窗口
             var stream = new StreamGeometry();
@@ -534,7 +534,7 @@ namespace YDock.View.Render
             hoffset += Constants.DropGlassLength;
             voffset += Constants.DropGlassLength;
 
-            ctx.DrawLine(ResourceManager.DropRectPen_Heavy,
+            ctx.DrawLine(ResourceManager.DropRectPenHeavy,
                          new Point(hoffset - 0.5, voffset),
                          new Point(hoffset + Constants.DropUnitLength - Constants.DropGlassLength * 4 + 0.5, voffset));
 

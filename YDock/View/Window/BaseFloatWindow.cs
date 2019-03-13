@@ -246,7 +246,7 @@ namespace YDock.View.Window
         public void HitTest(Point p)
         {
             var p1 = (Content as FrameworkElement).PointToScreenDPIWithoutFlowDirection(new Point());
-            VisualTreeHelper.HitTest(Content as FrameworkElement, _HitFilter, _HitRessult, new PointHitTestParameters(new Point(p.X - p1.X, p.Y - p1.Y)));
+            VisualTreeHelper.HitTest(Content as FrameworkElement, _HitFilter, _HitResult, new PointHitTestParameters(new Point(p.X - p1.X, p.Y - p1.Y)));
         }
 
         public virtual void Recreate()
@@ -337,7 +337,7 @@ namespace YDock.View.Window
             return HitTestFilterBehavior.Continue;
         }
 
-        private HitTestResultBehavior _HitRessult(HitTestResult result)
+        private HitTestResultBehavior _HitResult(HitTestResult result)
         {
             DockManager.DragManager.DragTarget = null;
             return HitTestResultBehavior.Stop;

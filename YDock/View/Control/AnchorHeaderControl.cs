@@ -15,8 +15,8 @@ namespace YDock.View.Control
     {
         private Point _mouseDown;
 
-        private ToggleButton ctb;
-        private DockMenu menu;
+        private ToggleButton _toggleButton;
+        private DockMenu _dockMenu;
 
         #region Constructors
 
@@ -95,10 +95,10 @@ namespace YDock.View.Control
             base.OnPropertyChanged(e);
             if (e.Property.Name == "DataContext")
             {
-                if (menu != null)
+                if (_dockMenu != null)
                 {
-                    menu.Dispose();
-                    menu = null;
+                    _dockMenu.Dispose();
+                    _dockMenu = null;
                 }
             }
         }
@@ -106,8 +106,8 @@ namespace YDock.View.Control
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            ctb = (ToggleButton)GetTemplateChild("PART_DropMenu");
-            ctb.PreviewMouseLeftButtonUp += OnMenuOpen;
+            _toggleButton = (ToggleButton)GetTemplateChild("PART_DropMenu");
+            _toggleButton.PreviewMouseLeftButtonUp += OnMenuOpen;
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -125,7 +125,7 @@ namespace YDock.View.Control
         {
             DataContext = null;
             ContextMenu = null;
-            ctb.PreviewMouseLeftButtonUp -= OnMenuOpen;
+            _toggleButton.PreviewMouseLeftButtonUp -= OnMenuOpen;
         }
 
         #endregion
@@ -153,12 +153,12 @@ namespace YDock.View.Control
 
         private void OnMenuOpen(object sender, MouseButtonEventArgs e)
         {
-            if (menu == null)
+            if (_dockMenu == null)
             {
                 _ApplyMenu();
             }
 
-            menu.IsOpen = true;
+            _dockMenu.IsOpen = true;
         }
 
         #endregion
@@ -168,10 +168,10 @@ namespace YDock.View.Control
         private void _ApplyMenu()
         {
             var element = DataContext as DockElement;
-            menu = new DockMenu(element);
-            menu.PlacementTarget = ctb;
-            menu.Placement = PlacementMode.Bottom;
-            ctb.ContextMenu = menu;
+            _dockMenu = new DockMenu(element);
+            _dockMenu.PlacementTarget = _toggleButton;
+            _dockMenu.Placement = PlacementMode.Bottom;
+            _toggleButton.ContextMenu = _dockMenu;
         }
 
         #endregion

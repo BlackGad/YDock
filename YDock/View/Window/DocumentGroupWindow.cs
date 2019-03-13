@@ -19,7 +19,7 @@ namespace YDock.View.Window
 
         private readonly Timeline _thicknessAnimation;
 
-        private DockPanel header;
+        private DockPanel _header;
 
         #region Constructors
 
@@ -71,7 +71,7 @@ namespace YDock.View.Window
                 NeedReCreate = false;
                 var layoutCtrl = Child as BaseGroupControl;
                 layoutCtrl.IsDraggingFromDock = false;
-                header.Visibility = Visibility.Visible;
+                _header.Visibility = Visibility.Visible;
                 Storyboard.SetTarget(_thicknessAnimation, layoutCtrl);
                 Storyboard.SetTargetProperty(_thicknessAnimation, new PropertyPath(BorderThicknessProperty));
                 Storyboard.SetTarget(_backgroundAnimation, this);
@@ -96,10 +96,10 @@ namespace YDock.View.Window
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            header = (DockPanel)GetTemplateChild("PART_Header");
+            _header = (DockPanel)GetTemplateChild("PART_Header");
             if (_needReCreate)
             {
-                header.Visibility = Visibility.Collapsed;
+                _header.Visibility = Visibility.Collapsed;
             }
         }
 
