@@ -13,10 +13,10 @@ namespace YDock.View.Control
     public class AnchorHeaderControl : System.Windows.Controls.Control,
                                        IDisposable
     {
+        private DockMenu _dockMenu;
         private Point _mouseDown;
 
         private ToggleButton _toggleButton;
-        private DockMenu _dockMenu;
 
         #region Constructors
 
@@ -59,34 +59,34 @@ namespace YDock.View.Control
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
-            if (e.LeftButton == MouseButtonState.Pressed && IsMouseCaptured)
+
+            if (e.LeftButton != MouseButtonState.Pressed) return;
+            if (!IsMouseCaptured) return;
+
+            var vector = e.GetPosition(this) - _mouseDown;
+            if (vector.Length <= Math.Max(SystemParameters.MinimumHorizontalDragDistance, SystemParameters.MinimumVerticalDragDistance)) return;
+
+            ReleaseMouseCapture();
+
+            var element = (IDockElement)DataContext;
+            if (element.DockManager.DragManager.IsDragging) return;
+            if (element.Mode == DockMode.DockBar)
             {
-                if ((e.GetPosition(this) - _mouseDown).Length > Math.Max(SystemParameters.MinimumHorizontalDragDistance, SystemParameters.MinimumVerticalDragDistance))
-                {
-                    ReleaseMouseCapture();
-                    var element = DataContext as IDockElement;
-                    if (!element.DockManager.DragManager.IsDragging)
-                    {
-                        if (element.Mode == DockMode.DockBar)
-                        {
-                            element.DockManager.DragManager.IntoDragAction(new DragItem(element,
-                                                                                    element.Mode,
-                                                                                    DragMode.Anchor,
-                                                                                    _mouseDown,
-                                                                                    Rect.Empty,
-                                                                                    new Size(element.DesiredWidth, element.DesiredHeight)));
-                        }
-                        else
-                        {
-                            element.DockManager.DragManager.IntoDragAction(new DragItem(element.Container,
-                                                                                    element.Mode,
-                                                                                    DragMode.Anchor,
-                                                                                    _mouseDown,
-                                                                                    Rect.Empty,
-                                                                                    new Size(element.DesiredWidth, element.DesiredHeight)));
-                        }
-                    }
-                }
+                element.DockManager.DragManager.IntoDragAction(new DragItem(element,
+                                                                            element.Mode,
+                                                                            DragMode.Anchor,
+                                                                            _mouseDown,
+                                                                            Rect.Empty,
+                                                                            new Size(element.DesiredWidth, element.DesiredHeight)));
+            }
+            else
+            {
+                element.DockManager.DragManager.IntoDragAction(new DragItem(element.Container,
+                                                                            element.Mode,
+                                                                            DragMode.Anchor,
+                                                                            _mouseDown,
+                                                                            Rect.Empty,
+                                                                            new Size(element.DesiredWidth, element.DesiredHeight)));
             }
         }
 
@@ -106,8 +106,13 @@ namespace YDock.View.Control
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            _toggleButton = (ToggleButton)GetTemplateChild("PART_DropMenu");
-            _toggleButton.PreviewMouseLeftButtonUp += OnMenuOpen;
+
+            _toggleButton = GetTemplateChild("PART_DropMenu") as ToggleButton;
+
+            if (_toggleButton != null)
+            {
+                _toggleButton.PreviewMouseLeftButtonUp += OnMenuOpen;
+            }
         }
 
         protected override void OnInitialized(EventArgs e)

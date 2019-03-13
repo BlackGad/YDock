@@ -46,25 +46,26 @@ namespace YDock.View.Control
             else
             {
                 IDockView child;
-                if (source.RelativeObj is BaseFloatWindow)
+                if (source.RelativeObj is BaseFloatWindow window)
                 {
-                    child = (source.RelativeObj as BaseFloatWindow).Child;
-                    (source.RelativeObj as BaseFloatWindow).DetachChild(child);
+                    child = window.Child;
+                    window.DetachChild(child);
                 }
                 else
                 {
                     child = source.RelativeObj as IDockView;
                 }
 
-                DockManager.ChangeDockMode(child, (Model as ILayoutGroup).Mode);
+                DockManager.ChangeDockMode(child, ((ILayoutGroup)Model).Mode);
 
-                if (_AssertSplitMode(DropMode))
+                if (AssertSplitMode(DropMode))
                 {
-                    //must to changside
+                    //must to change side
                     DockManager.ChangeSide(child, Model.Side);
+
                     if (DockViewParent == null)
                     {
-                        var parent = Parent as BaseFloatWindow;
+                        var parent = (BaseFloatWindow)Parent;
                         parent.DetachChild(this, false);
                         var panel = new LayoutGroupDocumentPanel
                         {
@@ -86,7 +87,7 @@ namespace YDock.View.Control
                     }
                     else
                     {
-                        var parent = Parent as LayoutGroupDocumentPanel;
+                        var parent = (LayoutGroupDocumentPanel)Parent;
                         parent.Direction = DropMode == DropMode.Left_WithSplit || DropMode == DropMode.Right_WithSplit ? Direction.Horizontal : Direction.Vertical;
                         var index = parent.IndexOf(this);
                         switch (DropMode)
@@ -110,43 +111,41 @@ namespace YDock.View.Control
                 {
                     DockManager.FormatChildSize(child as ILayoutSize, new Size(ActualWidth, ActualHeight));
 
-                    var _parent = Parent as LayoutGroupDocumentPanel;
-                    var child_size = child as ILayoutSize;
-                    if (_parent.DockViewParent is LayoutRootPanel)
+                    var parent = (LayoutGroupDocumentPanel)Parent;
+                    if (parent.DockViewParent is LayoutRootPanel rootPanel)
                     {
-                        var rootPanel = _parent.DockViewParent as LayoutRootPanel;
-                        rootPanel.DetachChild(_parent, false);
-                        var pparent = new LayoutGroupPanel
+                        rootPanel.DetachChild(parent, false);
+                        var parentPanel = new LayoutGroupPanel
                         {
                             Direction = DropMode == DropMode.Left || DropMode == DropMode.Right ? Direction.Horizontal : Direction.Vertical
                         };
-                        pparent._AttachChild(_parent, 0);
+                        parentPanel._AttachChild(parent, 0);
                         switch (DropMode)
                         {
                             case DropMode.Left:
                                 DockManager.ChangeSide(child, DockSide.Left);
-                                pparent.AttachChild(child, AttachMode.Left, 0);
+                                parentPanel.AttachChild(child, AttachMode.Left, 0);
                                 break;
                             case DropMode.Top:
                                 DockManager.ChangeSide(child, DockSide.Top);
-                                pparent.AttachChild(child, AttachMode.Top, 0);
+                                parentPanel.AttachChild(child, AttachMode.Top, 0);
                                 break;
                             case DropMode.Right:
                                 DockManager.ChangeSide(child, DockSide.Right);
-                                pparent.AttachChild(child, AttachMode.Right, 1);
+                                parentPanel.AttachChild(child, AttachMode.Right, 1);
                                 break;
                             case DropMode.Bottom:
                                 DockManager.ChangeSide(child, DockSide.Bottom);
-                                pparent.AttachChild(child, AttachMode.Bottom, 1);
+                                parentPanel.AttachChild(child, AttachMode.Bottom, 1);
                                 break;
                         }
 
-                        rootPanel.AttachChild(pparent, AttachMode.None, 0);
+                        rootPanel.AttachChild(parentPanel, AttachMode.None, 0);
                     }
                     else
                     {
-                        var panel = _parent.DockViewParent as LayoutGroupPanel;
-                        var index = panel.IndexOf(_parent);
+                        var panel = (LayoutGroupPanel)parent.DockViewParent;
+                        var index = panel.IndexOf(parent);
                         switch (DropMode)
                         {
                             case DropMode.Left:
@@ -157,14 +156,14 @@ namespace YDock.View.Control
                                 }
                                 else
                                 {
-                                    panel._DetachChild(_parent);
-                                    var pparent = new LayoutGroupPanel
+                                    panel._DetachChild(parent);
+                                    var parentPanel = new LayoutGroupPanel
                                     {
                                         Direction = Direction.Horizontal
                                     };
-                                    pparent._AttachChild(_parent, 0);
-                                    pparent._AttachChild(child, 0);
-                                    panel._AttachChild(pparent, Math.Min(index, panel.Count));
+                                    parentPanel._AttachChild(parent, 0);
+                                    parentPanel._AttachChild(child, 0);
+                                    panel._AttachChild(parentPanel, Math.Min(index, panel.Count));
                                 }
 
                                 break;
@@ -176,14 +175,14 @@ namespace YDock.View.Control
                                 }
                                 else
                                 {
-                                    panel._DetachChild(_parent);
-                                    var pparent = new LayoutGroupPanel
+                                    panel._DetachChild(parent);
+                                    var parentPanel = new LayoutGroupPanel
                                     {
                                         Direction = Direction.Vertical
                                     };
-                                    pparent._AttachChild(_parent, 0);
-                                    pparent._AttachChild(child, 0);
-                                    panel._AttachChild(pparent, Math.Min(index, panel.Count));
+                                    parentPanel._AttachChild(parent, 0);
+                                    parentPanel._AttachChild(child, 0);
+                                    panel._AttachChild(parentPanel, Math.Min(index, panel.Count));
                                 }
 
                                 break;
@@ -195,14 +194,14 @@ namespace YDock.View.Control
                                 }
                                 else
                                 {
-                                    panel._DetachChild(_parent);
-                                    var pparent = new LayoutGroupPanel
+                                    panel._DetachChild(parent);
+                                    var parentPanel = new LayoutGroupPanel
                                     {
                                         Direction = Direction.Horizontal
                                     };
-                                    pparent._AttachChild(_parent, 0);
-                                    pparent._AttachChild(child, 1);
-                                    panel._AttachChild(pparent, Math.Min(index, panel.Count));
+                                    parentPanel._AttachChild(parent, 0);
+                                    parentPanel._AttachChild(child, 1);
+                                    panel._AttachChild(parentPanel, Math.Min(index, panel.Count));
                                 }
 
                                 break;
@@ -214,14 +213,14 @@ namespace YDock.View.Control
                                 }
                                 else
                                 {
-                                    panel._DetachChild(_parent);
-                                    var pparent = new LayoutGroupPanel
+                                    panel._DetachChild(parent);
+                                    var parentPanel = new LayoutGroupPanel
                                     {
                                         Direction = Direction.Vertical
                                     };
-                                    pparent._AttachChild(_parent, 0);
-                                    pparent._AttachChild(child, 1);
-                                    panel._AttachChild(pparent, Math.Min(index, panel.Count));
+                                    parentPanel._AttachChild(parent, 0);
+                                    parentPanel._AttachChild(child, 1);
+                                    panel._AttachChild(parentPanel, Math.Min(index, panel.Count));
                                 }
 
                                 break;
@@ -230,9 +229,9 @@ namespace YDock.View.Control
                 }
             }
 
-            if (source.RelativeObj is BaseFloatWindow)
+            if (source.RelativeObj is BaseFloatWindow floatWindow)
             {
-                (source.RelativeObj as BaseFloatWindow).Close();
+                floatWindow.Close();
             }
         }
 
@@ -240,12 +239,12 @@ namespace YDock.View.Control
 
         #region Members
 
-        private bool _AssertSplitMode(DropMode mode)
+        private bool AssertSplitMode(DropMode mode)
         {
-            return DropMode == DropMode.Left_WithSplit
-                   || DropMode == DropMode.Right_WithSplit
-                   || DropMode == DropMode.Top_WithSplit
-                   || DropMode == DropMode.Bottom_WithSplit;
+            return mode == DropMode.Left_WithSplit
+                   || mode == DropMode.Right_WithSplit
+                   || mode == DropMode.Top_WithSplit
+                   || mode == DropMode.Bottom_WithSplit;
         }
 
         #endregion

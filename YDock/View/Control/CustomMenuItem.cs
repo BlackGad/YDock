@@ -20,8 +20,8 @@ namespace YDock.View.Control
         protected override void OnClick()
         {
             base.OnClick();
-            var element = DataContext as IDockElement;
-            if (element?.Container is ILayoutGroup group)
+
+            if (DataContext is IDockElement element && element.Container is ILayoutGroup group)
             {
                 group.ShowWithActive(element);
             }

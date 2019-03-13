@@ -11,7 +11,9 @@ namespace YDock.View.Control
         #region Property definitions
 
         public static readonly DependencyProperty DropContextMenuProperty =
-            DependencyProperty.Register("DropContextMenu", typeof(CustomContextMenu), typeof(CustomToggleButton));
+            DependencyProperty.Register("DropContextMenu",
+                                        typeof(CustomContextMenu),
+                                        typeof(CustomToggleButton));
 
         #endregion
 

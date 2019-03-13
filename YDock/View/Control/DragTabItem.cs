@@ -46,14 +46,14 @@ namespace YDock.View.Control
         {
             base.OnMouseDown(e);
 
-            if (e.MiddleButton == MouseButtonState.Pressed)
+            if (e.MiddleButton == MouseButtonState.Pressed && Content is DockElement dockElement)
             {
-                if ((Content as DockElement).IsActive)
+                if (dockElement.IsActive)
                 {
                     Container.ShowWithActive(null);
                 }
 
-                (Content as DockElement).CanSelect = false;
+                dockElement.CanSelect = false;
             }
         }
 
@@ -65,15 +65,15 @@ namespace YDock.View.Control
                 ContextMenu = null;
             }
 
-            if (newContent is IDockItem)
+            if (newContent is IDockItem dockItem)
             {
                 if (_dockViewParent is AnchorSideGroupControl)
                 {
-                    ContextMenu = new DockMenu(newContent as IDockItem);
+                    ContextMenu = new DockMenu(dockItem);
                 }
                 else
                 {
-                    ContextMenu = new DocumentMenu(newContent as IDockElement);
+                    ContextMenu = new DocumentMenu(dockItem as IDockElement);
                 }
             }
 
@@ -82,9 +82,9 @@ namespace YDock.View.Control
 
         protected override void OnToolTipOpening(ToolTipEventArgs e)
         {
-            if (Content is DockElement)
+            if (Content is DockElement element)
             {
-                ToolTip = (Content as DockElement).ToolTip;
+                ToolTip = element.ToolTip;
             }
 
             base.OnToolTipOpening(e);
@@ -105,13 +105,14 @@ namespace YDock.View.Control
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            //在基类事件处理后再设置
+            //Set after the base class event is processed
             base.OnMouseLeftButtonDown(e);
 
             _dockViewParent._mouseInside = true;
             _dockViewParent._mouseDown = e.GetPosition(this);
             _dockViewParent._dragItem = Content as IDockElement;
-            if (_dockViewParent._dragItem.Container is LayoutDocumentGroup)
+
+            if (_dockViewParent._dragItem?.Container is LayoutDocumentGroup)
             {
                 _dockViewParent._rect = new Rect();
             }
@@ -269,9 +270,9 @@ namespace YDock.View.Control
         public void Dispose()
         {
             _dockViewParent = null;
-            if (ContextMenu is IDisposable)
+            if (ContextMenu is IDisposable disposable)
             {
-                (ContextMenu as IDisposable).Dispose();
+                disposable.Dispose();
             }
 
             ContextMenu = null;
@@ -289,7 +290,7 @@ namespace YDock.View.Control
 
         private void OnCommandExecute(object sender, ExecutedRoutedEventArgs e)
         {
-            var element = Content as DockElement;
+            var element = (DockElement)Content;
             element.DockControl.Hide();
         }
 

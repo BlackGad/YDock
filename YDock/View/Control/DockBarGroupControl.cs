@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -58,12 +57,6 @@ namespace YDock.View.Control
 
         #endregion
 
-        #region Events
-
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
-
-        #endregion
-
         #region Override members
 
         protected override DependencyObject GetContainerForItemOverride()
@@ -80,15 +73,10 @@ namespace YDock.View.Control
             get { return _model; }
             set
             {
-                if (_model != null) (_model as DockSideGroup).View = null;
-                if (_model != value)
-                {
-                    _model = value as ILayoutGroup;
-                    if (_model != null)
-                    {
-                        (_model as DockSideGroup).View = this;
-                    }
-                }
+                if (_model == value) return;
+                if (_model is DockSideGroup oldModel) oldModel.View = null;
+                _model = value as ILayoutGroup;
+                if (_model is DockSideGroup newModel) newModel.View = this;
             }
         }
 

@@ -31,19 +31,15 @@ namespace YDock.View.Control
         private ActiveRectDropVisual _activeRect;
 
         private double _desiredHeight;
-
         private double _desiredWidth;
-
-        private DropWindow _dragWnd;
-
+        private DropWindow _dragWindow;
         private double _floatLeft;
-
         private double _floatTop;
 
         private bool _isDraggingFromDock;
 
         private ILayoutGroup _model;
-        private Point _mouseP;
+        private Point _position;
 
         #region Constructors
 
@@ -69,7 +65,7 @@ namespace YDock.View.Control
 
         public int ChildrenCount
         {
-            get { return ((LayoutGroup)_model).SelectableChildren.Count(); }
+            get { return ((LayoutGroup)_model).SelectableChildren.Count; }
         }
 
         public bool IsDraggingFromDock
@@ -201,22 +197,22 @@ namespace YDock.View.Control
 
         public void CloseDropWindow()
         {
-            if (_dragWnd != null)
+            if (_dragWindow != null)
             {
                 DropMode = DropMode.None;
-                _dragWnd.IsOpen = false;
-                _dragWnd = null;
+                _dragWindow.IsOpen = false;
+                _dragWindow = null;
             }
         }
 
         public void HideDropWindow()
         {
-            _dragWnd?.Hide();
+            _dragWindow?.Hide();
         }
 
         public void ShowDropWindow()
         {
-            if (_dragWnd == null)
+            if (_dragWindow == null)
             {
                 CreateDropWindow();
             }
@@ -226,29 +222,29 @@ namespace YDock.View.Control
             {
                 if (DockViewParent == null)
                 {
-                    _dragWnd.DropPanel.InnerRect = new Rect(0, 0, ActualWidth, ActualHeight);
-                    DockHelper.UpdateLocation(_dragWnd, p.X, p.Y, ActualWidth, ActualHeight);
+                    _dragWindow.DropPanel.InnerRect = new Rect(0, 0, ActualWidth, ActualHeight);
+                    DockHelper.UpdateLocation(_dragWindow, p.X, p.Y, ActualWidth, ActualHeight);
                 }
                 else
                 {
                     var panel = (LayoutGroupDocumentPanel)DockViewParent;
                     var p1 = panel.PointToScreenDPIWithoutFlowDirection(new Point());
-                    _dragWnd.DropPanel.InnerRect = new Rect(p.X - p1.X, p.Y - p1.Y, ActualWidth, ActualHeight);
-                    DockHelper.UpdateLocation(_dragWnd, p1.X, p1.Y, panel.ActualWidth, panel.ActualHeight);
+                    _dragWindow.DropPanel.InnerRect = new Rect(p.X - p1.X, p.Y - p1.Y, ActualWidth, ActualHeight);
+                    DockHelper.UpdateLocation(_dragWindow, p1.X, p1.Y, panel.ActualWidth, panel.ActualHeight);
                 }
             }
             else
             {
-                DockHelper.UpdateLocation(_dragWnd, p.X, p.Y, ActualWidth, ActualHeight);
+                DockHelper.UpdateLocation(_dragWindow, p.X, p.Y, ActualWidth, ActualHeight);
             }
 
-            if (!_dragWnd.IsOpen) _dragWnd.IsOpen = true;
-            _dragWnd.Show();
+            if (!_dragWindow.IsOpen) _dragWindow.IsOpen = true;
+            _dragWindow.Show();
         }
 
         public void Update(Point mouseP)
         {
-            _dragWnd?.Update(mouseP);
+            _dragWindow?.Update(mouseP);
         }
 
         public void AttachWith(IDockView source, AttachMode mode = AttachMode.Center)
@@ -404,44 +400,40 @@ namespace YDock.View.Control
 
         public bool TryDetachFromParent(bool isDispose = true)
         {
-            if (Parent != null)
+            var parent = Parent;
+            if (parent == null) return true;
+
+            if (DockViewParent is ILayoutPanel layoutPanel)
             {
-                if (DockViewParent is ILayoutPanel)
+                if (layoutPanel.IsDocumentPanel)
                 {
-                    if (((ILayoutPanel)DockViewParent).IsDocumentPanel)
+                    var panel = (LayoutGroupDocumentPanel)DockViewParent;
+                    if (panel.Children.Count > 1 || DockManager.MainWindow != System.Windows.Window.GetWindow(panel))
                     {
-                        var panel = DockViewParent as LayoutGroupDocumentPanel;
-                        if (panel.Children.Count > 1 || DockManager.MainWindow != System.Windows.Window.GetWindow(panel))
-                        {
-                            panel.DetachChild(this);
-                            if (isDispose)
-                            {
-                                Dispose();
-                            }
+                        panel.DetachChild(this);
 
-                            return true;
-                        }
-
-                        DockManager.RaiseDocumentToEmpty();
-                        return false;
+                        if (isDispose) Dispose();
+                        return true;
                     }
-                }
 
-                var parent = Parent;
-                ((ILayoutViewParent)parent).DetachChild(this);
-
-                if (parent is System.Windows.Window window)
-                {
-                    window.Close();
-                }
-
-                DesiredHeight = ActualHeight;
-                DesiredWidth = ActualWidth;
-                if (isDispose)
-                {
-                    Dispose();
+                    DockManager.RaiseDocumentToEmpty();
+                    return false;
                 }
             }
+            
+            if (parent is ILayoutViewParent layoutViewParent)
+            {
+                layoutViewParent.DetachChild(this);
+            }
+            if (parent is System.Windows.Window window)
+            {
+                window.Close();
+            }
+
+            DesiredHeight = ActualHeight;
+            DesiredWidth = ActualWidth;
+
+            if (isDispose) Dispose();
 
             return true;
         }
@@ -508,13 +500,13 @@ namespace YDock.View.Control
             return element;
         }
 
-        public void HitTest(Point mouseP, ActiveRectDropVisual activeRect)
+        public void HitTest(Point position, ActiveRectDropVisual activeRect)
         {
-            _mouseP = mouseP;
+            _position = position;
             _activeRect = activeRect;
             _activeRect.Flag = DragManager.NONE;
             var p = this.PointToScreenDPIWithoutFlowDirection(new Point());
-            p = new Point(mouseP.X - p.X, mouseP.Y - p.Y);
+            p = new Point(position.X - p.X, position.Y - p.Y);
             VisualTreeHelper.HitTest(this, _HitFilter, _HitResult, new PointHitTestParameters(p));
             _activeRect = null;
         }
@@ -531,9 +523,9 @@ namespace YDock.View.Control
 
         internal virtual void CreateDropWindow()
         {
-            if (_dragWnd == null)
+            if (_dragWindow == null)
             {
-                _dragWnd = new DropWindow(this);
+                _dragWindow = new DropWindow(this);
             }
         }
 
@@ -595,7 +587,7 @@ namespace YDock.View.Control
             {
                 UpdateChildrenBounds((Panel)potentialHitTestTarget);
                 var p = ((Panel)potentialHitTestTarget).PointToScreenDPIWithoutFlowDirection(new Point());
-                var index = _childrenBounds.FindIndex(new Point(_mouseP.X - p.X, _mouseP.Y - p.Y));
+                var index = _childrenBounds.FindIndex(new Point(_position.X - p.X, _position.Y - p.Y));
                 Rect rect;
                 if (index < 0)
                 {
