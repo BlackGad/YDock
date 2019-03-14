@@ -415,8 +415,8 @@ namespace YDock.View.Window
         private void _CreateDragPopup(LayoutDragSplitter splitter)
         {
             _pToScreen = this.PointToScreenDPIWithoutFlowDirection(new Point());
-            var transfrom = splitter.TransformToAncestor(this);
-            var _pToInterPanel = transfrom.Transform(new Point(0, 0));
+            var transform = splitter.TransformToAncestor(this);
+            var _pToInterPanel = transform.Transform(new Point(0, 0));
             _pToScreen.X += _pToInterPanel.X;
             _pToScreen.Y += _pToInterPanel.Y;
 

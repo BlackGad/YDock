@@ -69,10 +69,10 @@ namespace YDock.View.Window
             if (_needReCreate)
             {
                 NeedReCreate = false;
-                var layoutCtrl = Child as BaseGroupControl;
-                layoutCtrl.IsDraggingFromDock = false;
+                var layoutControl = (BaseGroupControl)Child;
+                layoutControl.IsDraggingFromDock = false;
                 _header.Visibility = Visibility.Visible;
-                Storyboard.SetTarget(_thicknessAnimation, layoutCtrl);
+                Storyboard.SetTarget(_thicknessAnimation, layoutControl);
                 Storyboard.SetTargetProperty(_thicknessAnimation, new PropertyPath(BorderThicknessProperty));
                 Storyboard.SetTarget(_backgroundAnimation, this);
                 Storyboard.SetTargetProperty(_backgroundAnimation, new PropertyPath("(0).(1)", BackgroundProperty, SolidColorBrush.ColorProperty));
@@ -87,9 +87,9 @@ namespace YDock.View.Window
                 NeedReCreate = true;
                 Background = Brushes.WhiteSmoke;
                 BorderBrush = Brushes.WhiteSmoke;
-                var layoutCtrl = Child as BaseGroupControl;
-                layoutCtrl.BorderThickness = new Thickness(1);
-                layoutCtrl.IsDraggingFromDock = true;
+                var layoutControl = (BaseGroupControl)Child;
+                layoutControl.BorderThickness = new Thickness(1);
+                layoutControl.IsDraggingFromDock = true;
             }
         }
 
@@ -97,7 +97,7 @@ namespace YDock.View.Window
         {
             base.OnApplyTemplate();
             _header = (DockPanel)GetTemplateChild("PART_Header");
-            if (_needReCreate)
+            if (_needReCreate && _header != null)
             {
                 _header.Visibility = Visibility.Collapsed;
             }

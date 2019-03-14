@@ -71,7 +71,7 @@ namespace YDock.View.Control
                     };
                     wnd.DockManager = DockManager;
                     wnd.AttachChild(panel, AttachMode.None, 0);
-                    panel._AttachChild(this, 0);
+                    panel.AttachChild(this, 0);
                 }
                 else
                 {
@@ -110,14 +110,14 @@ namespace YDock.View.Control
                             DesiredHeight = Math.Max(ActualHeight, Constants.DockDefaultHeightLength),
                             IsAnchorPanel = true
                         };
-                        panel._DetachChild(this);
-                        panel._AttachChild(subPanel, Math.Min(index, panel.Count));
-                        subPanel._AttachChild(this, 0);
+                        panel.InternalDetachChild(this);
+                        panel.AttachChild(subPanel, Math.Min(index, panel.Count));
+                        subPanel.AttachChild(this, 0);
                         subPanel.AttachChild(source, AttachMode.Left, 0);
                     }
                     else
                     {
-                        panel._AttachChild(source, index);
+                        panel.AttachChild(source, index);
                     }
 
                     break;
@@ -131,14 +131,14 @@ namespace YDock.View.Control
                             DesiredHeight = Math.Max(ActualHeight, Constants.DockDefaultHeightLength),
                             IsAnchorPanel = true
                         };
-                        panel._DetachChild(this);
-                        panel._AttachChild(subPanel, Math.Min(index, panel.Count));
-                        subPanel._AttachChild(this, 0);
+                        panel.InternalDetachChild(this);
+                        panel.AttachChild(subPanel, Math.Min(index, panel.Count));
+                        subPanel.AttachChild(this, 0);
                         subPanel.AttachChild(source, AttachMode.Top, 0);
                     }
                     else
                     {
-                        panel._AttachChild(source, index);
+                        panel.AttachChild(source, index);
                     }
 
                     break;
@@ -152,14 +152,14 @@ namespace YDock.View.Control
                             DesiredHeight = Math.Max(ActualHeight, Constants.DockDefaultHeightLength),
                             IsAnchorPanel = true
                         };
-                        panel._DetachChild(this);
-                        subPanel._AttachChild(this, 0);
+                        panel.InternalDetachChild(this);
+                        subPanel.AttachChild(this, 0);
                         subPanel.AttachChild(source, AttachMode.Right, 1);
-                        panel._AttachChild(subPanel, Math.Min(index, panel.Count));
+                        panel.AttachChild(subPanel, Math.Min(index, panel.Count));
                     }
                     else
                     {
-                        panel._AttachChild(source, index + 1);
+                        panel.AttachChild(source, index + 1);
                     }
 
                     break;
@@ -173,14 +173,14 @@ namespace YDock.View.Control
                             DesiredHeight = Math.Max(ActualHeight, Constants.DockDefaultHeightLength),
                             IsAnchorPanel = true
                         };
-                        panel._DetachChild(this);
-                        subPanel._AttachChild(this, 0);
+                        panel.InternalDetachChild(this);
+                        subPanel.AttachChild(this, 0);
                         subPanel.AttachChild(source, AttachMode.Bottom, 1);
-                        panel._AttachChild(subPanel, Math.Min(index, panel.Count));
+                        panel.AttachChild(subPanel, Math.Min(index, panel.Count));
                     }
                     else
                     {
-                        panel._AttachChild(source, index + 1);
+                        panel.AttachChild(source, index + 1);
                     }
 
                     break;

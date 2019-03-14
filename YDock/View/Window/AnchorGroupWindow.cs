@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -35,7 +35,7 @@ namespace YDock.View.Window
         #region Properties
 
         /// <summary>
-        ///     是否Content为<see cref="ILayoutGroupControl" />
+        ///     Whether Content is <see cref="ILayoutGroupControl" />
         /// </summary>
         public bool IsSingleMode
         {
@@ -43,7 +43,7 @@ namespace YDock.View.Window
         }
 
         /// <summary>
-        ///     是否需要Border
+        ///     Do you need a Border?
         /// </summary>
         public bool NoBorder
         {
@@ -63,23 +63,24 @@ namespace YDock.View.Window
 
             Owner = DockManager.MainWindow;
             base.AttachChild(child, mode, index);
-            if (child is BaseGroupControl)
+            if (child is BaseGroupControl control &&
+                control.Model is BaseLayoutGroup layoutGroup &&
+                layoutGroup.Children is INotifyCollectionChanged collection)
             {
-                (((child as BaseGroupControl).Model as BaseLayoutGroup).Children as ObservableCollection<IDockElement>).CollectionChanged += OnCollectionChanged;
+                collection.CollectionChanged += OnCollectionChanged;
             }
         }
 
         public override void DetachChild(IDockView child, bool force = true)
         {
-            if (child is BaseGroupControl)
+            if (child is BaseGroupControl control &&
+                control.Model is BaseLayoutGroup layoutGroup &&
+                layoutGroup.Children is INotifyCollectionChanged collection)
             {
-                (((child as BaseGroupControl).Model as BaseLayoutGroup).Children as ObservableCollection<IDockElement>).CollectionChanged -= OnCollectionChanged;
+                collection.CollectionChanged -= OnCollectionChanged;
             }
 
-            if (force)
-            {
-                Owner = null;
-            }
+            if (force) Owner = null;
 
             base.DetachChild(child, force);
             UpdateSize();
@@ -105,7 +106,7 @@ namespace YDock.View.Window
                     {
                         if (_menu == null)
                         {
-                            _ApplyMenu((Child as BaseGroupControl).SelectedItem as IDockItem);
+                            ApplyMenu(((BaseGroupControl)Child).SelectedItem as IDockItem);
                         }
 
                         _menu.IsOpen = true;
@@ -135,10 +136,9 @@ namespace YDock.View.Window
             if (_needReCreate)
             {
                 NeedReCreate = false;
-                if (Child != null)
+                if (Child is BaseGroupControl layoutControl)
                 {
-                    var layoutCtrl = Child as BaseGroupControl;
-                    layoutCtrl.IsDraggingFromDock = false;
+                    layoutControl.IsDraggingFromDock = false;
                 }
             }
         }
@@ -183,7 +183,7 @@ namespace YDock.View.Window
 
         #region Event handlers
 
-        private void OnCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             UpdateTemplate();
         }
@@ -217,20 +217,24 @@ namespace YDock.View.Window
             }
         }
 
-        private void _ApplyMenu(IDockItem item)
-        {
-            _menu = new DockMenu(item);
-            _menu.Placement = PlacementMode.MousePoint;
-        }
-
         private void ActiveSelf()
         {
-            if (IsSingleMode)
+            if (IsSingleMode &&
+                Content is BaseGroupControl groupControl &&
+                groupControl.Model is ILayoutGroup layoutGroup)
             {
-                ((Content as ILayoutGroupControl).Model as ILayoutGroup).ShowWithActive((Content as BaseGroupControl).SelectedIndex);
+                layoutGroup.ShowWithActive(groupControl.SelectedIndex);
             }
 
             DockManager.MainWindow.Activate();
+        }
+
+        private void ApplyMenu(IDockItem item)
+        {
+            _menu = new DockMenu(item)
+            {
+                Placement = PlacementMode.MousePoint
+            };
         }
 
         #endregion

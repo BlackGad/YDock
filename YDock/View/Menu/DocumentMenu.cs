@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 using YDock.Enum;
@@ -65,7 +64,7 @@ namespace YDock.View.Menu
 
             if (e.Command == GlobalCommands.CloseAllExceptCommand)
             {
-                e.CanExecute = TargetObj.Container.Children.Count() > 1;
+                e.CanExecute = TargetObj.Container.Children.Count > 1;
             }
 
             if (e.Command == GlobalCommands.ToFloatCommand)
@@ -116,25 +115,24 @@ namespace YDock.View.Menu
         {
             foreach (var item in Items)
             {
-                if (item is MenuItem)
+                if (item is MenuItem menuItem)
                 {
-                    var _item = item as MenuItem;
-                    switch ((int)_item.Tag)
+                    switch ((int)menuItem.Tag)
                     {
                         case 0:
-                            _item.Header = Properties.Resources._Close;
+                            menuItem.Header = Properties.Resources._Close;
                             break;
                         case 1:
-                            _item.Header = Properties.Resources.Close_All_Except;
+                            menuItem.Header = Properties.Resources.Close_All_Except;
                             break;
                         case 2:
-                            _item.Header = Properties.Resources.Close_All;
+                            menuItem.Header = Properties.Resources.Close_All;
                             break;
                         case 3:
-                            _item.Header = Properties.Resources.Float;
+                            menuItem.Header = Properties.Resources.Float;
                             break;
                         case 4:
-                            _item.Header = Properties.Resources.Float_All;
+                            menuItem.Header = Properties.Resources.Float_All;
                             break;
                     }
                 }

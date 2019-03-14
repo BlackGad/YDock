@@ -24,7 +24,7 @@ namespace YDock.View.Layout
         public override void AttachChild(IDockView child, AttachMode mode, int index)
         {
             if (index < 0 || index > Count) throw new ArgumentOutOfRangeException("index");
-            if (!_AssertMode(mode)) throw new ArgumentException("mode is illegal");
+            if (!AssertMode(mode)) throw new ArgumentException("mode is illegal");
 
             if (Count == 1 && ActualWidth > 0 && ActualHeight > 0)
             {
@@ -58,23 +58,23 @@ namespace YDock.View.Layout
                             {
                                 if (child is LayoutGroupPanel panel)
                                 {
-                                    _AttachSubPanel(panel, index);
+                                    AttachSubPanel(panel, index);
                                 }
                                 else
                                 {
-                                    _AttachChild(child, index);
+                                    AttachChild(child, index);
                                 }
                             }
                             else
                             {
-                                parent._DetachChild(this);
+                                parent.InternalDetachChild(this);
                                 var parentParent = new LayoutGroupPanel
                                 {
                                     Direction = Direction.Vertical 
                                 };
-                                parent._AttachChild(parentParent, parent.IndexOf(this));
-                                parentParent._AttachChild(this, 0);
-                                parentParent._AttachChild(child, mode == AttachMode.Top ? 0 : 1);
+                                parent.AttachChild(parentParent, parent.IndexOf(this));
+                                parentParent.AttachChild(this, 0);
+                                parentParent.AttachChild(child, mode == AttachMode.Top ? 0 : 1);
                             }
 
                             break;
@@ -83,23 +83,23 @@ namespace YDock.View.Layout
                             {
                                 if (child is LayoutGroupPanel panel)
                                 {
-                                    _AttachSubPanel(panel, index);
+                                    AttachSubPanel(panel, index);
                                 }
                                 else
                                 {
-                                    _AttachChild(child, index);
+                                    AttachChild(child, index);
                                 }
                             }
                             else
                             {
-                                parent._DetachChild(this);
+                                parent.InternalDetachChild(this);
                                 var parentParent = new LayoutGroupPanel
                                 {
                                     Direction = Direction.Horizontal
                                 };
-                                parent._AttachChild(parentParent, parent.IndexOf(this));
-                                parentParent._AttachChild(this, 0);
-                                parentParent._AttachChild(child, mode == AttachMode.Left ? 0 : 1);
+                                parent.AttachChild(parentParent, parent.IndexOf(this));
+                                parentParent.AttachChild(this, 0);
+                                parentParent.AttachChild(child, mode == AttachMode.Left ? 0 : 1);
                             }
 
                             break;
@@ -115,7 +115,7 @@ namespace YDock.View.Layout
                 throw new InvalidOperationException("not support Operation!");
             }
 
-            _DetachChild(child);
+            InternalDetachChild(child);
 
             if (DockViewParent != null) DockManager.Root.DocumentModels.Remove(child.Model as BaseLayoutGroup);
 
@@ -125,11 +125,11 @@ namespace YDock.View.Layout
 
             var wnd = (ILayoutViewParent)Parent;
             wnd.DetachChild(this, false);
-            _Dispose();
+            ProtectedDispose();
             wnd.AttachChild(Children[0] as IDockView, AttachMode.None, 0);
         }
 
-        internal override bool _AssertMode(AttachMode mode)
+        internal override bool AssertMode(AttachMode mode)
         {
             return mode == AttachMode.Left
                    || mode == AttachMode.Top
@@ -154,7 +154,7 @@ namespace YDock.View.Layout
                     Direction = mode == AttachMode.Left_WithSplit || mode == AttachMode.Right_WithSplit ? Direction.Horizontal : Direction.Vertical;
                 }
 
-                _AttachChild(child, index);
+                AttachChild(child, index);
 
                 if (DockViewParent != null)
                 {
@@ -174,7 +174,7 @@ namespace YDock.View.Layout
                 }
 
                 var control = new LayoutDocumentGroupControl(group);
-                _AttachChild(control, index);
+                AttachChild(control, index);
                 child.Dispose();
             }
 

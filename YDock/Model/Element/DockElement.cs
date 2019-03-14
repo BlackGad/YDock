@@ -433,7 +433,7 @@ namespace YDock.Model.Element
             if (_isVisible && IsDocument)
             {
                 IsVisible = false;
-                var id = DockManager.FindVisibleCtrl();
+                var id = DockManager.FindVisibleControl();
                 DockManager.PushBackwards(id);
                 DockManager.ShowByID(id);
             }

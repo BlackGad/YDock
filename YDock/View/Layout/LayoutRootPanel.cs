@@ -295,7 +295,7 @@ namespace YDock.View.Layout
             //先初始化Document区域
             RootGroupPanel = new LayoutGroupDocumentPanel();
             var _documentControl = new LayoutDocumentGroupControl((_model as DockRoot).DocumentModels[0]);
-            RootGroupPanel._AttachChild(_documentControl, 0);
+            RootGroupPanel.AttachChild(_documentControl, 0);
         }
 
         #endregion

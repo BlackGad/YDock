@@ -108,7 +108,7 @@ namespace YDock.View.Window
 
         #region Event handlers
 
-        //Popup在全屏时显示不全，这里将PopupRoot的高度强制为ScreenHeight
+        //Popup is not fully displayed in full screen, here the height of PopupRoot is forced to ScreenHeight
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
             DropPanel.SizeChanged -= OnSizeChanged;
@@ -119,7 +119,7 @@ namespace YDock.View.Window
 
                 if (parent != null && parent.ToString() == "System.Windows.Controls.Primitives.PopupRoot")
                 {
-                    (parent as FrameworkElement).Height = Math.Max(DropPanel.OuterRect.Height, MinHeight);
+                    ((FrameworkElement)parent).Height = Math.Max(DropPanel.OuterRect.Height, MinHeight);
                     break;
                 }
             } while (parent != null);

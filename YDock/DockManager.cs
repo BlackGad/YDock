@@ -869,7 +869,7 @@ namespace YDock
             _floatWindows.Add(window);
         }
 
-        internal int FindVisibleCtrl()
+        internal int FindVisibleControl()
         {
             foreach (var id in backwards)
             {

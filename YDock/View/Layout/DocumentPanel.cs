@@ -63,24 +63,24 @@ namespace YDock.View.Layout
 
             if (index > 0 && index < visibleChildren.Count && visibleChildren[index].IsSelected)
             {
-                var selecteditem = visibleChildren[index];
-                var startindex = index - 1;
-                for (; startindex >= 0; startindex--)
+                var selectedItem = visibleChildren[index];
+                var startIndex = index - 1;
+                for (; startIndex >= 0; startIndex--)
                 {
-                    var item = visibleChildren[startindex];
+                    var item = visibleChildren[startIndex];
                     width -= item.DesiredSize.Width + item.Margin.Left + item.Margin.Right;
-                    if (width <= finalSize.Width || startindex == 0) break;
+                    if (width <= finalSize.Width || startIndex == 0) break;
                 }
 
-                width -= selecteditem.DesiredSize.Width + selecteditem.Margin.Left + selecteditem.Margin.Right;
+                width -= selectedItem.DesiredSize.Width + selectedItem.Margin.Left + selectedItem.Margin.Right;
 
-                var element = selecteditem.Content as IDockElement;
+                var element = (IDockElement)selectedItem.Content;
                 var tab = element.Container;
-                tab.MoveTo(index, startindex);
+                tab.MoveTo(index, startIndex);
 
-                for (; startindex < visibleChildren.Count; startindex++)
+                for (; startIndex < visibleChildren.Count; startIndex++)
                 {
-                    var item = visibleChildren[startindex];
+                    var item = visibleChildren[startIndex];
                     item.Arrange(new Rect(new Point(width, 0), item.DesiredSize));
                     width += item.DesiredSize.Width + item.Margin.Left + item.Margin.Right;
                     if (width > finalSize.Width)

@@ -8,7 +8,6 @@ using System.Xml.Linq;
 using YDock.Enum;
 using YDock.Global.Commands;
 using YDock.Interface;
-using YDock.Model.Element;
 using YDock.Model.Layout;
 using YDock.View.Control;
 using YDock.View.Layout;
@@ -21,8 +20,8 @@ namespace YDock.View.Window
         protected DockManager _dockManager;
 
         protected double _heightExceed;
-        protected HwndSource _hwndSrc;
-        protected HwndSourceHook _hwndSrcHook;
+        protected HwndSource _hwndSource;
+        protected HwndSourceHook _hwndSourceHook;
 
         protected bool _isDragging;
 
@@ -35,14 +34,14 @@ namespace YDock.View.Window
         protected BaseFloatWindow(DockManager dockManager, bool needReCreate = false)
         {
             _dockManager = dockManager;
-            MinWidth = 150;
-            MinHeight = 60;
             _widthExceed = 0;
             _heightExceed = 0;
+
+            MinWidth = 150;
+            MinHeight = 60;
             NeedReCreate = needReCreate;
-            //AllowsTransparency = true;
-            //WindowStyle = WindowStyle.None;
             ShowActivated = true;
+
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
         }
@@ -69,7 +68,7 @@ namespace YDock.View.Window
 
         internal IntPtr Handle
         {
-            get { return _hwndSrc.Handle; }
+            get { return _hwndSource.Handle; }
         }
 
         internal double HeightExceed
@@ -119,10 +118,7 @@ namespace YDock.View.Window
             if (_dockManager == null) return;
             var child = Child;
             DetachChild(Child);
-            if (child is IDisposable)
-            {
-                child.Dispose();
-            }
+            child?.Dispose();
         }
 
         #endregion
@@ -131,21 +127,17 @@ namespace YDock.View.Window
 
         public virtual void DetachChild(IDockView child, bool force = true)
         {
-            if (child == Content)
-            {
-                DockManager.RemoveFloatWindow(this);
-                SaveSize();
-                if (child is BaseGroupControl)
-                {
-                    (child as BaseGroupControl).IsDraggingFromDock = false;
-                }
+            if (child != Content) return;
 
-                Content = null;
-                if (force)
-                {
-                    _dockManager = null;
-                }
+            DockManager.RemoveFloatWindow(this);
+            SaveSize();
+            if (child is BaseGroupControl control)
+            {
+                control.IsDraggingFromDock = false;
             }
+
+            Content = null;
+            if (force) _dockManager = null;
         }
 
         public virtual void AttachChild(IDockView child, AttachMode mode, int index)
@@ -154,19 +146,15 @@ namespace YDock.View.Window
             {
                 Content = child;
                 DockManager.AddFloatWindow(this);
-                Height = (child as ILayoutSize).DesiredHeight + _heightExceed;
-                Width = (child as ILayoutSize).DesiredWidth + _widthExceed;
+                var layoutSize = (ILayoutSize)child;
+                Height = layoutSize.DesiredHeight + _heightExceed;
+                Width = layoutSize.DesiredWidth + _widthExceed;
             }
         }
 
         public int IndexOf(IDockView child)
         {
-            if (child == Child)
-            {
-                return 0;
-            }
-
-            return -1;
+            return Equals(child, Child) ? 0 : -1;
         }
 
         #endregion
@@ -187,9 +175,9 @@ namespace YDock.View.Window
         {
             Loaded -= OnLoaded;
 
-            _hwndSrc = PresentationSource.FromDependencyObject(this) as HwndSource;
-            _hwndSrcHook = FilterMessage;
-            _hwndSrc.AddHook(_hwndSrcHook);
+            _hwndSource = PresentationSource.FromDependencyObject(this) as HwndSource;
+            _hwndSourceHook = FilterMessage;
+            _hwndSource?.AddHook(_hwndSourceHook);
         }
 
         protected virtual void OnMaximizeCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -216,11 +204,11 @@ namespace YDock.View.Window
         {
             Unloaded -= OnUnloaded;
 
-            if (_hwndSrc != null)
+            if (_hwndSource != null)
             {
-                _hwndSrc.RemoveHook(_hwndSrcHook);
-                _hwndSrc.Dispose();
-                _hwndSrc = null;
+                _hwndSource.RemoveHook(_hwndSourceHook);
+                _hwndSource.Dispose();
+                _hwndSource = null;
             }
         }
 
@@ -231,13 +219,13 @@ namespace YDock.View.Window
         public XElement GenerateLayout()
         {
             var element = new XElement("FloatWindow");
-            if (Child is BaseGroupControl)
+            if (Child is BaseGroupControl control)
             {
-                element.Add((Child as BaseGroupControl).GenerateLayout());
+                element.Add(control.GenerateLayout());
             }
-            else if (Child is LayoutGroupPanel)
+            else if (Child is LayoutGroupPanel panel)
             {
-                element.Add((Child as LayoutGroupPanel).GenerateLayout());
+                element.Add(panel.GenerateLayout());
             }
 
             return element;
@@ -246,7 +234,7 @@ namespace YDock.View.Window
         public void HitTest(Point p)
         {
             var p1 = (Content as FrameworkElement).PointToScreenDPIWithoutFlowDirection(new Point());
-            VisualTreeHelper.HitTest(Content as FrameworkElement, _HitFilter, _HitResult, new PointHitTestParameters(new Point(p.X - p1.X, p.Y - p1.Y)));
+            VisualTreeHelper.HitTest((FrameworkElement)Content, HitFilter, HitResult, new PointHitTestParameters(new Point(p.X - p1.X, p.Y - p1.Y)));
         }
 
         public virtual void Recreate()
@@ -255,12 +243,11 @@ namespace YDock.View.Window
 
         public void SaveSize()
         {
-            //保存Size信息
-            if (Content is ILayoutSize)
+            //Save Size information
+            if (Content is ILayoutSize child)
             {
-                var _child = Content as ILayoutSize;
-                _child.DesiredWidth = Math.Max(ActualWidth - _widthExceed, Constants.SideLength);
-                _child.DesiredHeight = Math.Max(ActualHeight - _heightExceed, Constants.SideLength);
+                child.DesiredWidth = Math.Max(ActualWidth - _widthExceed, Constants.SideLength);
+                child.DesiredHeight = Math.Max(ActualHeight - _heightExceed, Constants.SideLength);
             }
         }
 
@@ -310,14 +297,14 @@ namespace YDock.View.Window
                         _isDragging = false;
                     }
 
-                    _UpdateLocation(Child);
+                    UpdateLocation(Child);
                     break;
             }
 
             return IntPtr.Zero;
         }
 
-        private HitTestFilterBehavior _HitFilter(DependencyObject potentialHitTestTarget)
+        private HitTestFilterBehavior HitFilter(DependencyObject potentialHitTestTarget)
         {
             if (potentialHitTestTarget is BaseGroupControl target)
             {
@@ -330,34 +317,34 @@ namespace YDock.View.Window
             return HitTestFilterBehavior.Continue;
         }
 
-        private HitTestResultBehavior _HitResult(HitTestResult result)
+        private HitTestResultBehavior HitResult(HitTestResult result)
         {
             DockManager.DragManager.DragTarget = null;
             return HitTestResultBehavior.Stop;
         }
 
-        private void _UpdateLocation(object obj)
+        private void UpdateLocation(object obj)
         {
             if (obj != null)
             {
-                if (obj is LayoutGroupPanel)
+                if (obj is LayoutGroupPanel panel)
                 {
-                    foreach (var child in (obj as LayoutGroupPanel).Children)
+                    foreach (var child in panel.Children)
                     {
-                        _UpdateLocation(child as IDockView);
+                        UpdateLocation(child as IDockView);
                     }
                 }
 
                 if (obj is BaseGroupControl)
                 {
-                    var size = obj as ILayoutSize;
+                    var size = (ILayoutSize)obj;
                     size.FloatLeft = Left;
                     size.FloatTop = Top;
                 }
 
-                if (obj is BaseLayoutGroup)
+                if (obj is BaseLayoutGroup group)
                 {
-                    foreach (DockElement item in (obj as BaseLayoutGroup).Children)
+                    foreach (var item in group.Children)
                     {
                         item.FloatLeft = Left;
                         item.FloatTop = Top;

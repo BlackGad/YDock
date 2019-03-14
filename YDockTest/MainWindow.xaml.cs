@@ -154,7 +154,7 @@ namespace YDockTest
         }
     }
 
-    public class Doc : Button, IDockSource
+    public class Doc : TextBlock, IDockSource
     {
         public Doc(string header)
         {

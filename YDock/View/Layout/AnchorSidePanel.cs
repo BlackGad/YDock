@@ -7,13 +7,14 @@ namespace YDock.View.Layout
 {
     public class AnchorSidePanel : Panel
     {
-        ///<summary>此标志位表示Arrange时是否需要补偿子元素的宽度</summary>
+        ///<summary>This flag indicates whether it is necessary to compensate for the width of the child element when Arrange</summary>
         private bool _needCompensate;
 
         #region Override members
 
         /// <summary>
-        ///     测量阶段若子元素总宽度超过可用宽度，则对子元素的宽度进行排序后依次裁剪多余得到宽度
+        ///     In the measurement phase, if the total width of the child elements exceeds the available width, the width of the
+        ///     child elements is sorted, and the excess width is sequentially cut.
         /// </summary>
         /// <param name="availableSize"></param>
         /// <returns></returns>
@@ -30,36 +31,29 @@ namespace YDock.View.Layout
                 height = Math.Max(height, child.DesiredSize.Height);
             }
 
-            //超过可用宽度
+            //More than available width
             if (width > availableSize.Width)
             {
                 _needCompensate = true;
-                //超过的部分
+                //Exceeded part
                 var exceed = width - availableSize.Width;
-                //将元素按宽度从大到小排序,多余的长度从最长的元素开始裁剪
+                //Sort elements by width from large to small, and extra lengths are cropped from the longest element
                 visibleChildren.Sort(new ElementComparer<FrameworkElement>((a, b) =>
                 {
-                    if (a.DesiredSize.Width == b.DesiredSize.Width)
-                    {
-                        return 0;
-                    }
-
-                    if (a.DesiredSize.Width > b.DesiredSize.Width)
-                    {
-                        return -1;
-                    }
+                    if (Math.Abs(a.DesiredSize.Width - b.DesiredSize.Width) < double.Epsilon) return 0;
+                    if (a.DesiredSize.Width > b.DesiredSize.Width) return -1;
 
                     return 1;
                 }));
 
-                //当前宽度为最大宽度的元素个数
+                //The number of elements whose current width is the maximum width
                 var currentCnt = 0;
-                //当前最大宽度
+                //Current maximum width
                 var currentWidth = visibleChildren[0].DesiredSize.Width;
-                //若最大宽度有多个元素，则要一起进行裁剪
+                //If there are multiple elements in the maximum width, they will be cropped together.
                 foreach (var child in visibleChildren)
                 {
-                    if (child.DesiredSize.Width == currentWidth)
+                    if (Math.Abs(child.DesiredSize.Width - currentWidth) < double.Epsilon)
                     {
                         currentCnt++;
                     }
@@ -71,7 +65,7 @@ namespace YDock.View.Layout
 
                 while (exceed > 0)
                 {
-                    //表示所有子元素裁剪后宽度全部一致了
+                    //Indicates that all child elements are all the same width after clipping.
                     if (currentCnt == visibleChildren.Count)
                     {
                         if (currentCnt * currentWidth >= exceed)
@@ -87,7 +81,7 @@ namespace YDock.View.Layout
                     }
                     else
                     {
-                        //获得第二宽的元素的宽度作为本轮裁剪的目标值
+                        //Obtain the width of the second wide element as the target value of the current crop
                         var nextLen = visibleChildren[currentCnt].DesiredSize.Width;
                         if ((currentWidth - nextLen) * currentCnt >= exceed)
                         {
@@ -99,7 +93,7 @@ namespace YDock.View.Layout
                             exceed -= (currentWidth - nextLen) * currentCnt;
                             for (var i = currentCnt; i < visibleChildren.Count; i++)
                             {
-                                if (visibleChildren[currentCnt].DesiredSize.Width == nextLen)
+                                if (Math.Abs(visibleChildren[currentCnt].DesiredSize.Width - nextLen) < double.Epsilon)
                                 {
                                     currentCnt++;
                                 }
@@ -114,7 +108,7 @@ namespace YDock.View.Layout
                     }
                 }
 
-                //裁剪后，对宽度改变的元素重新进行测量
+                //After cropping, re-measure the elements with the changed width
                 for (var i = 0; i < currentCnt; i++)
                 {
                     visibleChildren[i].Measure(new Size(currentWidth, height));
@@ -126,16 +120,20 @@ namespace YDock.View.Layout
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var visibleChildren = InternalChildren.Cast<FrameworkElement>().Where(element => element.Visibility != Visibility.Collapsed);
+            var visibleChildren = InternalChildren.OfType<FrameworkElement>()
+                                                  .Where(element => element.Visibility != Visibility.Collapsed)
+                                                  .ToList();
 
             var wholeLength = visibleChildren.Sum(a => a.DesiredSize.Width);
             double delta = 0;
 
-            //由于TextBlock的TextTrimming="CharacterEllipsis"时，由于字符裁剪会导致DesiredSize的Width变得比实际尺寸小，故在这里补偿
+            //Due to TextBlock's TextTrimming="CharacterEllipsis",
+            //since the character clipping will cause the DesiredSize Width to become smaller than the actual size,
+            //compensate here.
             if (wholeLength < finalSize.Width && _needCompensate)
             {
                 _needCompensate = false;
-                delta = (finalSize.Width - wholeLength) / visibleChildren.Count();
+                delta = (finalSize.Width - wholeLength) / visibleChildren.Count;
             }
 
             var offset = 0.0;

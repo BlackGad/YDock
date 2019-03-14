@@ -73,7 +73,7 @@ namespace YDock.View.Control
                             DesiredHeight = Math.Max(parent.ActualHeight, Constants.DockDefaultHeightLength),
                             Direction = DropMode == DropMode.Left_WithSplit || DropMode == DropMode.Right_WithSplit ? Direction.Horizontal : Direction.Vertical
                         };
-                        panel._AttachChild(this, 0);
+                        panel.AttachChild(this, 0);
                         if (DropMode == DropMode.Left_WithSplit || DropMode == DropMode.Top_WithSplit)
                         {
                             panel.AttachChild(child, DropMode == DropMode.Left_WithSplit ? AttachMode.Left_WithSplit : AttachMode.Top_WithSplit, 0);
@@ -119,7 +119,7 @@ namespace YDock.View.Control
                         {
                             Direction = DropMode == DropMode.Left || DropMode == DropMode.Right ? Direction.Horizontal : Direction.Vertical
                         };
-                        parentPanel._AttachChild(parent, 0);
+                        parentPanel.AttachChild(parent, 0);
                         switch (DropMode)
                         {
                             case DropMode.Left:
@@ -156,14 +156,14 @@ namespace YDock.View.Control
                                 }
                                 else
                                 {
-                                    panel._DetachChild(parent);
+                                    panel.InternalDetachChild(parent);
                                     var parentPanel = new LayoutGroupPanel
                                     {
                                         Direction = Direction.Horizontal
                                     };
-                                    parentPanel._AttachChild(parent, 0);
-                                    parentPanel._AttachChild(child, 0);
-                                    panel._AttachChild(parentPanel, Math.Min(index, panel.Count));
+                                    parentPanel.AttachChild(parent, 0);
+                                    parentPanel.AttachChild(child, 0);
+                                    panel.AttachChild(parentPanel, Math.Min(index, panel.Count));
                                 }
 
                                 break;
@@ -175,14 +175,14 @@ namespace YDock.View.Control
                                 }
                                 else
                                 {
-                                    panel._DetachChild(parent);
+                                    panel.InternalDetachChild(parent);
                                     var parentPanel = new LayoutGroupPanel
                                     {
                                         Direction = Direction.Vertical
                                     };
-                                    parentPanel._AttachChild(parent, 0);
-                                    parentPanel._AttachChild(child, 0);
-                                    panel._AttachChild(parentPanel, Math.Min(index, panel.Count));
+                                    parentPanel.AttachChild(parent, 0);
+                                    parentPanel.AttachChild(child, 0);
+                                    panel.AttachChild(parentPanel, Math.Min(index, panel.Count));
                                 }
 
                                 break;
@@ -194,14 +194,14 @@ namespace YDock.View.Control
                                 }
                                 else
                                 {
-                                    panel._DetachChild(parent);
+                                    panel.InternalDetachChild(parent);
                                     var parentPanel = new LayoutGroupPanel
                                     {
                                         Direction = Direction.Horizontal
                                     };
-                                    parentPanel._AttachChild(parent, 0);
-                                    parentPanel._AttachChild(child, 1);
-                                    panel._AttachChild(parentPanel, Math.Min(index, panel.Count));
+                                    parentPanel.AttachChild(parent, 0);
+                                    parentPanel.AttachChild(child, 1);
+                                    panel.AttachChild(parentPanel, Math.Min(index, panel.Count));
                                 }
 
                                 break;
@@ -213,14 +213,14 @@ namespace YDock.View.Control
                                 }
                                 else
                                 {
-                                    panel._DetachChild(parent);
+                                    panel.InternalDetachChild(parent);
                                     var parentPanel = new LayoutGroupPanel
                                     {
                                         Direction = Direction.Vertical
                                     };
-                                    parentPanel._AttachChild(parent, 0);
-                                    parentPanel._AttachChild(child, 1);
-                                    panel._AttachChild(parentPanel, Math.Min(index, panel.Count));
+                                    parentPanel.AttachChild(parent, 0);
+                                    parentPanel.AttachChild(child, 1);
+                                    panel.AttachChild(parentPanel, Math.Min(index, panel.Count));
                                 }
 
                                 break;

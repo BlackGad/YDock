@@ -17,25 +17,20 @@ using YDock.View.Window;
 namespace YDock.View.Layout
 {
     /// <summary>
-    ///     the core class for layout and resize region
+    ///     The core class for layout and resize region
     /// </summary>
     public class LayoutGroupPanel : Panel,
                                     ILayoutPanel,
                                     IDragTarget
     {
-        private double _desiredHeight;
-
-        private double _desiredWidth;
-
         private double _dragBound1;
         private double _dragBound2;
         private Popup _dragPopup;
 
         private DropWindow _dragWnd;
-        private bool _isAnchorPanel;
+        private Point _pointToScreen;
 
         private DockSide _side;
-        private Point _pointToScreen;
 
         #region Constructors
 
@@ -49,7 +44,7 @@ namespace YDock.View.Layout
         #region Properties
 
         /// <summary>
-        ///     表示该Panel的Children中递归包含<see cref="LayoutDocumentGroupControl" />
+        ///     Represents recursion in the Children of the Panel containing <see cref="LayoutDocumentGroupControl" />
         /// </summary>
         public bool ContainDocument
         {
@@ -77,10 +72,10 @@ namespace YDock.View.Layout
             if (InternalChildren.Count == 0) return availableSize;
             if (IsAnchorPanel || IsDocumentPanel)
             {
-                return _MeasureOverrideFull(availableSize);
+                return MeasureOverrideFull(availableSize);
             }
 
-            return _MeasureOverrideSplit(availableSize);
+            return MeasureOverrideSplit(availableSize);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -88,10 +83,10 @@ namespace YDock.View.Layout
             if (InternalChildren.Count == 0) return finalSize;
             if (IsAnchorPanel || IsDocumentPanel)
             {
-                return _ArrangeOverrideFull(finalSize);
+                return ArrangeOverrideFull(finalSize);
             }
 
-            return _ArrangeOverrideSplit(finalSize);
+            return ArrangeOverrideSplit(finalSize);
         }
 
         #endregion
@@ -108,10 +103,10 @@ namespace YDock.View.Layout
         public void OnDrop(DragItem source)
         {
             IDockView child;
-            if (source.RelativeObj is BaseFloatWindow)
+            if (source.RelativeObj is BaseFloatWindow window)
             {
-                child = (source.RelativeObj as BaseFloatWindow).Child;
-                (source.RelativeObj as BaseFloatWindow).DetachChild(child);
+                child = window.Child;
+                window.DetachChild(child);
             }
             else
             {
@@ -120,7 +115,7 @@ namespace YDock.View.Layout
 
             DockManager.ChangeDockMode(child, DockMode.Normal);
             DockManager.FormatChildSize(child as ILayoutSize, new Size(ActualWidth, ActualHeight));
-            //取消AttachObj信息
+            //Cancel AttachObj information
             DockManager.ClearAttachObj(child);
 
             switch (DropMode)
@@ -143,9 +138,9 @@ namespace YDock.View.Layout
                     break;
             }
 
-            if (source.RelativeObj is BaseFloatWindow)
+            if (source.RelativeObj is BaseFloatWindow floatWindow)
             {
-                (source.RelativeObj as BaseFloatWindow).Close();
+                floatWindow.Close();
             }
         }
 
@@ -213,7 +208,8 @@ namespace YDock.View.Layout
         #region ILayoutPanel Members
 
         /// <summary>
-        ///     表示该Panel的Children中除了<see cref="LayoutDragSplitter" />就是<see cref="LayoutDocumentGroupControl" />
+        ///     Indicates that the Children of the Panel except <see cref="LayoutDragSplitter" /> is
+        ///     <see cref="LayoutDocumentGroupControl" />
         /// </summary>
         public bool IsDocumentPanel
         {
@@ -221,19 +217,10 @@ namespace YDock.View.Layout
         }
 
         /// <summary>
-        ///     表示该Panel的Children中除了<see cref="LayoutDragSplitter" />就是<see cref="AnchorSideGroupControl" />
+        ///     Indicates that the Children of the Panel except <see cref="LayoutDragSplitter" /> is
+        ///     <see cref="AnchorSideGroupControl" />
         /// </summary>
-        public bool IsAnchorPanel
-        {
-            get { return _isAnchorPanel; }
-            internal set
-            {
-                if (_isAnchorPanel != value)
-                {
-                    _isAnchorPanel = value;
-                }
-            }
-        }
+        public bool IsAnchorPanel { get; internal set; }
 
         public int Count
         {
@@ -247,9 +234,9 @@ namespace YDock.View.Layout
                 var parent = DockViewParent;
                 while (parent?.DockViewParent != null)
                 {
-                    if (parent.DockViewParent is DockManager)
+                    if (parent.DockViewParent is DockManager manager)
                     {
-                        return parent.DockViewParent as DockManager;
+                        return manager;
                     }
 
                     parent = parent.DockViewParent;
@@ -259,42 +246,20 @@ namespace YDock.View.Layout
             }
         }
 
-        public double DesiredWidth
-        {
-            get { return _desiredWidth; }
-            set
-            {
-                if (_desiredWidth != value)
-                {
-                    _desiredWidth = value;
-                }
-            }
-        }
+        public double DesiredWidth { get; set; }
 
-        public double DesiredHeight
-        {
-            get { return _desiredHeight; }
-            set
-            {
-                if (_desiredHeight != value)
-                {
-                    _desiredHeight = value;
-                }
-            }
-        }
+        public double DesiredHeight { get; set; }
 
         public double FloatLeft
         {
-            get { throw new NotImplementedException(); }
-
-            set { throw new NotImplementedException(); }
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
         }
 
         public double FloatTop
         {
-            get { throw new NotImplementedException(); }
-
-            set { throw new NotImplementedException(); }
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
         }
 
         public DockSide Side
@@ -307,14 +272,15 @@ namespace YDock.View.Layout
                     _side = value;
                     foreach (var child in Children)
                     {
-                        if (child is ILayoutPanel)
+                        if (child is LayoutGroupPanel layoutGroupPanel)
                         {
-                            (child as LayoutGroupPanel).Side = value;
+                            layoutGroupPanel.Side = value;
                         }
 
-                        if (child is BaseGroupControl)
+                        if (child is BaseGroupControl control &&
+                            control.Model is BaseLayoutGroup layoutGroup)
                         {
-                            ((child as BaseGroupControl).Model as BaseLayoutGroup).Side = value;
+                            layoutGroup.Side = value;
                         }
                     }
                 }
@@ -333,8 +299,8 @@ namespace YDock.View.Layout
 
         public virtual void AttachChild(IDockView child, AttachMode mode, int index)
         {
-            if (index < 0 || index > Count) throw new ArgumentOutOfRangeException("index out of range!");
-            if (!_AssertMode(mode)) throw new ArgumentException("mode is illegal!");
+            if (index < 0 || index > Count) throw new ArgumentOutOfRangeException("index");
+            if (!AssertMode(mode)) throw new ArgumentException("mode is illegal!");
 
             var flag = true;
 
@@ -354,10 +320,10 @@ namespace YDock.View.Layout
                 case Direction.Horizontal:
                     if (mode == AttachMode.Left || mode == AttachMode.Right)
                     {
-                        if (child is LayoutGroupPanel && !(child as LayoutGroupPanel).IsDocumentPanel)
+                        if (child is LayoutGroupPanel panel && !panel.IsDocumentPanel)
                         {
                             flag = false;
-                            _AttachSubPanel(child as LayoutGroupPanel, index);
+                            AttachSubPanel(panel, index);
                         }
                     }
                     else
@@ -377,10 +343,10 @@ namespace YDock.View.Layout
                 case Direction.Vertical:
                     if (mode == AttachMode.Top || mode == AttachMode.Bottom)
                     {
-                        if (child is LayoutGroupPanel && !(child as LayoutGroupPanel).IsDocumentPanel)
+                        if (child is LayoutGroupPanel panel && !panel.IsDocumentPanel)
                         {
                             flag = false;
-                            _AttachSubPanel(child as LayoutGroupPanel, index);
+                            AttachSubPanel(panel, index);
                         }
                     }
                     else
@@ -401,61 +367,58 @@ namespace YDock.View.Layout
 
             if (flag)
             {
-                _AttachChild(child, index);
+                AttachChild(child, index);
             }
         }
 
         public virtual void DetachChild(IDockView child, bool force = true)
         {
-            if (Children.Contains(child as UIElement))
+            if (!Children.Contains(child as UIElement)) return;
+
+            InternalDetachChild(child);
+            if (!force) return;
+
+            if (Children.Count < 2)
             {
-                _DetachChild(child);
-                if (force)
+                Direction = Direction.None;
+                IsAnchorPanel = false;
+            }
+
+            //If the element is empty and not a RootPanel, recursively remove it from the Parent
+            if (Children.Count == 0 && !IsRootPanel)
+            {
+                ((ILayoutViewParent)Parent).DetachChild(this);
+                Dispose();
+            }
+
+            //If there is only one element, the child element level is decremented by one.
+            if (Children.Count != 1) return;
+
+            child = Children[0] as IDockView;
+            var parent = (ILayoutViewParent)Parent;
+            var index = parent.IndexOf(this);
+            //Remove yourself from the parent container
+            parent.DetachChild(this, false);
+            ProtectedDispose();
+            //Add your own child elements from the parent container
+            if (parent is LayoutGroupPanel panel)
+            {
+                switch (panel.Direction)
                 {
-                    if (Children.Count < 2)
-                    {
-                        Direction = Direction.None;
-                        _isAnchorPanel = false;
-                    }
-
-                    //若元素为空，且不是RootPanel，则递归的将其从Parent中移除
-                    if (Children.Count == 0 && !IsRootPanel)
-                    {
-                        (Parent as ILayoutViewParent).DetachChild(this);
-                        Dispose();
-                    }
-
-                    //若元素只有一个，则将子元素层次减一
-                    if (Children.Count == 1)
-                    {
-                        child = Children[0] as IDockView;
-                        var parent = Parent as ILayoutViewParent;
-                        var index = parent.IndexOf(this);
-                        //从父容器中移除自己
-                        parent.DetachChild(this, false);
-                        _Dispose();
-                        //从父容器中加入自己的子元素
-                        if (parent is LayoutGroupPanel)
-                        {
-                            switch ((parent as LayoutGroupPanel).Direction)
-                            {
-                                case Direction.None:
-                                    parent.AttachChild(child, AttachMode.None, Math.Max(index - 1, 0));
-                                    break;
-                                case Direction.Horizontal:
-                                    parent.AttachChild(child, AttachMode.Left, Math.Max(index - 1, 0));
-                                    break;
-                                case Direction.Vertical:
-                                    parent.AttachChild(child, AttachMode.Top, Math.Max(index - 1, 0));
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            parent.AttachChild(child, AttachMode.None, Math.Max(index - 1, 0));
-                        }
-                    }
+                    case Direction.None:
+                        panel.AttachChild(child, AttachMode.None, Math.Max(index - 1, 0));
+                        break;
+                    case Direction.Horizontal:
+                        panel.AttachChild(child, AttachMode.Left, Math.Max(index - 1, 0));
+                        break;
+                    case Direction.Vertical:
+                        panel.AttachChild(child, AttachMode.Top, Math.Max(index - 1, 0));
+                        break;
                 }
+            }
+            else
+            {
+                parent.AttachChild(child, AttachMode.None, Math.Max(index - 1, 0));
             }
         }
 
@@ -475,9 +438,9 @@ namespace YDock.View.Layout
         {
             foreach (var child in Children)
             {
-                if (child is IDisposable)
+                if (child is IDisposable disposable)
                 {
-                    (child as IDisposable).Dispose();
+                    disposable.Dispose();
                 }
             }
 
@@ -492,30 +455,29 @@ namespace YDock.View.Layout
         private void OnDragCompleted(object sender, DragCompletedEventArgs e)
         {
             var delta = Direction == Direction.Horizontal ? _dragPopup.HorizontalOffset - _pointToScreen.X : _dragPopup.VerticalOffset - _pointToScreen.Y;
-            double span1 = 0, span2 = 0;
             var index = Children.IndexOf(sender as UIElement);
-            span1 = _GetMinLength(Children[index - 1]);
-            span2 = _GetMinLength(Children[index + 1]);
-            if (delta != 0)
+            var span1 = GetMinLength(Children[index - 1]);
+            var span2 = GetMinLength(Children[index + 1]);
+            if (Math.Abs(delta) > double.Epsilon)
             {
                 if (Direction == Direction.Horizontal)
                 {
                     if (_dragPopup.HorizontalOffset >= _dragBound1 + span1 && _dragPopup.HorizontalOffset <= _dragBound2 - span2)
                     {
-                        (Children[index - 1] as ILayoutSize).DesiredWidth += delta;
-                        (Children[index + 1] as ILayoutSize).DesiredWidth -= delta;
+                        ((ILayoutSize)Children[index - 1]).DesiredWidth += delta;
+                        ((ILayoutSize)Children[index + 1]).DesiredWidth -= delta;
                     }
                     else
                     {
                         if (delta > 0)
                         {
-                            (Children[index - 1] as ILayoutSize).DesiredWidth += _dragBound2 - span2 - _pointToScreen.X;
-                            (Children[index + 1] as ILayoutSize).DesiredWidth -= _dragBound2 - span2 - _pointToScreen.X;
+                            ((ILayoutSize)Children[index - 1]).DesiredWidth += _dragBound2 - span2 - _pointToScreen.X;
+                            ((ILayoutSize)Children[index + 1]).DesiredWidth -= _dragBound2 - span2 - _pointToScreen.X;
                         }
                         else
                         {
-                            (Children[index - 1] as ILayoutSize).DesiredWidth += _dragBound1 + span1 - _pointToScreen.X;
-                            (Children[index + 1] as ILayoutSize).DesiredWidth -= _dragBound1 + span1 - _pointToScreen.X;
+                            ((ILayoutSize)Children[index - 1]).DesiredWidth += _dragBound1 + span1 - _pointToScreen.X;
+                            ((ILayoutSize)Children[index + 1]).DesiredWidth -= _dragBound1 + span1 - _pointToScreen.X;
                         }
                     }
                 }
@@ -523,26 +485,26 @@ namespace YDock.View.Layout
                 {
                     if (_dragPopup.VerticalOffset >= _dragBound1 + span1 && _dragPopup.VerticalOffset <= _dragBound2 - span2)
                     {
-                        (Children[index - 1] as ILayoutSize).DesiredHeight += delta;
-                        (Children[index + 1] as ILayoutSize).DesiredHeight -= delta;
+                        ((ILayoutSize)Children[index - 1]).DesiredHeight += delta;
+                        ((ILayoutSize)Children[index + 1]).DesiredHeight -= delta;
                     }
                     else
                     {
                         if (delta > 0)
                         {
-                            (Children[index - 1] as ILayoutSize).DesiredHeight += _dragBound2 - span2 - _pointToScreen.Y;
-                            (Children[index + 1] as ILayoutSize).DesiredHeight -= _dragBound2 - span2 - _pointToScreen.Y;
+                            ((ILayoutSize)Children[index - 1]).DesiredHeight += _dragBound2 - span2 - _pointToScreen.Y;
+                            ((ILayoutSize)Children[index + 1]).DesiredHeight -= _dragBound2 - span2 - _pointToScreen.Y;
                         }
                         else
                         {
-                            (Children[index - 1] as ILayoutSize).DesiredHeight += _dragBound1 + span1 - _pointToScreen.Y;
-                            (Children[index + 1] as ILayoutSize).DesiredHeight -= _dragBound1 + span1 - _pointToScreen.Y;
+                            ((ILayoutSize)Children[index - 1]).DesiredHeight += _dragBound1 + span1 - _pointToScreen.Y;
+                            ((ILayoutSize)Children[index + 1]).DesiredHeight -= _dragBound1 + span1 - _pointToScreen.Y;
                         }
                     }
                 }
             }
 
-            _DisposeDragPopup();
+            DisposeDragPopup();
 
             InvalidateMeasure();
         }
@@ -551,7 +513,7 @@ namespace YDock.View.Layout
         {
             if (Direction == Direction.Horizontal)
             {
-                if (e.HorizontalChange != 0)
+                if (Math.Abs(e.HorizontalChange) > double.Epsilon)
                 {
                     var newPos = _pointToScreen.X + e.HorizontalChange;
                     if (_dragBound1 + Constants.SideLength >= _dragBound2 - Constants.SideLength) return;
@@ -575,40 +537,40 @@ namespace YDock.View.Layout
                 {
                     _dragPopup.HorizontalOffset = _pointToScreen.X;
                 }
+
+                return;
             }
-            else
+
+            if (Math.Abs(e.VerticalChange) > double.Epsilon)
             {
-                if (e.VerticalChange != 0)
+                var newPos = _pointToScreen.Y + e.VerticalChange;
+                if (_dragBound1 + Constants.SideLength >= _dragBound2 - Constants.SideLength) return;
+                if (newPos >= _dragBound1 + Constants.SideLength && newPos <= _dragBound2 - Constants.SideLength)
                 {
-                    var newPos = _pointToScreen.Y + e.VerticalChange;
-                    if (_dragBound1 + Constants.SideLength >= _dragBound2 - Constants.SideLength) return;
-                    if (newPos >= _dragBound1 + Constants.SideLength && newPos <= _dragBound2 - Constants.SideLength)
-                    {
-                        _dragPopup.VerticalOffset = newPos;
-                    }
-                    else
-                    {
-                        if (e.VerticalChange > 0)
-                        {
-                            _dragPopup.VerticalOffset = _dragBound2 - Constants.SideLength;
-                        }
-                        else
-                        {
-                            _dragPopup.VerticalOffset = _dragBound1 + Constants.SideLength;
-                        }
-                    }
+                    _dragPopup.VerticalOffset = newPos;
                 }
                 else
                 {
-                    _dragPopup.VerticalOffset = _pointToScreen.Y;
+                    if (e.VerticalChange > 0)
+                    {
+                        _dragPopup.VerticalOffset = _dragBound2 - Constants.SideLength;
+                    }
+                    else
+                    {
+                        _dragPopup.VerticalOffset = _dragBound1 + Constants.SideLength;
+                    }
                 }
+            }
+            else
+            {
+                _dragPopup.VerticalOffset = _pointToScreen.Y;
             }
         }
 
         private void OnDragStarted(object sender, DragStartedEventArgs e)
         {
-            _ComputeDragBounds(sender as LayoutDragSplitter, ref _dragBound1, ref _dragBound2);
-            _CreateDragPopup(sender as LayoutDragSplitter);
+            ComputeDragBounds(sender as LayoutDragSplitter, ref _dragBound1, ref _dragBound2);
+            CreateDragPopup(sender as LayoutDragSplitter);
         }
 
         #endregion
@@ -631,45 +593,45 @@ namespace YDock.View.Layout
             element.SetAttributeValue("Direction", Direction);
             foreach (var child in Children)
             {
-                if (child is BaseGroupControl)
+                if (child is BaseGroupControl control)
                 {
-                    element.Add((child as BaseGroupControl).GenerateLayout());
+                    element.Add(control.GenerateLayout());
                 }
-                else if (child is LayoutGroupPanel)
+                else if (child is LayoutGroupPanel panel)
                 {
-                    element.Add((child as LayoutGroupPanel).GenerateLayout());
+                    element.Add(panel.GenerateLayout());
                 }
             }
 
             return element;
         }
 
-        protected void _AttachSubPanel(LayoutGroupPanel subpanel, int index)
+        protected void AttachSubPanel(LayoutGroupPanel subPanel, int index)
         {
             var children = new List<UIElement>();
-            foreach (UIElement element in subpanel.Children)
+            foreach (UIElement element in subPanel.Children)
             {
                 children.Add(element);
             }
 
             children.Reverse();
-            subpanel.Children.Clear();
+            subPanel.Children.Clear();
             foreach (var element in children)
             {
-                if (element is IDockView)
+                if (element is IDockView view)
                 {
-                    _AttachChild(element as IDockView, index);
+                    AttachChild(view, index);
                 }
             }
         }
 
-        protected void _Dispose()
+        protected void ProtectedDispose()
         {
             Children.Clear();
             Disposed(this, new EventArgs());
         }
 
-        internal virtual bool _AssertMode(AttachMode mode)
+        internal virtual bool AssertMode(AttachMode mode)
         {
             return mode == AttachMode.Left
                    || mode == AttachMode.Top
@@ -677,9 +639,9 @@ namespace YDock.View.Layout
                    || mode == AttachMode.Bottom;
         }
 
-        internal void _AttachChild(IDockView child, int index)
+        internal void AttachChild(IDockView child, int index)
         {
-            Children.Insert(index, child as UIElement);
+            Children.Insert(index, (UIElement)child);
             if (Children.Count > 1)
             {
                 switch (Direction)
@@ -687,22 +649,22 @@ namespace YDock.View.Layout
                     case Direction.Horizontal:
                         if (index % 2 == 0)
                         {
-                            Children.Insert(index + 1, _CreateSplitter(Cursors.SizeWE));
+                            Children.Insert(index + 1, CreateSplitter(Cursors.SizeWE));
                         }
                         else
                         {
-                            Children.Insert(index, _CreateSplitter(Cursors.SizeWE));
+                            Children.Insert(index, CreateSplitter(Cursors.SizeWE));
                         }
 
                         break;
                     case Direction.Vertical:
                         if (index % 2 == 0)
                         {
-                            Children.Insert(index + 1, _CreateSplitter(Cursors.SizeNS));
+                            Children.Insert(index + 1, CreateSplitter(Cursors.SizeNS));
                         }
                         else
                         {
-                            Children.Insert(index, _CreateSplitter(Cursors.SizeNS));
+                            Children.Insert(index, CreateSplitter(Cursors.SizeNS));
                         }
 
                         break;
@@ -710,7 +672,28 @@ namespace YDock.View.Layout
             }
         }
 
-        internal LayoutDragSplitter _CreateSplitter(Cursor cursor)
+        internal void AttachToRootPanel(IDockView child, AttachMode mode)
+        {
+            var parent = (ILayoutViewParent)Parent;
+            parent.DetachChild(this);
+            var parentPanel = new LayoutGroupPanel
+            {
+                Direction = mode == AttachMode.Left || mode == AttachMode.Right ? Direction.Horizontal : Direction.Vertical
+            };
+            parent.AttachChild(parentPanel, AttachMode.None, 0);
+            if (mode == AttachMode.Left || mode == AttachMode.Top)
+            {
+                parentPanel.AttachChild(this, 0);
+                parentPanel.AttachChild(child, 0);
+            }
+            else
+            {
+                parentPanel.AttachChild(child, 0);
+                parentPanel.AttachChild(this, 0);
+            }
+        }
+
+        internal LayoutDragSplitter CreateSplitter(Cursor cursor)
         {
             var splitter = new LayoutDragSplitter
             {
@@ -723,14 +706,14 @@ namespace YDock.View.Layout
             return splitter;
         }
 
-        internal void _DesstroySplitter(LayoutDragSplitter splitter)
+        internal void DestroySplitter(LayoutDragSplitter splitter)
         {
             splitter.DragStarted -= OnDragStarted;
             splitter.DragDelta -= OnDragDelta;
             splitter.DragCompleted -= OnDragCompleted;
         }
 
-        internal void _DetachChild(IDockView child)
+        internal void InternalDetachChild(IDockView child)
         {
             if (Children.Contains(child as UIElement))
             {
@@ -738,101 +721,81 @@ namespace YDock.View.Layout
                 if (index > 0)
                 {
                     Children.RemoveAt(index);
-                    //移除对应的Spliter
+                    //Remove the corresponding Splitter
                     if (Children.Count > 0)
                     {
-                        _DesstroySplitter(Children[index - 1] as LayoutDragSplitter);
+                        DestroySplitter(Children[index - 1] as LayoutDragSplitter);
                         Children.RemoveAt(index - 1);
                     }
                 }
                 else
                 {
                     Children.RemoveAt(0);
-                    //移除对应的Spliter
+                    //Remove the corresponding Splitter
                     if (Children.Count > 0)
                     {
-                        _DesstroySplitter(Children[0] as LayoutDragSplitter);
+                        DestroySplitter(Children[0] as LayoutDragSplitter);
                         Children.RemoveAt(0);
                     }
                 }
             }
         }
 
-        internal void AttachToRootPanel(IDockView child, AttachMode mode)
+        private Size ArrangeOverrideFull(Size finalSize)
         {
-            var parent = Parent as ILayoutViewParent;
-            parent.DetachChild(this);
-            var pparent = new LayoutGroupPanel
-            {
-                Direction = mode == AttachMode.Left || mode == AttachMode.Right ? Direction.Horizontal : Direction.Vertical
-            };
-            parent.AttachChild(pparent, AttachMode.None, 0);
-            if (mode == AttachMode.Left || mode == AttachMode.Top)
-            {
-                pparent._AttachChild(this, 0);
-                pparent._AttachChild(child, 0);
-            }
-            else
-            {
-                pparent._AttachChild(child, 0);
-                pparent._AttachChild(this, 0);
-            }
-        }
-
-        private Size _ArrangeOverrideFull(Size finalSize)
-        {
-            var layoutgroups = new List<ILayoutSize>();
+            var layoutGroups = new List<ILayoutSize>();
             for (var i = 0; i < InternalChildren.Count; i += 2)
             {
-                layoutgroups.Add(InternalChildren[i] as ILayoutSize);
+                layoutGroups.Add(InternalChildren[i] as ILayoutSize);
             }
 
-            double wholelength = 0;
-            double availableLength = 0;
+            double wholeLength;
+            double availableLength;
             var stars = new List<double>();
             switch (Direction)
             {
                 case Direction.Horizontal:
-                    wholelength = layoutgroups.Sum(group => group.DesiredWidth);
-                    foreach (var group in layoutgroups)
+                    wholeLength = layoutGroups.Sum(group => group.DesiredWidth);
+                    foreach (var group in layoutGroups)
                     {
-                        stars.Add(group.DesiredWidth / wholelength);
+                        stars.Add(group.DesiredWidth / wholeLength);
                     }
 
-                    availableLength = Math.Max(finalSize.Width - Constants.SplitterSpan * (layoutgroups.Count - 1), 0);
-                    //当children中的最小可用空间都大于SideLength，则按每个child的实际长度比来分配空间
+                    availableLength = Math.Max(finalSize.Width - Constants.SplitterSpan * (layoutGroups.Count - 1), 0);
+                    //When the minimum available space in the children is greater than SideLength,
+                    //the space is allocated according to the actual length ratio of each child.
                     if (availableLength * stars.Min() >= Constants.SideLength)
                     {
-                        return _ArrangeUniverse(finalSize);
+                        return ArrangeUniverse(finalSize);
                     }
                     else
                     {
-                        var deceed = wholelength - availableLength;
-                        if (deceed >= 0 && availableLength - layoutgroups.Count * Constants.SideLength > 0)
+                        var deceed = wholeLength - availableLength;
+                        if (deceed >= 0 && availableLength - layoutGroups.Count * Constants.SideLength > 0)
                         {
                             double offset = 0;
                             for (var i = 0; i < InternalChildren.Count; i += 2)
                             {
-                                var childlen = layoutgroups[i / 2].DesiredWidth;
+                                var children = layoutGroups[i / 2].DesiredWidth;
                                 if (deceed > 0)
                                 {
-                                    if (childlen - deceed > Constants.SideLength)
+                                    if (children - deceed > Constants.SideLength)
                                     {
-                                        InternalChildren[i].Arrange(new Rect(new Point(offset, 0), new Size(childlen - deceed, finalSize.Height)));
-                                        offset += childlen - deceed;
+                                        InternalChildren[i].Arrange(new Rect(new Point(offset, 0), new Size(children - deceed, finalSize.Height)));
+                                        offset += children - deceed;
                                         deceed = 0;
                                     }
                                     else
                                     {
                                         InternalChildren[i].Arrange(new Rect(new Point(offset, 0), new Size(Constants.SideLength, finalSize.Height)));
                                         offset += Constants.SideLength;
-                                        deceed -= childlen - Constants.SideLength;
+                                        deceed -= children - Constants.SideLength;
                                     }
                                 }
                                 else
                                 {
-                                    InternalChildren[i].Arrange(new Rect(new Point(offset, 0), new Size(childlen, finalSize.Height)));
-                                    offset += childlen;
+                                    InternalChildren[i].Arrange(new Rect(new Point(offset, 0), new Size(children, finalSize.Height)));
+                                    offset += children;
                                 }
 
                                 if (i + 1 < InternalChildren.Count)
@@ -842,54 +805,55 @@ namespace YDock.View.Layout
                                 }
                             }
                         }
-                        else //表示可用空间小于最小需求空间大小，故执行剪裁
+                        else //Indicates that the available space is smaller than the minimum required space, so the cut is performed.
                         {
-                            return _ClipToBounds_Arrange(finalSize);
+                            return ClipToBoundsArrange(finalSize);
                         }
                     }
 
                     break;
                 case Direction.Vertical:
-                    wholelength = layoutgroups.Sum(group => group.DesiredHeight);
-                    foreach (var group in layoutgroups)
+                    wholeLength = layoutGroups.Sum(group => group.DesiredHeight);
+                    foreach (var group in layoutGroups)
                     {
-                        stars.Add(group.DesiredHeight / wholelength);
+                        stars.Add(group.DesiredHeight / wholeLength);
                     }
 
-                    availableLength = Math.Max(finalSize.Height - Constants.SplitterSpan * (layoutgroups.Count - 1), 0);
-                    //当children中的最小可用空间都大于SideLength，则按每个child的实际长度比来分配空间
+                    availableLength = Math.Max(finalSize.Height - Constants.SplitterSpan * (layoutGroups.Count - 1), 0);
+                    //When the minimum available space in the children is greater than SideLength,
+                    //the space is allocated according to the actual length ratio of each child.
                     if (availableLength * stars.Min() >= Constants.SideLength)
                     {
-                        return _ArrangeUniverse(finalSize);
+                        return ArrangeUniverse(finalSize);
                     }
                     else
                     {
-                        var deceed = wholelength - availableLength;
-                        if (deceed >= 0 && availableLength - layoutgroups.Count * Constants.SideLength > 0)
+                        var deceed = wholeLength - availableLength;
+                        if (deceed >= 0 && availableLength - layoutGroups.Count * Constants.SideLength > 0)
                         {
                             double offset = 0;
                             for (var i = 0; i < InternalChildren.Count; i += 2)
                             {
-                                var childlen = layoutgroups[i / 2].DesiredHeight;
+                                var childLength = layoutGroups[i / 2].DesiredHeight;
                                 if (deceed > 0)
                                 {
-                                    if (childlen - deceed > Constants.SideLength)
+                                    if (childLength - deceed > Constants.SideLength)
                                     {
-                                        InternalChildren[i].Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, childlen - deceed)));
-                                        offset += childlen - deceed;
+                                        InternalChildren[i].Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, childLength - deceed)));
+                                        offset += childLength - deceed;
                                         deceed = 0;
                                     }
                                     else
                                     {
                                         InternalChildren[i].Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, Constants.SideLength)));
                                         offset += Constants.SideLength;
-                                        deceed -= childlen - Constants.SideLength;
+                                        deceed -= childLength - Constants.SideLength;
                                     }
                                 }
                                 else
                                 {
-                                    InternalChildren[i].Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, childlen)));
-                                    offset += childlen;
+                                    InternalChildren[i].Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, childLength)));
+                                    offset += childLength;
                                 }
 
                                 if (i + 1 < InternalChildren.Count)
@@ -899,9 +863,9 @@ namespace YDock.View.Layout
                                 }
                             }
                         }
-                        else //表示可用空间小于最小需求空间大小，故执行剪裁
+                        else //Indicates that the available space is smaller than the minimum required space, so the cut is performed.
                         {
-                            return _ClipToBounds_Arrange(finalSize);
+                            return ClipToBoundsArrange(finalSize);
                         }
                     }
 
@@ -914,10 +878,10 @@ namespace YDock.View.Layout
             return finalSize;
         }
 
-        private Size _ArrangeOverrideSplit(Size finalSize)
+        private Size ArrangeOverrideSplit(Size finalSize)
         {
-            var sizechild = default(ILayoutSize);
-            //这里的wholeLength表示不需要调整child类型为LayoutDocumentGroupControl大小的最小总长度
+            ILayoutSize childSize;
+            //The wholeLength here means that there is no need to adjust the minimum total length of the child type to the size of the LayoutDocumentGroupControl.
             double wholeLength = 0;
             switch (Direction)
             {
@@ -930,35 +894,35 @@ namespace YDock.View.Layout
                         }
                         else
                         {
-                            if (_IsDocumentChild(child))
+                            if (IsDocumentChild(child))
                             {
-                                wholeLength += _GetMinLength(child);
+                                wholeLength += GetMinLength(child);
                             }
                             else
                             {
-                                wholeLength += (child as ILayoutSize).DesiredWidth;
+                                wholeLength += ((ILayoutSize)child).DesiredWidth;
                             }
                         }
                     }
 
-                    //自动调整child类型为LayoutDocumentGroupControl的大小，以适应布局
+                    //Automatically adjust the child type to the size of the LayoutDocumentGroupControl to fit the layout
                     if (wholeLength <= finalSize.Width)
                     {
-                        return _ArrangeUniverse(finalSize);
+                        return ArrangeUniverse(finalSize);
                     }
-                    else //否则减小其它child的大小，以适应布局
+                    else //Otherwise reduce the size of other children to fit the layout
                     {
-                        //这里计算所有child的最小长度和
-                        if (_GetMinLength(this) <= finalSize.Width)
+                        //Calculate the minimum length of all children
+                        if (GetMinLength(this) <= finalSize.Width)
                         {
                             double offset = 0;
                             var exceed = wholeLength - finalSize.Width;
                             foreach (FrameworkElement child in InternalChildren)
                             {
-                                if (_IsDocumentChild(child))
+                                if (IsDocumentChild(child))
                                 {
-                                    child.Arrange(new Rect(new Point(offset, 0), new Size(_GetMinLength(child), finalSize.Height)));
-                                    offset += _GetMinLength(child);
+                                    child.Arrange(new Rect(new Point(offset, 0), new Size(GetMinLength(child), finalSize.Height)));
+                                    offset += GetMinLength(child);
                                 }
                                 else
                                 {
@@ -969,34 +933,34 @@ namespace YDock.View.Layout
                                     }
                                     else
                                     {
-                                        sizechild = child as ILayoutSize;
+                                        childSize = (ILayoutSize)child;
                                         if (exceed > 0)
                                         {
-                                            if (sizechild.DesiredWidth - exceed >= Constants.SideLength)
+                                            if (childSize.DesiredWidth - exceed >= Constants.SideLength)
                                             {
-                                                child.Arrange(new Rect(new Point(offset, 0), new Size(sizechild.DesiredWidth - exceed, finalSize.Height)));
-                                                offset += sizechild.DesiredWidth - exceed;
+                                                child.Arrange(new Rect(new Point(offset, 0), new Size(childSize.DesiredWidth - exceed, finalSize.Height)));
+                                                offset += childSize.DesiredWidth - exceed;
                                                 exceed = 0;
                                             }
                                             else
                                             {
-                                                exceed -= sizechild.DesiredWidth - Constants.SideLength;
+                                                exceed -= childSize.DesiredWidth - Constants.SideLength;
                                                 child.Arrange(new Rect(new Point(offset, 0), new Size(Constants.SideLength, finalSize.Height)));
                                                 offset += Constants.SideLength;
                                             }
                                         }
                                         else
                                         {
-                                            child.Arrange(new Rect(new Point(offset, 0), new Size(sizechild.DesiredWidth, finalSize.Height)));
-                                            offset += sizechild.DesiredWidth;
+                                            child.Arrange(new Rect(new Point(offset, 0), new Size(childSize.DesiredWidth, finalSize.Height)));
+                                            offset += childSize.DesiredWidth;
                                         }
                                     }
                                 }
                             }
                         }
-                        else //表示可用空间小于最小需求空间大小，故执行剪裁
+                        else //Indicates that the available space is smaller than the minimum required space, so the cut is performed.
                         {
-                            _ClipToBounds_Arrange(finalSize);
+                            ClipToBoundsArrange(finalSize);
                         }
                     }
 
@@ -1010,35 +974,35 @@ namespace YDock.View.Layout
                         }
                         else
                         {
-                            if (_IsDocumentChild(child))
+                            if (IsDocumentChild(child))
                             {
-                                wholeLength += _GetMinLength(child);
+                                wholeLength += GetMinLength(child);
                             }
                             else
                             {
-                                wholeLength += (child as ILayoutSize).DesiredHeight;
+                                wholeLength += ((ILayoutSize)child).DesiredHeight;
                             }
                         }
                     }
 
-                    //自动调整child类型为LayoutDocumentGroupControl的大小，以适应布局
+                    //Automatically adjust the child type to the size of the LayoutDocumentGroupControl to fit the layout
                     if (wholeLength <= finalSize.Height)
                     {
-                        return _ArrangeUniverse(finalSize);
+                        return ArrangeUniverse(finalSize);
                     }
-                    else //否则减小其它child的大小，以适应布局
+                    else //Otherwise reduce the size of other children to fit the layout
                     {
-                        //这里计算所有child的最小长度和
-                        if (_GetMinLength(this) <= finalSize.Height)
+                        //Calculate the minimum length of all children and
+                        if (GetMinLength(this) <= finalSize.Height)
                         {
                             double offset = 0;
                             var exceed = wholeLength - finalSize.Height;
                             foreach (FrameworkElement child in InternalChildren)
                             {
-                                if (_IsDocumentChild(child))
+                                if (IsDocumentChild(child))
                                 {
-                                    child.Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, _GetMinLength(child))));
-                                    offset += _GetMinLength(child);
+                                    child.Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, GetMinLength(child))));
+                                    offset += GetMinLength(child);
                                 }
                                 else
                                 {
@@ -1049,34 +1013,34 @@ namespace YDock.View.Layout
                                     }
                                     else
                                     {
-                                        sizechild = child as ILayoutSize;
+                                        childSize = (ILayoutSize)child;
                                         if (exceed > 0)
                                         {
-                                            if (sizechild.DesiredHeight - exceed >= Constants.SideLength)
+                                            if (childSize.DesiredHeight - exceed >= Constants.SideLength)
                                             {
-                                                child.Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, sizechild.DesiredHeight - exceed)));
-                                                offset += sizechild.DesiredHeight - exceed;
+                                                child.Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, childSize.DesiredHeight - exceed)));
+                                                offset += childSize.DesiredHeight - exceed;
                                                 exceed = 0;
                                             }
                                             else
                                             {
-                                                exceed -= sizechild.DesiredHeight - Constants.SideLength;
+                                                exceed -= childSize.DesiredHeight - Constants.SideLength;
                                                 child.Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, Constants.SideLength)));
                                                 offset += Constants.SideLength;
                                             }
                                         }
                                         else
                                         {
-                                            child.Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, sizechild.DesiredHeight)));
-                                            offset += sizechild.DesiredHeight;
+                                            child.Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, childSize.DesiredHeight)));
+                                            offset += childSize.DesiredHeight;
                                         }
                                     }
                                 }
                             }
                         }
-                        else //表示可用空间小于最小需求空间大小，故执行剪裁
+                        else //Indicates that the available space is smaller than the minimum required space, so the cut is performed.
                         {
-                            _ClipToBounds_Arrange(finalSize);
+                            ClipToBoundsArrange(finalSize);
                         }
                     }
 
@@ -1086,7 +1050,7 @@ namespace YDock.View.Layout
             return finalSize;
         }
 
-        private Size _ArrangeUniverse(Size finalSize)
+        private Size ArrangeUniverse(Size finalSize)
         {
             double offset = 0;
             switch (Direction)
@@ -1101,8 +1065,8 @@ namespace YDock.View.Layout
                         }
                         else
                         {
-                            child.Arrange(new Rect(new Point(offset, 0), new Size((child as ILayoutSize).DesiredWidth, finalSize.Height)));
-                            offset += (child as ILayoutSize).DesiredWidth;
+                            child.Arrange(new Rect(new Point(offset, 0), new Size(((ILayoutSize)child).DesiredWidth, finalSize.Height)));
+                            offset += ((ILayoutSize)child).DesiredWidth;
                         }
                     }
 
@@ -1117,8 +1081,8 @@ namespace YDock.View.Layout
                         }
                         else
                         {
-                            child.Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, (child as ILayoutSize).DesiredHeight)));
-                            offset += (child as ILayoutSize).DesiredHeight;
+                            child.Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, ((ILayoutSize)child).DesiredHeight)));
+                            offset += ((ILayoutSize)child).DesiredHeight;
                         }
                     }
 
@@ -1128,7 +1092,7 @@ namespace YDock.View.Layout
             return finalSize;
         }
 
-        private Size _ClipToBounds_Arrange(Size finalSize)
+        private Size ClipToBoundsArrange(Size finalSize)
         {
             double avaLength, offset = 0, minLength;
             switch (Direction)
@@ -1155,7 +1119,7 @@ namespace YDock.View.Layout
                         }
                         else
                         {
-                            minLength = _GetMinLength(child);
+                            minLength = GetMinLength(child);
                             if (avaLength >= minLength)
                             {
                                 child.Arrange(new Rect(new Point(offset, 0), new Size(minLength, finalSize.Height)));
@@ -1194,7 +1158,7 @@ namespace YDock.View.Layout
                         }
                         else
                         {
-                            minLength = _GetMinLength(child);
+                            minLength = GetMinLength(child);
                             if (avaLength >= minLength)
                             {
                                 child.Arrange(new Rect(new Point(0, offset), new Size(finalSize.Width, minLength)));
@@ -1216,7 +1180,7 @@ namespace YDock.View.Layout
             return finalSize;
         }
 
-        private Size _ClipToBounds_Measure(Size availableSize)
+        private Size ClipToBoundsMeasure(Size availableSize)
         {
             double minLength;
             switch (Direction)
@@ -1225,7 +1189,7 @@ namespace YDock.View.Layout
                     var availableLength = availableSize.Width;
                     for (var i = 0; i < InternalChildren.Count; i += 2)
                     {
-                        minLength = _GetMinLength(InternalChildren[i]);
+                        minLength = GetMinLength(InternalChildren[i]);
                         if (availableLength >= minLength)
                         {
                             InternalChildren[i].Measure(new Size(minLength, availableSize.Height));
@@ -1257,7 +1221,7 @@ namespace YDock.View.Layout
                     availableLength = availableSize.Height;
                     for (var i = 0; i < InternalChildren.Count; i += 2)
                     {
-                        minLength = _GetMinLength(InternalChildren[i]);
+                        minLength = GetMinLength(InternalChildren[i]);
                         if (availableLength >= minLength)
                         {
                             InternalChildren[i].Measure(new Size(availableSize.Width, minLength));
@@ -1291,22 +1255,22 @@ namespace YDock.View.Layout
         }
 
         /// <summary>
-        ///     计算拖动时的上下边界值
+        ///     Calculate the upper and lower boundary values when dragging
         /// </summary>
-        /// <param name="splitter">拖动的对象</param>
-        /// <param name="x1">下界</param>
-        /// <param name="x2">上界</param>
-        private void _ComputeDragBounds(LayoutDragSplitter splitter, ref double x1, ref double x2)
+        /// <param name="splitter">Dragged object</param>
+        /// <param name="x1">Lower bound</param>
+        /// <param name="x2">Upper bound</param>
+        private void ComputeDragBounds(LayoutDragSplitter splitter, ref double x1, ref double x2)
         {
             var index = Children.IndexOf(splitter);
             if (index > 1)
             {
-                var splitter_x1 = Children[index - 2];
+                var splitterX1 = Children[index - 2];
                 var pToScreen = this.PointToScreenDPIWithoutFlowDirection(new Point());
-                var transfrom = splitter_x1.TransformToAncestor(this);
-                var _pToInterPanel = transfrom.Transform(new Point(0, 0));
-                pToScreen.X += _pToInterPanel.X;
-                pToScreen.Y += _pToInterPanel.Y;
+                var transform = splitterX1.TransformToAncestor(this);
+                var pToInterPanel = transform.Transform(new Point(0, 0));
+                pToScreen.X += pToInterPanel.X;
+                pToScreen.Y += pToInterPanel.Y;
                 if (Direction == Direction.Horizontal)
                 {
                     x1 = pToScreen.X + Constants.SplitterSpan;
@@ -1331,12 +1295,12 @@ namespace YDock.View.Layout
 
             if (index < Children.Count - 2)
             {
-                var splitter_x2 = Children[index + 2];
+                var splitterX2 = Children[index + 2];
                 var pToScreen = this.PointToScreenDPIWithoutFlowDirection(new Point());
-                var transfrom = splitter_x2.TransformToAncestor(this);
-                var _pToInterPanel = transfrom.Transform(new Point(0, 0));
-                pToScreen.X += _pToInterPanel.X;
-                pToScreen.Y += _pToInterPanel.Y;
+                var transform = splitterX2.TransformToAncestor(this);
+                var pToInterPanel = transform.Transform(new Point(0, 0));
+                pToScreen.X += pToInterPanel.X;
+                pToScreen.Y += pToInterPanel.Y;
                 if (Direction == Direction.Horizontal)
                 {
                     x2 = pToScreen.X - Constants.SplitterSpan;
@@ -1360,24 +1324,24 @@ namespace YDock.View.Layout
             }
         }
 
-        private void _CreateDragPopup(LayoutDragSplitter splitter)
+        private void CreateDragPopup(LayoutDragSplitter splitter)
         {
             _pointToScreen = this.PointToScreenDPIWithoutFlowDirection(new Point());
-            var transfrom = splitter.TransformToAncestor(this);
-            var _pToInterPanel = transfrom.Transform(new Point(0, 0));
-            _pointToScreen.X += _pToInterPanel.X;
-            _pointToScreen.Y += _pToInterPanel.Y;
+            var transform = splitter.TransformToAncestor(this);
+            var pToInterPanel = transform.Transform(new Point(0, 0));
+            _pointToScreen.X += pToInterPanel.X;
+            _pointToScreen.Y += pToInterPanel.Y;
 
             var index = Children.IndexOf(splitter);
             switch (Direction)
             {
                 case Direction.Horizontal:
-                    (Children[index - 1] as ILayoutSize).DesiredWidth = (Children[index - 1] as FrameworkElement).ActualWidth;
-                    (Children[index + 1] as ILayoutSize).DesiredWidth = (Children[index + 1] as FrameworkElement).ActualWidth;
+                    ((ILayoutSize)Children[index - 1]).DesiredWidth = ((FrameworkElement)Children[index - 1]).ActualWidth;
+                    ((ILayoutSize)Children[index + 1]).DesiredWidth = ((FrameworkElement)Children[index + 1]).ActualWidth;
                     break;
                 case Direction.Vertical:
-                    (Children[index - 1] as ILayoutSize).DesiredHeight = (Children[index - 1] as FrameworkElement).ActualHeight;
-                    (Children[index + 1] as ILayoutSize).DesiredHeight = (Children[index + 1] as FrameworkElement).ActualHeight;
+                    ((ILayoutSize)Children[index - 1]).DesiredHeight = ((FrameworkElement)Children[index - 1]).ActualHeight;
+                    ((ILayoutSize)Children[index + 1]).DesiredHeight = ((FrameworkElement)Children[index + 1]).ActualHeight;
                     break;
             }
 
@@ -1401,38 +1365,37 @@ namespace YDock.View.Layout
             _dragPopup.IsOpen = true;
         }
 
-        private void _DisposeDragPopup()
+        private void DisposeDragPopup()
         {
             _dragPopup.IsOpen = false;
             _dragPopup = null;
         }
 
         /// <summary>
-        ///     计算obj的中最小长度
+        ///     Calculate the minimum length of obj
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        private double _GetMinLength(object obj)
+        private double GetMinLength(object obj)
         {
-            if (obj is LayoutGroupPanel && (obj as LayoutGroupPanel).ContainDocument)
+            if (obj is LayoutGroupPanel child && child.ContainDocument)
             {
-                var child = obj as LayoutGroupPanel;
                 if (child.Direction == Direction)
                 {
                     double length = 0;
-                    foreach (var child_ele in child.Children)
+                    foreach (var childElement in child.Children)
                     {
-                        length += _GetMinLength(child_ele);
+                        length += GetMinLength(childElement);
                     }
 
                     return length;
                 }
 
-                //若方向不同则找出子元素中最小长度最大的值
+                //If the direction is different, find the value with the smallest minimum length among the child elements.
                 double max = 0;
-                foreach (var child_ele in child.Children)
+                foreach (var childElement in child.Children)
                 {
-                    var value = _GetMinLength(child_ele);
+                    var value = GetMinLength(childElement);
                     if (max < value)
                     {
                         max = value;
@@ -1451,49 +1414,50 @@ namespace YDock.View.Layout
         }
 
         /// <summary>
-        ///     判断Child是否包含文档（文档区域大小判定方式为Auto）
+        ///     Determine if Child contains a document (document area size is determined by Auto)
         /// </summary>
         /// <param name="child"></param>
         /// <returns></returns>
-        private bool _IsDocumentChild(object child)
+        private bool IsDocumentChild(object child)
         {
-            return child is LayoutDocumentGroupControl
-                   || child is LayoutGroupPanel && (child as LayoutGroupPanel).ContainDocument;
+            return child is LayoutDocumentGroupControl || child is LayoutGroupPanel panel && panel.ContainDocument;
         }
 
         /// <summary>
-        ///     Children全部为同一种<see cref="ILayoutGroupControl" />时调用
+        ///     Children are all called for the same <see cref="ILayoutGroupControl" />
         /// </summary>
         /// <param name="availableSize"></param>
         /// <returns></returns>
-        private Size _MeasureOverrideFull(Size availableSize)
+        private Size MeasureOverrideFull(Size availableSize)
         {
-            var layoutgroups = new List<ILayoutSize>();
+            var layoutGroups = new List<ILayoutSize>();
             for (var i = 0; i < InternalChildren.Count; i += 2)
             {
-                layoutgroups.Add(InternalChildren[i] as ILayoutSize);
+                layoutGroups.Add(InternalChildren[i] as ILayoutSize);
             }
 
-            double wholelength = 0;
-            double availableLength = 0;
+            double wholeLength;
+            double availableLength;
             var stars = new List<double>();
             switch (Direction)
             {
                 case Direction.Horizontal:
-                    wholelength = layoutgroups.Sum(group => group.DesiredWidth);
-                    foreach (var group in layoutgroups)
+                    wholeLength = layoutGroups.Sum(group => group.DesiredWidth);
+                    foreach (var group in layoutGroups)
                     {
-                        stars.Add(group.DesiredWidth / wholelength);
+                        stars.Add(group.DesiredWidth / wholeLength);
                     }
 
-                    availableLength = Math.Max(availableSize.Width - Constants.SplitterSpan * (layoutgroups.Count - 1), 0);
-                    //当children中的最小可用空间都大于SideLength，则按每个child的实际长度比来分配空间
+                    availableLength = Math.Max(availableSize.Width - Constants.SplitterSpan * (layoutGroups.Count - 1), 0);
+                    //When the minimum available space in the children is greater than SideLength,
+                    //the space is allocated according to the actual length ratio of each child.
                     if (availableLength * stars.Min() >= Constants.SideLength)
                     {
                         for (var i = 0; i < InternalChildren.Count; i += 2)
                         {
-                            (InternalChildren[i] as ILayoutSize).DesiredWidth = stars[i / 2] * availableLength;
-                            InternalChildren[i].Measure(new Size((InternalChildren[i] as ILayoutSize).DesiredWidth, availableSize.Height));
+                            var layoutSize = (ILayoutSize)InternalChildren[i];
+                            layoutSize.DesiredWidth = stars[i / 2] * availableLength;
+                            InternalChildren[i].Measure(new Size(layoutSize.DesiredWidth, availableSize.Height));
                             if (i + 1 < InternalChildren.Count)
                             {
                                 InternalChildren[i + 1].Measure(new Size(Constants.SplitterSpan, availableSize.Height));
@@ -1502,28 +1466,28 @@ namespace YDock.View.Layout
                     }
                     else
                     {
-                        var deceed = wholelength - availableLength;
-                        if (deceed >= 0 && availableLength - layoutgroups.Count * Constants.SideLength > 0)
+                        var deceed = wholeLength - availableLength;
+                        if (deceed >= 0 && availableLength - layoutGroups.Count * Constants.SideLength > 0)
                         {
                             for (var i = 0; i < InternalChildren.Count; i += 2)
                             {
-                                var childlen = layoutgroups[i / 2].DesiredWidth;
+                                var childLength = layoutGroups[i / 2].DesiredWidth;
                                 if (deceed > 0)
                                 {
-                                    if (childlen - deceed > Constants.SideLength)
+                                    if (childLength - deceed > Constants.SideLength)
                                     {
-                                        InternalChildren[i].Measure(new Size(childlen - deceed, availableSize.Height));
+                                        InternalChildren[i].Measure(new Size(childLength - deceed, availableSize.Height));
                                         deceed = 0;
                                     }
                                     else
                                     {
                                         InternalChildren[i].Measure(new Size(Constants.SideLength, availableSize.Height));
-                                        deceed -= childlen - Constants.SideLength;
+                                        deceed -= childLength - Constants.SideLength;
                                     }
                                 }
                                 else
                                 {
-                                    InternalChildren[i].Measure(new Size(childlen, availableSize.Height));
+                                    InternalChildren[i].Measure(new Size(childLength, availableSize.Height));
                                 }
 
                                 if (i + 1 < InternalChildren.Count)
@@ -1532,28 +1496,30 @@ namespace YDock.View.Layout
                                 }
                             }
                         }
-                        else //表示可用空间小于最小需求空间大小，故执行剪裁
+                        else //Indicates that the available space is smaller than the minimum required space, so the cut is performed.
                         {
-                            return _ClipToBounds_Measure(availableSize);
+                            return ClipToBoundsMeasure(availableSize);
                         }
                     }
 
                     break;
                 case Direction.Vertical:
-                    wholelength = layoutgroups.Sum(group => group.DesiredHeight);
-                    foreach (var group in layoutgroups)
+                    wholeLength = layoutGroups.Sum(group => group.DesiredHeight);
+                    foreach (var group in layoutGroups)
                     {
-                        stars.Add(group.DesiredHeight / wholelength);
+                        stars.Add(group.DesiredHeight / wholeLength);
                     }
 
-                    availableLength = Math.Max(availableSize.Height - Constants.SplitterSpan * (layoutgroups.Count - 1), 0);
-                    //当children中的最小可用空间都大于SideLength，则按每个child的实际长度比来分配空间
+                    availableLength = Math.Max(availableSize.Height - Constants.SplitterSpan * (layoutGroups.Count - 1), 0);
+                    //When the minimum available space in the children is greater than SideLength,
+                    //the space is allocated according to the actual length ratio of each child.
                     if (availableLength * stars.Min() >= Constants.SideLength)
                     {
                         for (var i = 0; i < InternalChildren.Count; i += 2)
                         {
-                            (InternalChildren[i] as ILayoutSize).DesiredHeight = stars[i / 2] * availableLength;
-                            InternalChildren[i].Measure(new Size(availableSize.Width, (InternalChildren[i] as ILayoutSize).DesiredHeight));
+                            var internalChild = (ILayoutSize)InternalChildren[i];
+                            internalChild.DesiredHeight = stars[i / 2] * availableLength;
+                            InternalChildren[i].Measure(new Size(availableSize.Width, internalChild.DesiredHeight));
                             if (i + 1 < InternalChildren.Count)
                             {
                                 InternalChildren[i + 1].Measure(new Size(availableSize.Width, Constants.SplitterSpan));
@@ -1562,28 +1528,28 @@ namespace YDock.View.Layout
                     }
                     else
                     {
-                        var deceed = wholelength - availableLength;
-                        if (deceed >= 0 && availableLength - layoutgroups.Count * Constants.SideLength > 0)
+                        var deceed = wholeLength - availableLength;
+                        if (deceed >= 0 && availableLength - layoutGroups.Count * Constants.SideLength > 0)
                         {
                             for (var i = 0; i < InternalChildren.Count; i += 2)
                             {
-                                var childlen = layoutgroups[i / 2].DesiredHeight;
+                                var childLength = layoutGroups[i / 2].DesiredHeight;
                                 if (deceed > 0)
                                 {
-                                    if (childlen - deceed > Constants.SideLength)
+                                    if (childLength - deceed > Constants.SideLength)
                                     {
-                                        InternalChildren[i].Measure(new Size(availableSize.Width, childlen - deceed));
+                                        InternalChildren[i].Measure(new Size(availableSize.Width, childLength - deceed));
                                         deceed = 0;
                                     }
                                     else
                                     {
                                         InternalChildren[i].Measure(new Size(availableSize.Width, Constants.SideLength));
-                                        deceed -= childlen - Constants.SideLength;
+                                        deceed -= childLength - Constants.SideLength;
                                     }
                                 }
                                 else
                                 {
-                                    InternalChildren[i].Measure(new Size(availableSize.Width, childlen));
+                                    InternalChildren[i].Measure(new Size(availableSize.Width, childLength));
                                 }
 
                                 if (i + 1 < InternalChildren.Count)
@@ -1592,9 +1558,9 @@ namespace YDock.View.Layout
                                 }
                             }
                         }
-                        else //表示可用空间小于最小需求空间大小，故执行剪裁
+                        else //Indicates that the available space is smaller than the minimum required space, so the cut is performed.
                         {
-                            return _ClipToBounds_Measure(availableSize);
+                            return ClipToBoundsMeasure(availableSize);
                         }
                     }
 
@@ -1607,11 +1573,11 @@ namespace YDock.View.Layout
             return availableSize;
         }
 
-        private Size _MeasureOverrideSplit(Size availableSize)
+        private Size MeasureOverrideSplit(Size availableSize)
         {
-            var sizechild = default(ILayoutSize);
+            ILayoutSize childSize;
             var documentChild = default(FrameworkElement);
-            //这里的wholeLength表示不需要调整child类型为LayoutDocumentGroupControl大小的最小总长度
+            //The wholeLength here means that there is no need to adjust the minimum total length of the child type to the size of the LayoutDocumentGroupControl.
             double wholeLength = 0;
             switch (Direction)
             {
@@ -1624,18 +1590,18 @@ namespace YDock.View.Layout
                         }
                         else
                         {
-                            if (_IsDocumentChild(child))
+                            if (IsDocumentChild(child))
                             {
-                                wholeLength += _GetMinLength(child);
+                                wholeLength += GetMinLength(child);
                             }
                             else
                             {
-                                wholeLength += (child as ILayoutSize).DesiredWidth;
+                                wholeLength += ((ILayoutSize)child).DesiredWidth;
                             }
                         }
                     }
 
-                    //自动调整child类型为LayoutDocumentGroupControl的大小，以适应布局
+                    //Automatically adjust the child type to the size of the LayoutDocumentGroupControl to fit the layout
                     if (wholeLength <= availableSize.Width)
                     {
                         double useLength = 0;
@@ -1648,33 +1614,37 @@ namespace YDock.View.Layout
                             }
                             else
                             {
-                                if (documentChild == null && _IsDocumentChild(child))
+                                if (documentChild == null && IsDocumentChild(child))
                                 {
                                     documentChild = child;
                                 }
                                 else
                                 {
-                                    useLength += (child as ILayoutSize).DesiredWidth;
-                                    child.Measure(new Size((child as ILayoutSize).DesiredWidth, availableSize.Height));
+                                    useLength += ((ILayoutSize)child).DesiredWidth;
+                                    child.Measure(new Size(((ILayoutSize)child).DesiredWidth, availableSize.Height));
                                 }
                             }
                         }
 
-                        (documentChild as ILayoutSize).DesiredWidth = availableSize.Width - useLength;
-                        (documentChild as ILayoutSize).DesiredHeight = availableSize.Height;
-                        documentChild.Measure(new Size((documentChild as ILayoutSize).DesiredWidth, (documentChild as ILayoutSize).DesiredHeight));
+                        var layoutSize = (ILayoutSize)documentChild;
+                        if (layoutSize != null)
+                        {
+                            layoutSize.DesiredWidth = availableSize.Width - useLength;
+                            layoutSize.DesiredHeight = availableSize.Height;
+                            documentChild.Measure(new Size(layoutSize.DesiredWidth, layoutSize.DesiredHeight));
+                        }
                     }
-                    else //否则减小其它child的大小，以适应布局
+                    else //Otherwise reduce the size of other children to fit the layout
                     {
-                        //这里计算所有child的最小长度和
-                        if (_GetMinLength(this) <= availableSize.Width)
+                        //Calculate the minimum length of all children
+                        if (GetMinLength(this) <= availableSize.Width)
                         {
                             var exceed = wholeLength - availableSize.Width;
                             foreach (FrameworkElement child in InternalChildren)
                             {
-                                if (_IsDocumentChild(child))
+                                if (IsDocumentChild(child))
                                 {
-                                    child.Measure(new Size(_GetMinLength(child), availableSize.Height));
+                                    child.Measure(new Size(GetMinLength(child), availableSize.Height));
                                 }
                                 else
                                 {
@@ -1684,31 +1654,31 @@ namespace YDock.View.Layout
                                     }
                                     else
                                     {
-                                        sizechild = child as ILayoutSize;
+                                        childSize = (ILayoutSize)child;
                                         if (exceed > 0)
                                         {
-                                            if (sizechild.DesiredWidth - exceed >= Constants.SideLength)
+                                            if (childSize.DesiredWidth - exceed >= Constants.SideLength)
                                             {
-                                                child.Measure(new Size(sizechild.DesiredWidth - exceed, availableSize.Height));
+                                                child.Measure(new Size(childSize.DesiredWidth - exceed, availableSize.Height));
                                                 exceed = 0;
                                             }
                                             else
                                             {
-                                                exceed -= sizechild.DesiredWidth - Constants.SideLength;
+                                                exceed -= childSize.DesiredWidth - Constants.SideLength;
                                                 child.Measure(new Size(Constants.SideLength, availableSize.Height));
                                             }
                                         }
                                         else
                                         {
-                                            child.Measure(new Size(sizechild.DesiredWidth, availableSize.Height));
+                                            child.Measure(new Size(childSize.DesiredWidth, availableSize.Height));
                                         }
                                     }
                                 }
                             }
                         }
-                        else //表示可用空间小于最小需求空间大小，故执行剪裁
+                        else //Indicates that the available space is smaller than the minimum required space, so the cut is performed.
                         {
-                            return _ClipToBounds_Measure(availableSize);
+                            return ClipToBoundsMeasure(availableSize);
                         }
                     }
 
@@ -1722,18 +1692,18 @@ namespace YDock.View.Layout
                         }
                         else
                         {
-                            if (_IsDocumentChild(child))
+                            if (IsDocumentChild(child))
                             {
-                                wholeLength += _GetMinLength(child);
+                                wholeLength += GetMinLength(child);
                             }
                             else
                             {
-                                wholeLength += (child as ILayoutSize).DesiredHeight;
+                                wholeLength += ((ILayoutSize)child).DesiredHeight;
                             }
                         }
                     }
 
-                    //自动调整child类型为LayoutDocumentGroupControl的大小，以适应布局
+                    //Automatically adjust the child type to the size of the LayoutDocumentGroupControl to fit the layout
                     if (wholeLength <= availableSize.Height)
                     {
                         double useLength = 0;
@@ -1746,33 +1716,42 @@ namespace YDock.View.Layout
                             }
                             else
                             {
-                                if (documentChild == null && _IsDocumentChild(child))
+                                if (documentChild == null && IsDocumentChild(child))
                                 {
                                     documentChild = child;
                                 }
                                 else
                                 {
-                                    useLength += (child as ILayoutSize).DesiredHeight;
-                                    child.Measure(new Size(availableSize.Width, (child as ILayoutSize).DesiredHeight));
+                                    var layoutSize = (ILayoutSize)child;
+                                    useLength += layoutSize.DesiredHeight;
+                                    child.Measure(new Size(availableSize.Width, layoutSize.DesiredHeight));
                                 }
                             }
                         }
 
-                        (documentChild as ILayoutSize).DesiredWidth = availableSize.Width;
-                        (documentChild as ILayoutSize).DesiredHeight = availableSize.Height - useLength;
-                        documentChild.Measure(new Size(availableSize.Width, availableSize.Height - useLength));
+                        var size = (ILayoutSize)documentChild;
+                        if (size != null)
+                        {
+                            size.DesiredWidth = availableSize.Width;
+                            size.DesiredHeight = availableSize.Height - useLength;
+                        }
+
+                        if (documentChild != null)
+                        {
+                            documentChild.Measure(new Size(availableSize.Width, availableSize.Height - useLength));
+                        }
                     }
-                    else //否则减小其它child的大小，以适应布局
+                    else //Otherwise reduce the size of other children to fit the layout
                     {
-                        //这里计算所有child的最小长度和
-                        if (_GetMinLength(this) <= availableSize.Height)
+                        //Calculate the minimum length of all children
+                        if (GetMinLength(this) <= availableSize.Height)
                         {
                             var exceed = wholeLength - availableSize.Height;
                             foreach (FrameworkElement child in InternalChildren)
                             {
-                                if (_IsDocumentChild(child))
+                                if (IsDocumentChild(child))
                                 {
-                                    child.Measure(new Size(availableSize.Width, _GetMinLength(child)));
+                                    child.Measure(new Size(availableSize.Width, GetMinLength(child)));
                                 }
                                 else
                                 {
@@ -1782,31 +1761,31 @@ namespace YDock.View.Layout
                                     }
                                     else
                                     {
-                                        sizechild = child as ILayoutSize;
+                                        childSize = (ILayoutSize)child;
                                         if (exceed > 0)
                                         {
-                                            if (sizechild.DesiredHeight - exceed >= Constants.SideLength)
+                                            if (childSize.DesiredHeight - exceed >= Constants.SideLength)
                                             {
-                                                child.Measure(new Size(availableSize.Width, sizechild.DesiredHeight - exceed));
+                                                child.Measure(new Size(availableSize.Width, childSize.DesiredHeight - exceed));
                                                 exceed = 0;
                                             }
                                             else
                                             {
-                                                exceed -= sizechild.DesiredHeight - Constants.SideLength;
+                                                exceed -= childSize.DesiredHeight - Constants.SideLength;
                                                 child.Measure(new Size(availableSize.Width, Constants.SideLength));
                                             }
                                         }
                                         else
                                         {
-                                            child.Measure(new Size(availableSize.Width, sizechild.DesiredHeight));
+                                            child.Measure(new Size(availableSize.Width, childSize.DesiredHeight));
                                         }
                                     }
                                 }
                             }
                         }
-                        else //表示可用空间小于最小需求空间大小，故执行剪裁
+                        else //Indicates that the available space is smaller than the minimum required space, so the cut is performed.
                         {
-                            return _ClipToBounds_Measure(availableSize);
+                            return ClipToBoundsMeasure(availableSize);
                         }
                     }
 

@@ -66,59 +66,58 @@ namespace YDock
             return new FormattedText(text,
                                      CultureInfo.CurrentUICulture,
                                      FlowDirection.LeftToRight,
-                                     new Typeface(new FontFamily("微软 雅黑"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),
+                                     new Typeface(new FontFamily("Segoe ui"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),
                                      12,
                                      Brushes.Black).Width;
         }
 
         public static void UpdateLocation(DropWindow wnd, double left, double top, double width, double height)
         {
-            double hrectoffset = 0, vrectoffset = 0;
-            if (wnd.Host is LayoutDocumentGroupControl)
+            double hRectOffset = 0, vRectOffset = 0;
+            if (wnd.Host is LayoutDocumentGroupControl groupControl)
             {
-                var dcrt = wnd.Host as LayoutDocumentGroupControl;
-                var index = dcrt.IndexOf();
+                var index = groupControl.IndexOf();
                 wnd.Width = width;
                 wnd.Height = height;
                 if (wnd.DropPanel.InnerRect.Width < wnd.MinWidth)
                 {
-                    hrectoffset = (wnd.MinWidth - wnd.DropPanel.InnerRect.Width) / 2;
+                    hRectOffset = (wnd.MinWidth - wnd.DropPanel.InnerRect.Width) / 2;
                     if (index == 0)
                     {
-                        wnd.Width += hrectoffset;
-                        left -= hrectoffset;
+                        wnd.Width += hRectOffset;
+                        left -= hRectOffset;
                     }
 
-                    if (index == dcrt.ParentChildrenCount - 1)
+                    if (index == groupControl.ParentChildrenCount - 1)
                     {
-                        wnd.Width += hrectoffset;
+                        wnd.Width += hRectOffset;
                     }
                 }
 
                 if (wnd.DropPanel.InnerRect.Height < wnd.MinHeight)
                 {
-                    vrectoffset = (wnd.MinHeight - wnd.DropPanel.InnerRect.Height) / 2;
+                    vRectOffset = (wnd.MinHeight - wnd.DropPanel.InnerRect.Height) / 2;
                     if (index == 0)
                     {
-                        wnd.Height += vrectoffset;
-                        top -= vrectoffset;
+                        wnd.Height += vRectOffset;
+                        top -= vRectOffset;
                     }
 
-                    if (index == dcrt.ParentChildrenCount - 1)
+                    if (index == groupControl.ParentChildrenCount - 1)
                     {
-                        wnd.Height += vrectoffset;
+                        wnd.Height += vRectOffset;
                     }
                 }
 
                 if (left < 0)
                 {
                     wnd.HorizontalOffset = 0;
-                    hrectoffset += left;
+                    hRectOffset += left;
                 }
                 else if (left + wnd.Width > SystemParameters.PrimaryScreenWidth)
                 {
                     wnd.HorizontalOffset = SystemParameters.PrimaryScreenWidth - wnd.Width;
-                    hrectoffset += left + wnd.Width - SystemParameters.PrimaryScreenWidth;
+                    hRectOffset += left + wnd.Width - SystemParameters.PrimaryScreenWidth;
                 }
                 else
                 {
@@ -128,19 +127,19 @@ namespace YDock
                 if (top < 0)
                 {
                     wnd.VerticalOffset = 0;
-                    vrectoffset += top;
+                    vRectOffset += top;
                 }
                 else if (top + wnd.Height > SystemParameters.PrimaryScreenHeight)
                 {
                     wnd.VerticalOffset = SystemParameters.PrimaryScreenHeight - wnd.Height;
-                    vrectoffset += top + wnd.Height - SystemParameters.PrimaryScreenHeight;
+                    vRectOffset += top + wnd.Height - SystemParameters.PrimaryScreenHeight;
                 }
                 else
                 {
                     wnd.VerticalOffset = top;
                 }
 
-                wnd.DropPanel.OuterRect = new Rect(hrectoffset, vrectoffset, width, height);
+                wnd.DropPanel.OuterRect = new Rect(hRectOffset, vRectOffset, width, height);
             }
             else
             {
@@ -148,27 +147,27 @@ namespace YDock
                 wnd.Height = height;
                 if (wnd.MinWidth > width)
                 {
-                    hrectoffset = (wnd.MinWidth - width) / 2;
-                    left -= hrectoffset;
+                    hRectOffset = (wnd.MinWidth - width) / 2;
+                    left -= hRectOffset;
                     width = wnd.MinWidth;
                 }
 
                 if (wnd.MinHeight > height)
                 {
-                    vrectoffset = (wnd.MinHeight - height) / 2;
-                    top -= vrectoffset;
+                    vRectOffset = (wnd.MinHeight - height) / 2;
+                    top -= vRectOffset;
                     height = wnd.MinHeight;
                 }
 
                 if (left < 0)
                 {
                     wnd.HorizontalOffset = 0;
-                    hrectoffset += left;
+                    hRectOffset += left;
                 }
                 else if (left + width > SystemParameters.PrimaryScreenWidth)
                 {
                     wnd.HorizontalOffset = SystemParameters.PrimaryScreenWidth - width;
-                    hrectoffset += left + width - SystemParameters.PrimaryScreenWidth;
+                    hRectOffset += left + width - SystemParameters.PrimaryScreenWidth;
                 }
                 else
                 {
@@ -178,19 +177,19 @@ namespace YDock
                 if (top < 0)
                 {
                     wnd.VerticalOffset = 0;
-                    vrectoffset += top;
+                    vRectOffset += top;
                 }
                 else if (top + height > SystemParameters.PrimaryScreenHeight)
                 {
                     wnd.VerticalOffset = SystemParameters.PrimaryScreenHeight - height;
-                    vrectoffset += top + height - SystemParameters.PrimaryScreenHeight;
+                    vRectOffset += top + height - SystemParameters.PrimaryScreenHeight;
                 }
                 else
                 {
                     wnd.VerticalOffset = top;
                 }
 
-                wnd.DropPanel.InnerRect = new Rect(hrectoffset, vrectoffset, wnd.Width, wnd.Height);
+                wnd.DropPanel.InnerRect = new Rect(hRectOffset, vRectOffset, wnd.Width, wnd.Height);
                 wnd.DropPanel.OuterRect = new Rect(0, 0, wnd.Width, wnd.Height);
             }
         }
