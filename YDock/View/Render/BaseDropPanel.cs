@@ -72,7 +72,7 @@ namespace YDock.View.Render
         {
             _target = target;
             _source = source;
-            //绘制停靠的区域
+            //Draw the docked area
             ActiveRect = new ActiveRectDropVisual(DragManager.NONE);
             AddChild(ActiveRect);
         }
@@ -88,7 +88,7 @@ namespace YDock.View.Render
         public Rect OuterRect { get; set; }
 
         /// <summary>
-        ///     拖放源
+        ///     Drag and drop source
         /// </summary>
         internal DragItem Source
         {
@@ -96,7 +96,7 @@ namespace YDock.View.Render
         }
 
         /// <summary>
-        ///     拖放目标
+        ///     Drag and drop target
         /// </summary>
         internal IDragTarget Target
         {

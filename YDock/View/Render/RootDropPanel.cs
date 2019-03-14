@@ -8,13 +8,13 @@ namespace YDock.View.Render
 
         internal RootDropPanel(IDragTarget target, DragItem source) : base(target, source)
         {
-            //绘制左边的拖放区域
+            //Draw the drag area on the left
             AddChild(new UnitDropVisual(DragManager.LEFT));
-            //绘制顶部的拖放区域
+            //Draw the top drop zone
             AddChild(new UnitDropVisual(DragManager.Top));
-            //绘制右边的拖放区域
+            //Draw the drag area on the right
             AddChild(new UnitDropVisual(DragManager.Right));
-            //绘制底部的拖放区域
+            //Draw the bottom drop zone
             AddChild(new UnitDropVisual(DragManager.Bottom));
         }
 

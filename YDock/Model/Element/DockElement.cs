@@ -329,7 +329,7 @@ namespace YDock.Model.Element
                 var group = Container as LayoutGroup;
                 if (group?.AttachObject == null || !group.AttachObject.AttachTo())
                 {
-                    //默认向下停靠
+                    //Default down dock
                     if (Side == DockSide.None)
                     {
                         Side = DockSide.Bottom;

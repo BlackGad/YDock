@@ -8,25 +8,25 @@ namespace YDock.View.Render
 
         internal DropPanel(IDragTarget target, DragItem source) : base(target, source)
         {
-            //绘制拖放区域的玻璃外观
+            //Draw the glass appearance of the drop zone
             AddChild(new GlassDropVisual(DragManager.NONE));
-            //绘制中心的拖放区域
+            //Draw the center's drop zone
             AddChild(new UnitDropVisual(DragManager.Center));
-            //绘制左边的拖放区域
+            //Draw the drag area on the left
             AddChild(new UnitDropVisual(DragManager.LEFT));
-            //绘制顶部的拖放区域
+            //Draw the top drop zone
             AddChild(new UnitDropVisual(DragManager.Top));
-            //绘制右边的拖放区域
+            //Draw the drag area on the right
             AddChild(new UnitDropVisual(DragManager.Right));
-            //绘制底部的拖放区域
+            //Draw the bottom drop zone
             AddChild(new UnitDropVisual(DragManager.Bottom));
-            //绘制左分割的拖放区域
+            //Draw a left-handed drop zone
             AddChild(new UnitDropVisual(DragManager.LEFT | DragManager.Split));
-            //绘制上分割的拖放区域
+            //Draw the drop zone on the split
             AddChild(new UnitDropVisual(DragManager.Top | DragManager.Split));
-            //绘制右分割的拖放区域
+            //Draw a right-handed drop zone
             AddChild(new UnitDropVisual(DragManager.Right | DragManager.Split));
-            //绘制下分割的拖放区域
+            //Draw the drop zone for the next split
             AddChild(new UnitDropVisual(DragManager.Bottom | DragManager.Split));
         }
 

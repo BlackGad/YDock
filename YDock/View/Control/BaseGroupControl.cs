@@ -177,7 +177,7 @@ namespace YDock.View.Control
             DockManager.FormatChildSize(child as ILayoutSize, new Size(ActualWidth, ActualHeight));
             DockManager.ChangeDockMode(child, ((ILayoutGroup)Model).Mode);
             DockManager.ChangeSide(child, Model.Side);
-            //取消AttachObject信息
+            //Cancel AttachObject information
             DockManager.ClearAttachObject(child);
 
             var group = Model as LayoutGroup;
