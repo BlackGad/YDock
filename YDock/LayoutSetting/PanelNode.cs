@@ -118,6 +118,7 @@ namespace YDock.LayoutSetting
                     node = node.Next;
                     if (relative != null) relativeDockControl = relative;
                 }
+
                 return;
             }
 

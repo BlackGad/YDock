@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using YDock.Enum;
 using YDock.View.Control;
+// ReSharper disable RedundantAssignment
 
 namespace YDock.View.Render
 {
@@ -213,48 +214,48 @@ namespace YDock.View.Render
                         if ((Flag & DragManager.Center) != 0)
                         {
                             var stream = new StreamGeometry();
-                            using (var sctx = stream.Open())
+                            using (var context = stream.Open())
                             {
                                 double currentX = DropPanel.InnerRect.Left + DropPanel.OuterRect.Left, currentY = DropPanel.InnerRect.Top + DropPanel.OuterRect.Top;
-                                sctx.BeginFigure(new Point(currentX, currentY), true, false);
+                                context.BeginFigure(new Point(currentX, currentY), true, false);
                                 if (DropPanel.Target.Mode == DragMode.Anchor)
                                 {
-                                    sctx.LineTo(new Point(currentX += DropPanel.InnerRect.Size.Width, currentY), true, false);
+                                    context.LineTo(new Point(currentX += DropPanel.InnerRect.Size.Width, currentY), true, false);
                                     if (DropPanel.InnerRect.Size.Width < 60)
                                     {
-                                        sctx.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height), true, false);
-                                        sctx.LineTo(new Point(currentX -= DropPanel.InnerRect.Size.Width, currentY), true, false);
+                                        context.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height), true, false);
+                                        context.LineTo(new Point(currentX -= DropPanel.InnerRect.Size.Width, currentY), true, false);
                                     }
                                     else
                                     {
-                                        sctx.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height - 20), true, false);
-                                        sctx.LineTo(new Point(currentX -= DropPanel.InnerRect.Size.Width - 60, currentY), true, false);
-                                        sctx.LineTo(new Point(currentX, currentY += 20), true, false);
-                                        sctx.LineTo(new Point(currentX -= 60, currentY), true, false);
+                                        context.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height - 20), true, false);
+                                        context.LineTo(new Point(currentX -= DropPanel.InnerRect.Size.Width - 60, currentY), true, false);
+                                        context.LineTo(new Point(currentX, currentY += 20), true, false);
+                                        context.LineTo(new Point(currentX -= 60, currentY), true, false);
                                     }
 
-                                    sctx.LineTo(new Point(currentX, currentY -= DropPanel.InnerRect.Size.Height), true, false);
+                                    context.LineTo(new Point(currentX, currentY -= DropPanel.InnerRect.Size.Height), true, false);
                                 }
                                 else
                                 {
                                     if (DropPanel.InnerRect.Size.Width < 120)
                                     {
-                                        sctx.LineTo(new Point(currentX += DropPanel.InnerRect.Size.Width, currentY), true, false);
-                                        sctx.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height), true, false);
+                                        context.LineTo(new Point(currentX += DropPanel.InnerRect.Size.Width, currentY), true, false);
+                                        context.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height), true, false);
                                     }
                                     else
                                     {
-                                        sctx.LineTo(new Point(currentX += 120, currentY), true, false);
-                                        sctx.LineTo(new Point(currentX, currentY += 22), true, false);
-                                        sctx.LineTo(new Point(currentX += DropPanel.InnerRect.Size.Width - 120, currentY), true, false);
-                                        sctx.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height - 22), true, false);
+                                        context.LineTo(new Point(currentX += 120, currentY), true, false);
+                                        context.LineTo(new Point(currentX, currentY += 22), true, false);
+                                        context.LineTo(new Point(currentX += DropPanel.InnerRect.Size.Width - 120, currentY), true, false);
+                                        context.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height - 22), true, false);
                                     }
 
-                                    sctx.LineTo(new Point(currentX -= DropPanel.InnerRect.Size.Width, currentY), true, false);
-                                    sctx.LineTo(new Point(currentX, currentY -= DropPanel.InnerRect.Size.Height), true, false);
+                                    context.LineTo(new Point(currentX -= DropPanel.InnerRect.Size.Width, currentY), true, false);
+                                    context.LineTo(new Point(currentX, currentY -= DropPanel.InnerRect.Size.Height), true, false);
                                 }
 
-                                sctx.Close();
+                                context.Close();
                             }
 
                             ctx.DrawGeometry(ResourceManager.RectBrush, ResourceManager.RectBorderPen, stream);
@@ -263,46 +264,46 @@ namespace YDock.View.Render
                     else
                     {
                         var stream = new StreamGeometry();
-                        using (var sctx = stream.Open())
+                        using (var context = stream.Open())
                         {
                             double currentX = DropPanel.InnerRect.Left + DropPanel.OuterRect.Left, currentY = DropPanel.InnerRect.Top + DropPanel.OuterRect.Top;
                             if (DropPanel.Target.Mode == DragMode.Anchor)
                             {
-                                sctx.BeginFigure(new Point(currentX, currentY), true, false);
+                                context.BeginFigure(new Point(currentX, currentY), true, false);
                                 if (DropPanel.InnerRect.Size.Width < Rect.X + Rect.Width)
                                 {
                                     Rect.Width = DropPanel.InnerRect.Size.Width - Rect.X;
                                 }
 
-                                sctx.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height - 20), true, false);
-                                sctx.LineTo(new Point(currentX += Rect.X, currentY), true, false);
-                                sctx.LineTo(new Point(currentX, currentY += 20), true, false);
-                                sctx.LineTo(new Point(currentX += Rect.Width, currentY), true, false);
-                                sctx.LineTo(new Point(currentX, currentY -= 20), true, false);
-                                sctx.LineTo(new Point(currentX += DropPanel.InnerRect.Size.Width - Rect.Width - Rect.X, currentY), true, false);
-                                sctx.LineTo(new Point(currentX, currentY -= DropPanel.InnerRect.Size.Height - 20), true, false);
-                                sctx.LineTo(new Point(currentX -= DropPanel.InnerRect.Size.Width, currentY), true, false);
+                                context.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height - 20), true, false);
+                                context.LineTo(new Point(currentX += Rect.X, currentY), true, false);
+                                context.LineTo(new Point(currentX, currentY += 20), true, false);
+                                context.LineTo(new Point(currentX += Rect.Width, currentY), true, false);
+                                context.LineTo(new Point(currentX, currentY -= 20), true, false);
+                                context.LineTo(new Point(currentX += DropPanel.InnerRect.Size.Width - Rect.Width - Rect.X, currentY), true, false);
+                                context.LineTo(new Point(currentX, currentY -= DropPanel.InnerRect.Size.Height - 20), true, false);
+                                context.LineTo(new Point(currentX -= DropPanel.InnerRect.Size.Width, currentY), true, false);
                             }
                             else
                             {
                                 currentY += DropPanel.InnerRect.Size.Height;
-                                sctx.BeginFigure(new Point(currentX, currentY), true, false);
+                                context.BeginFigure(new Point(currentX, currentY), true, false);
                                 if (DropPanel.InnerRect.Size.Width < Rect.X + Rect.Width)
                                 {
                                     Rect.Width = DropPanel.InnerRect.Size.Width - Rect.X;
                                 }
 
-                                sctx.LineTo(new Point(currentX, currentY -= DropPanel.InnerRect.Size.Height - 22), true, false);
-                                sctx.LineTo(new Point(currentX += Rect.X, currentY), true, false);
-                                sctx.LineTo(new Point(currentX, currentY -= 22), true, false);
-                                sctx.LineTo(new Point(currentX += Rect.Width, currentY), true, false);
-                                sctx.LineTo(new Point(currentX, currentY += 22), true, false);
-                                sctx.LineTo(new Point(currentX += DropPanel.InnerRect.Size.Width - Rect.Width - Rect.X, currentY), true, false);
-                                sctx.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height - 22), true, false);
-                                sctx.LineTo(new Point(currentX -= DropPanel.InnerRect.Size.Width, currentY), true, false);
+                                context.LineTo(new Point(currentX, currentY -= DropPanel.InnerRect.Size.Height - 22), true, false);
+                                context.LineTo(new Point(currentX += Rect.X, currentY), true, false);
+                                context.LineTo(new Point(currentX, currentY -= 22), true, false);
+                                context.LineTo(new Point(currentX += Rect.Width, currentY), true, false);
+                                context.LineTo(new Point(currentX, currentY += 22), true, false);
+                                context.LineTo(new Point(currentX += DropPanel.InnerRect.Size.Width - Rect.Width - Rect.X, currentY), true, false);
+                                context.LineTo(new Point(currentX, currentY += DropPanel.InnerRect.Size.Height - 22), true, false);
+                                context.LineTo(new Point(currentX -= DropPanel.InnerRect.Size.Width, currentY), true, false);
                             }
 
-                            sctx.Close();
+                            context.Close();
                         }
 
                         ctx.DrawGeometry(ResourceManager.RectBrush, ResourceManager.RectBorderPen, stream);

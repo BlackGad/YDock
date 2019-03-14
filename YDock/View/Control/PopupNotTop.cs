@@ -12,7 +12,7 @@ namespace YDock.View.Control
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+        private static extern bool GetWindowRect(IntPtr hWindow, out RECT lpRect);
 
         private static void OnTopmostChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
@@ -20,7 +20,7 @@ namespace YDock.View.Control
         }
 
         [DllImport("user32", EntryPoint = "SetWindowPos")]
-        private static extern int SetWindowPos(IntPtr hWnd, int hwndInsertAfter, int x, int y, int cx, int cy, int wFlags);
+        private static extern int SetWindowPos(IntPtr hWindow, int hwndInsertAfter, int x, int y, int cx, int cy, int wFlags);
 
         #endregion
 
@@ -48,7 +48,7 @@ namespace YDock.View.Control
         private void UpdateWindow()
         {
             var hwnd = ((HwndSource)PresentationSource.FromDependencyObject(this))?.Handle;
-            if(hwnd == null) return;
+            if (hwnd == null) return;
 
             if (GetWindowRect(hwnd.Value, out var rect))
             {

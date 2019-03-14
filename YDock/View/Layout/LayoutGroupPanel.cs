@@ -13,6 +13,7 @@ using YDock.Interface;
 using YDock.Model.Layout;
 using YDock.View.Control;
 using YDock.View.Window;
+// ReSharper disable RedundantAssignment
 
 namespace YDock.View.Layout
 {
@@ -27,7 +28,7 @@ namespace YDock.View.Layout
         private double _dragBound2;
         private Popup _dragPopup;
 
-        private DropWindow _dragWnd;
+        private DropWindow _dragWindow;
         private Point _pointToScreen;
 
         private DockSide _side;
@@ -103,20 +104,20 @@ namespace YDock.View.Layout
         public void OnDrop(DragItem source)
         {
             IDockView child;
-            if (source.RelativeObj is BaseFloatWindow window)
+            if (source.RelativeObject is BaseFloatWindow window)
             {
                 child = window.Child;
                 window.DetachChild(child);
             }
             else
             {
-                child = source.RelativeObj as IDockView;
+                child = source.RelativeObject as IDockView;
             }
 
             DockManager.ChangeDockMode(child, DockMode.Normal);
             DockManager.FormatChildSize(child as ILayoutSize, new Size(ActualWidth, ActualHeight));
-            //Cancel AttachObj information
-            DockManager.ClearAttachObj(child);
+            //Cancel AttachObject information
+            DockManager.ClearAttachObject(child);
 
             switch (DropMode)
             {
@@ -138,7 +139,7 @@ namespace YDock.View.Layout
                     break;
             }
 
-            if (source.RelativeObj is BaseFloatWindow floatWindow)
+            if (source.RelativeObject is BaseFloatWindow floatWindow)
             {
                 floatWindow.Close();
             }
@@ -146,35 +147,35 @@ namespace YDock.View.Layout
 
         public void CloseDropWindow()
         {
-            if (_dragWnd != null)
+            if (_dragWindow != null)
             {
                 DropMode = DropMode.None;
-                _dragWnd.Close();
-                _dragWnd = null;
+                _dragWindow.Close();
+                _dragWindow = null;
             }
         }
 
         public void HideDropWindow()
         {
-            _dragWnd?.Hide();
+            _dragWindow?.Hide();
         }
 
         public void ShowDropWindow()
         {
-            if (_dragWnd == null)
+            if (_dragWindow == null)
             {
                 CreateDropWindow();
             }
 
             var p = this.PointToScreenDPIWithoutFlowDirection(new Point());
-            DockHelper.UpdateLocation(_dragWnd, p.X, p.Y, ActualWidth, ActualHeight);
-            if (!_dragWnd.IsOpen) _dragWnd.IsOpen = true;
-            _dragWnd.Show();
+            DockHelper.UpdateLocation(_dragWindow, p.X, p.Y, ActualWidth, ActualHeight);
+            if (!_dragWindow.IsOpen) _dragWindow.IsOpen = true;
+            _dragWindow.Show();
         }
 
         public void Update(Point mouseP)
         {
-            _dragWnd?.Update(mouseP);
+            _dragWindow?.Update(mouseP);
         }
 
         public void AttachWith(IDockView source, AttachMode mode = AttachMode.Center)
@@ -579,9 +580,9 @@ namespace YDock.View.Layout
 
         public void CreateDropWindow()
         {
-            if (_dragWnd == null)
+            if (_dragWindow == null)
             {
-                _dragWnd = new DropWindow(this);
+                _dragWindow = new DropWindow(this);
             }
         }
 

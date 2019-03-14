@@ -33,7 +33,7 @@ namespace YDock.Model.Layout
             get { return _dockManager; }
         }
 
-        internal AttachObject AttachObj { get; set; }
+        internal AttachObject AttachObject { get; set; }
 
         #endregion
 
@@ -88,7 +88,7 @@ namespace YDock.Model.Layout
                 return;
             }
 
-            if (AttachObj != null && AttachObj.AttachTo()) return;
+            if (AttachObject != null && AttachObject.AttachTo()) return;
 
             //If view does not exist, create a new view
             if (this is LayoutDocumentGroup)
@@ -214,8 +214,8 @@ namespace YDock.Model.Layout
 
         public override void Dispose()
         {
-            AttachObj?.Dispose();
-            AttachObj = null;
+            AttachObject?.Dispose();
+            AttachObject = null;
             if (View is BaseGroupControl groupControl)
             {
                 _dockManager.DragManager.OnDragStatusChanged -= groupControl.OnDragStatusChanged;

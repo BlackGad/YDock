@@ -4,6 +4,8 @@ using YDock.Enum;
 using YDock.View.Control;
 using YDock.View.Layout;
 
+// ReSharper disable RedundantAssignment
+
 namespace YDock.View.Render
 {
     public class UnitDropVisual : BaseDropVisual
@@ -28,19 +30,19 @@ namespace YDock.View.Render
                 {
                     if ((Flag & DragManager.LEFT) != 0)
                     {
-                        _DrawLeft(ctx, hOffset + Constants.DropGlassLength, vOffset + (size.Height - Constants.DropUnitLength) / 2);
+                        DrawLeft(ctx, hOffset + Constants.DropGlassLength, vOffset + (size.Height - Constants.DropUnitLength) / 2);
                     }
                     else if ((Flag & DragManager.Top) != 0)
                     {
-                        _DrawTop(ctx, hOffset + (size.Width - Constants.DropUnitLength) / 2, vOffset + Constants.DropGlassLength);
+                        DrawTop(ctx, hOffset + (size.Width - Constants.DropUnitLength) / 2, vOffset + Constants.DropGlassLength);
                     }
                     else if ((Flag & DragManager.Right) != 0)
                     {
-                        _DrawRight(ctx, hOffset + size.Width - Constants.DropGlassLength, vOffset + (size.Height - Constants.DropUnitLength) / 2);
+                        DrawRight(ctx, hOffset + size.Width - Constants.DropGlassLength, vOffset + (size.Height - Constants.DropUnitLength) / 2);
                     }
                     else if ((Flag & DragManager.Bottom) != 0)
                     {
-                        _DrawBottom(ctx, hOffset + (size.Width - Constants.DropUnitLength) / 2, vOffset + size.Height - Constants.DropGlassLength);
+                        DrawBottom(ctx, hOffset + (size.Width - Constants.DropUnitLength) / 2, vOffset + size.Height - Constants.DropGlassLength);
                     }
                 }
                 else
@@ -61,9 +63,9 @@ namespace YDock.View.Render
 
                         if (flag)
                         {
-                            _DrawCenter(ctx,
-                                        hOffset + (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2,
-                                        vOffset + (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2);
+                            DrawCenter(ctx,
+                                       hOffset + (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2,
+                                       vOffset + (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2);
                         }
                     }
 
@@ -77,10 +79,10 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                layoutControl = (LayoutDocumentGroupControl)DropPanel.Target;
                                 if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    layoutPanel = (LayoutGroupPanel)layoutControl.DockViewParent;
                                     flag &= layoutPanel.Direction != Direction.Vertical && layoutControl.ChildrenCount > 0;
                                 }
 
@@ -88,7 +90,7 @@ namespace YDock.View.Render
                                 {
                                     hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2 - Constants.DropUnitLength;
                                     vOffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
-                                    _DrawCenter(ctx, hOffset, vOffset, true, true);
+                                    DrawCenter(ctx, hOffset, vOffset, true, true);
                                 }
                             }
                         }
@@ -96,10 +98,10 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                layoutControl = (LayoutDocumentGroupControl)DropPanel.Target;
                                 if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    layoutPanel = (LayoutGroupPanel)layoutControl.DockViewParent;
                                     if (layoutPanel.Direction == Direction.Horizontal)
                                     {
                                         flag &= layoutControl.IndexOf() == 0;
@@ -117,7 +119,7 @@ namespace YDock.View.Render
 
                             if (DropPanel.Source.DragMode == DragMode.Anchor && flag)
                             {
-                                _DrawLeft(ctx, hOffset, vOffset, false);
+                                DrawLeft(ctx, hOffset, vOffset, false);
                             }
                         }
                     }
@@ -128,10 +130,10 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                layoutControl = (LayoutDocumentGroupControl)DropPanel.Target;
                                 if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    layoutPanel = (LayoutGroupPanel)layoutControl.DockViewParent;
                                     flag &= layoutPanel.Direction != Direction.Vertical && layoutControl.ChildrenCount > 0;
                                 }
 
@@ -139,7 +141,7 @@ namespace YDock.View.Render
                                 {
                                     hOffset += (DropPanel.InnerRect.Size.Width + Constants.DropUnitLength) / 2;
                                     vOffset += (DropPanel.InnerRect.Size.Height - Constants.DropUnitLength) / 2;
-                                    _DrawCenter(ctx, hOffset, vOffset, true, true);
+                                    DrawCenter(ctx, hOffset, vOffset, true, true);
                                 }
                             }
                         }
@@ -147,10 +149,10 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                layoutControl = (LayoutDocumentGroupControl)DropPanel.Target;
                                 if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    layoutPanel = (LayoutGroupPanel)layoutControl.DockViewParent;
                                     if (layoutPanel.Direction == Direction.Horizontal)
                                     {
                                         flag &= layoutControl.IndexOf() == layoutPanel.Count - 1;
@@ -168,7 +170,7 @@ namespace YDock.View.Render
 
                             if (DropPanel.Source.DragMode == DragMode.Anchor && flag)
                             {
-                                _DrawRight(ctx, hOffset, vOffset, false);
+                                DrawRight(ctx, hOffset, vOffset, false);
                             }
                         }
                     }
@@ -179,10 +181,10 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                layoutControl = (LayoutDocumentGroupControl)DropPanel.Target;
                                 if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    layoutPanel = (LayoutGroupPanel)layoutControl.DockViewParent;
                                     flag &= layoutPanel.Direction != Direction.Horizontal && layoutControl.ChildrenCount > 0;
                                 }
 
@@ -190,7 +192,7 @@ namespace YDock.View.Render
                                 {
                                     hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
                                     vOffset += DropPanel.InnerRect.Size.Height / 2 - Constants.DropUnitLength * 1.5;
-                                    _DrawCenter(ctx, hOffset, vOffset, true);
+                                    DrawCenter(ctx, hOffset, vOffset, true);
                                 }
                             }
                         }
@@ -198,10 +200,10 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                layoutControl = (LayoutDocumentGroupControl)DropPanel.Target;
                                 if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    layoutPanel = (LayoutGroupPanel)layoutControl.DockViewParent;
                                     if (layoutPanel.Direction == Direction.Vertical)
                                     {
                                         flag &= layoutControl.IndexOf() == 0;
@@ -219,7 +221,7 @@ namespace YDock.View.Render
 
                             if (DropPanel.Source.DragMode == DragMode.Anchor && flag)
                             {
-                                _DrawTop(ctx, hOffset, vOffset, false);
+                                DrawTop(ctx, hOffset, vOffset, false);
                             }
                         }
                     }
@@ -230,10 +232,10 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                layoutControl = (LayoutDocumentGroupControl)DropPanel.Target;
                                 if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    layoutPanel = (LayoutGroupPanel)layoutControl.DockViewParent;
                                     flag &= layoutPanel.Direction != Direction.Horizontal && layoutControl.ChildrenCount > 0;
                                 }
 
@@ -241,7 +243,7 @@ namespace YDock.View.Render
                                 {
                                     hOffset += (DropPanel.InnerRect.Size.Width - Constants.DropUnitLength) / 2;
                                     vOffset += (DropPanel.InnerRect.Size.Height + Constants.DropUnitLength) / 2;
-                                    _DrawCenter(ctx, hOffset, vOffset, true);
+                                    DrawCenter(ctx, hOffset, vOffset, true);
                                 }
                             }
                         }
@@ -249,10 +251,10 @@ namespace YDock.View.Render
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
-                                layoutControl = DropPanel.Target as LayoutDocumentGroupControl;
+                                layoutControl = (LayoutDocumentGroupControl)DropPanel.Target;
                                 if (layoutControl.DockViewParent != null)
                                 {
-                                    layoutPanel = layoutControl.DockViewParent as LayoutGroupPanel;
+                                    layoutPanel = (LayoutGroupPanel)layoutControl.DockViewParent;
                                     if (layoutPanel.Direction == Direction.Vertical)
                                     {
                                         flag &= layoutControl.IndexOf() == layoutPanel.Count - 1;
@@ -270,7 +272,7 @@ namespace YDock.View.Render
 
                             if (DropPanel.Source.DragMode == DragMode.Anchor && flag)
                             {
-                                _DrawBottom(ctx, hOffset, vOffset, false);
+                                DrawBottom(ctx, hOffset, vOffset, false);
                             }
                         }
                     }
@@ -282,11 +284,11 @@ namespace YDock.View.Render
 
         #region Members
 
-        private void _DrawBottom(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
+        private void DrawBottom(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
         {
             if (hasGlassBorder)
             {
-                //绘制玻璃外观
+                //Drawing the appearance of the glass
                 ctx.PushOpacity(Constants.DragOpacity);
                 ctx.DrawRectangle(Brushes.White,
                                   ResourceManager.BorderPen,
@@ -314,35 +316,35 @@ namespace YDock.View.Render
                          new Point(hOffset - 0.5, vOffset - 12),
                          new Point(hOffset + Constants.DropUnitLength - Constants.DropGlassLength * 4 + 0.5, vOffset - 12));
 
-            //绘制小窗口
+            //Draw a small window
             var stream = new StreamGeometry();
-            using (var sctx = stream.Open())
+            using (var context = stream.Open())
             {
                 double currentX = hOffset, currentY = vOffset - 12;
-                sctx.BeginFigure(new Point(currentX, currentY), true, false);
-                sctx.LineTo(new Point(currentX, currentY += 12), true, true);
-                sctx.LineTo(new Point(currentX += Constants.DropUnitLength - Constants.DropGlassLength * 4, currentY), true, true);
-                sctx.LineTo(new Point(currentX, currentY -= 12), true, true);
-                sctx.Close();
+                context.BeginFigure(new Point(currentX, currentY), true, false);
+                context.LineTo(new Point(currentX, currentY += 12), true, true);
+                context.LineTo(new Point(currentX += Constants.DropUnitLength - Constants.DropGlassLength * 4, currentY), true, true);
+                context.LineTo(new Point(currentX, currentY -= 12), true, true);
+                context.Close();
             }
 
             ctx.DrawGeometry(null, ResourceManager.DropRectPen, stream);
 
-            //绘制方向箭头
+            //Drawing direction arrows
             stream = new StreamGeometry();
-            using (var sctx = stream.Open())
+            using (var context = stream.Open())
             {
                 double currentX = hOffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2, currentY = vOffset - 20;
-                sctx.BeginFigure(new Point(currentX, currentY), true, true);
-                sctx.LineTo(new Point(currentX += 5, currentY -= 5), true, true);
-                sctx.LineTo(new Point(currentX -= 10, currentY), true, true);
-                sctx.Close();
+                context.BeginFigure(new Point(currentX, currentY), true, true);
+                context.LineTo(new Point(currentX += 5, currentY -= 5), true, true);
+                context.LineTo(new Point(currentX -= 10, currentY), true, true);
+                context.Close();
             }
 
             ctx.DrawGeometry(Brushes.Black, null, stream);
         }
 
-        private void _DrawCenter(DrawingContext ctx, double hOffset, double vOffset, bool withSpliterLine = false, bool isVertical = false)
+        private void DrawCenter(DrawingContext ctx, double hOffset, double vOffset, bool withSplitterLine = false, bool isVertical = false)
         {
             double currentX = hOffset, currentY = vOffset;
 
@@ -366,20 +368,20 @@ namespace YDock.View.Render
                          new Point(currentX - 0.5, currentY),
                          new Point(currentX + Constants.DropUnitLength - Constants.DropGlassLength * 4 + 0.5, currentY));
 
-            //绘制小窗口
+            //Draw a small window
             var stream = new StreamGeometry();
-            using (var sctx = stream.Open())
+            using (var context = stream.Open())
             {
-                sctx.BeginFigure(new Point(currentX, currentY), true, false);
-                sctx.LineTo(new Point(currentX, currentY += 22), true, true);
-                sctx.LineTo(new Point(currentX += Constants.DropUnitLength - Constants.DropGlassLength * 4, currentY), true, true);
-                sctx.LineTo(new Point(currentX, currentY -= 22), true, true);
-                sctx.Close();
+                context.BeginFigure(new Point(currentX, currentY), true, false);
+                context.LineTo(new Point(currentX, currentY += 22), true, true);
+                context.LineTo(new Point(currentX += Constants.DropUnitLength - Constants.DropGlassLength * 4, currentY), true, true);
+                context.LineTo(new Point(currentX, currentY -= 22), true, true);
+                context.Close();
             }
 
             ctx.DrawGeometry(null, ResourceManager.DropRectPen, stream);
 
-            if (withSpliterLine)
+            if (withSplitterLine)
             {
                 if (isVertical)
                 {
@@ -396,11 +398,11 @@ namespace YDock.View.Render
             }
         }
 
-        private void _DrawLeft(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
+        private void DrawLeft(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
         {
             if (hasGlassBorder)
             {
-                //绘制玻璃外观
+                //Drawing the appearance of the glass
                 ctx.PushOpacity(Constants.DragOpacity);
                 ctx.DrawRectangle(Brushes.White, ResourceManager.BorderPen, new Rect(hOffset, vOffset, Constants.DropUnitLength, Constants.DropUnitLength));
                 ctx.Pop();
@@ -423,39 +425,39 @@ namespace YDock.View.Render
             vOffset += Constants.DropGlassLength;
             ctx.DrawLine(ResourceManager.DropRectPenHeavy, new Point(hOffset - 0.5, vOffset), new Point(hOffset + 12.5, vOffset));
 
-            //绘制小窗口
+            //Draw a small window
             var stream = new StreamGeometry();
-            using (var sctx = stream.Open())
+            using (var context = stream.Open())
             {
                 double currentX = hOffset, currentY = vOffset;
-                sctx.BeginFigure(new Point(currentX, currentY), true, false);
-                sctx.LineTo(new Point(currentX, currentY += Constants.DropUnitLength - Constants.DropGlassLength * 4), true, true);
-                sctx.LineTo(new Point(currentX += 12, currentY), true, true);
-                sctx.LineTo(new Point(currentX, currentY -= Constants.DropUnitLength - Constants.DropGlassLength * 4), true, true);
-                sctx.Close();
+                context.BeginFigure(new Point(currentX, currentY), true, false);
+                context.LineTo(new Point(currentX, currentY += Constants.DropUnitLength - Constants.DropGlassLength * 4), true, true);
+                context.LineTo(new Point(currentX += 12, currentY), true, true);
+                context.LineTo(new Point(currentX, currentY -= Constants.DropUnitLength - Constants.DropGlassLength * 4), true, true);
+                context.Close();
             }
 
             ctx.DrawGeometry(null, ResourceManager.DropRectPen, stream);
 
-            //绘制方向箭头
+            //Drawing direction arrows
             stream = new StreamGeometry();
-            using (var sctx = stream.Open())
+            using (var context = stream.Open())
             {
                 double currentX = hOffset + 20, currentY = vOffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2;
-                sctx.BeginFigure(new Point(currentX, currentY), true, true);
-                sctx.LineTo(new Point(currentX += 5, currentY -= 5), true, true);
-                sctx.LineTo(new Point(currentX, currentY += 10), true, true);
-                sctx.Close();
+                context.BeginFigure(new Point(currentX, currentY), true, true);
+                context.LineTo(new Point(currentX += 5, currentY -= 5), true, true);
+                context.LineTo(new Point(currentX, currentY += 10), true, true);
+                context.Close();
             }
 
             ctx.DrawGeometry(Brushes.Black, null, stream);
         }
 
-        private void _DrawRight(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
+        private void DrawRight(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
         {
             if (hasGlassBorder)
             {
-                //绘制玻璃外观
+                //Drawing the appearance of the glass
                 ctx.PushOpacity(Constants.DragOpacity);
                 ctx.DrawRectangle(Brushes.White,
                                   ResourceManager.BorderPen,
@@ -480,39 +482,39 @@ namespace YDock.View.Render
             vOffset += Constants.DropGlassLength;
             ctx.DrawLine(ResourceManager.DropRectPenHeavy, new Point(hOffset + 0.5, vOffset), new Point(hOffset - 12.5, vOffset));
 
-            //绘制小窗口
+            //Draw a small window
             var stream = new StreamGeometry();
-            using (var sctx = stream.Open())
+            using (var context = stream.Open())
             {
                 double currentX = hOffset, currentY = vOffset;
-                sctx.BeginFigure(new Point(currentX, currentY), true, false);
-                sctx.LineTo(new Point(currentX, currentY += Constants.DropUnitLength - Constants.DropGlassLength * 4), true, true);
-                sctx.LineTo(new Point(currentX -= 12, currentY), true, true);
-                sctx.LineTo(new Point(currentX, currentY -= Constants.DropUnitLength - Constants.DropGlassLength * 4), true, true);
-                sctx.Close();
+                context.BeginFigure(new Point(currentX, currentY), true, false);
+                context.LineTo(new Point(currentX, currentY += Constants.DropUnitLength - Constants.DropGlassLength * 4), true, true);
+                context.LineTo(new Point(currentX -= 12, currentY), true, true);
+                context.LineTo(new Point(currentX, currentY -= Constants.DropUnitLength - Constants.DropGlassLength * 4), true, true);
+                context.Close();
             }
 
             ctx.DrawGeometry(null, ResourceManager.DropRectPen, stream);
 
-            //绘制方向箭头
+            //Drawing direction arrows
             stream = new StreamGeometry();
-            using (var sctx = stream.Open())
+            using (var context = stream.Open())
             {
                 double currentX = hOffset - 20, currentY = vOffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2;
-                sctx.BeginFigure(new Point(currentX, currentY), true, true);
-                sctx.LineTo(new Point(currentX -= 5, currentY -= 5), true, true);
-                sctx.LineTo(new Point(currentX, currentY += 10), true, true);
-                sctx.Close();
+                context.BeginFigure(new Point(currentX, currentY), true, true);
+                context.LineTo(new Point(currentX -= 5, currentY -= 5), true, true);
+                context.LineTo(new Point(currentX, currentY += 10), true, true);
+                context.Close();
             }
 
             ctx.DrawGeometry(Brushes.Black, null, stream);
         }
 
-        private void _DrawTop(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
+        private void DrawTop(DrawingContext ctx, double hOffset, double vOffset, bool hasGlassBorder = true)
         {
             if (hasGlassBorder)
             {
-                //绘制玻璃外观
+                //Drawing the appearance of the glass
                 ctx.PushOpacity(Constants.DragOpacity);
                 ctx.DrawRectangle(Brushes.White, ResourceManager.BorderPen, new Rect(hOffset, vOffset, Constants.DropUnitLength, Constants.DropUnitLength));
                 ctx.Pop();
@@ -538,29 +540,29 @@ namespace YDock.View.Render
                          new Point(hOffset - 0.5, vOffset),
                          new Point(hOffset + Constants.DropUnitLength - Constants.DropGlassLength * 4 + 0.5, vOffset));
 
-            //绘制小窗口
+            //Draw a small window
             var stream = new StreamGeometry();
-            using (var sctx = stream.Open())
+            using (var context = stream.Open())
             {
                 double currentX = hOffset, currentY = vOffset;
-                sctx.BeginFigure(new Point(currentX, currentY), true, false);
-                sctx.LineTo(new Point(currentX, currentY += 12), true, true);
-                sctx.LineTo(new Point(currentX += Constants.DropUnitLength - Constants.DropGlassLength * 4, currentY), true, true);
-                sctx.LineTo(new Point(currentX, currentY -= 12), true, true);
-                sctx.Close();
+                context.BeginFigure(new Point(currentX, currentY), true, false);
+                context.LineTo(new Point(currentX, currentY += 12), true, true);
+                context.LineTo(new Point(currentX += Constants.DropUnitLength - Constants.DropGlassLength * 4, currentY), true, true);
+                context.LineTo(new Point(currentX, currentY -= 12), true, true);
+                context.Close();
             }
 
             ctx.DrawGeometry(null, ResourceManager.DropRectPen, stream);
 
-            //绘制方向箭头
+            //Drawing direction arrows
             stream = new StreamGeometry();
-            using (var sctx = stream.Open())
+            using (var context = stream.Open())
             {
                 double currentX = hOffset + (Constants.DropUnitLength - Constants.DropGlassLength * 4) / 2, currentY = vOffset + 20;
-                sctx.BeginFigure(new Point(currentX, currentY), true, true);
-                sctx.LineTo(new Point(currentX += 5, currentY += 5), true, true);
-                sctx.LineTo(new Point(currentX -= 10, currentY), true, true);
-                sctx.Close();
+                context.BeginFigure(new Point(currentX, currentY), true, true);
+                context.LineTo(new Point(currentX += 5, currentY += 5), true, true);
+                context.LineTo(new Point(currentX -= 10, currentY), true, true);
+                context.Close();
             }
 
             ctx.DrawGeometry(Brushes.Black, null, stream);

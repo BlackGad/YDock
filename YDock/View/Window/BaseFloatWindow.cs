@@ -11,6 +11,7 @@ using YDock.Interface;
 using YDock.Model.Layout;
 using YDock.View.Control;
 using YDock.View.Layout;
+// ReSharper disable RedundantAssignment
 
 namespace YDock.View.Window
 {
@@ -94,7 +95,7 @@ namespace YDock.View.Window
         protected override void OnActivated(EventArgs e)
         {
             base.OnActivated(e);
-            if (Mouse.LeftButton == MouseButtonState.Pressed && (DockManager.DragManager._dragWnd == null || DockManager.DragManager._dragWnd == this))
+            if (Mouse.LeftButton == MouseButtonState.Pressed && (DockManager.DragManager._dragWindow == null || DockManager.DragManager._dragWindow == this))
             {
                 var windowHandle = new WindowInteropHelper(this).Handle;
                 var mousePosition = this.PointToScreenDPI(Mouse.GetPosition(this));
@@ -308,7 +309,7 @@ namespace YDock.View.Window
         {
             if (potentialHitTestTarget is BaseGroupControl target)
             {
-                //Set DragTarget to display TargetWnd in real time
+                //Set DragTarget to display TargetWindow in real time
                 DockManager.DragManager.DragTarget = target;
 
                 return HitTestFilterBehavior.Stop;

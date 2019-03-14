@@ -89,7 +89,7 @@ namespace YDock
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool BringWindowToTop(IntPtr hWnd);
+        public static extern bool BringWindowToTop(IntPtr hWindow);
 
         [DllImport("user32.dll")]
         public static extern int CallNextHookEx(IntPtr hhook,
@@ -128,10 +128,9 @@ namespace YDock
         [DllImport("user32.dll", EntryPoint = "DestroyWindow", CharSet = CharSet.Unicode)]
         public static extern bool DestroyWindow(IntPtr hwnd);
 
-        public static RECT GetClientRect(IntPtr hWnd)
+        public static RECT GetClientRect(IntPtr hWindow)
         {
-            var result = new RECT();
-            GetClientRect(hWnd, out result);
+            GetClientRect(hWindow, out var result);
             return result;
         }
 
@@ -174,34 +173,33 @@ namespace YDock
         }
 
         [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
-        public static extern IntPtr GetParent(IntPtr hWnd);
+        public static extern IntPtr GetParent(IntPtr hWindow);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr GetTopWindow(IntPtr hWnd);
+        public static extern IntPtr GetTopWindow(IntPtr hWindow);
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
+        public static extern IntPtr GetWindow(IntPtr hWindow, uint uCmd);
 
         [DllImport("user32.dll")]
-        public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+        public static extern bool GetWindowRect(IntPtr hWindow, out RECT lpRect);
 
-        public static RECT GetWindowRect(IntPtr hWnd)
+        public static RECT GetWindowRect(IntPtr hWindow)
         {
-            var result = new RECT();
-            GetWindowRect(hWnd, out result);
+            GetWindowRect(hWindow, out var result);
             return result;
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-        public static extern bool IsChild(IntPtr hWndParent, IntPtr hwnd);
+        public static extern bool IsChild(IntPtr hWindowParent, IntPtr hwnd);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsWindowEnabled(IntPtr hWnd);
+        public static extern bool IsWindowEnabled(IntPtr hWindow);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsWindowVisible(IntPtr hWnd);
+        public static extern bool IsWindowVisible(IntPtr hWindow);
 
         public static int MakeLParam(int LoWord, int HiWord)
         {
@@ -248,16 +246,16 @@ namespace YDock
         public static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
 
         [DllImport("user32.dll")]
-        public static extern int PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+        public static extern int PostMessage(IntPtr hWindow, int Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+        public static extern int SendMessage(IntPtr hWindow, int Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr SetActiveWindow(IntPtr hWnd);
+        public static extern IntPtr SetActiveWindow(IntPtr hWindow);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr SetFocus(IntPtr hWnd);
+        public static extern IntPtr SetFocus(IntPtr hWindow);
 
         public static void SetOwner(IntPtr childHandle, IntPtr ownerHandle)
         {
@@ -268,11 +266,11 @@ namespace YDock
         }
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+        public static extern IntPtr SetParent(IntPtr hWindowChild, IntPtr hWindowNewParent);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
+        public static extern bool SetWindowPos(IntPtr hWindow, IntPtr hWindowInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
 
         [DllImport("user32.dll")]
         public static extern IntPtr SetWindowsHookEx(HookType code,
@@ -284,16 +282,16 @@ namespace YDock
         public static extern int UnhookWindowsHookEx(IntPtr hhook);
 
         [DllImport("user32.dll")]
-        private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+        private static extern bool GetClientRect(IntPtr hWindow, out RECT lpRect);
 
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        private static extern int GetWindowLong(IntPtr hWindow, int nIndex);
 
         /// <summary>
         ///     Changes an attribute of the specified window. The function also sets the 32-bit (long) value at the specified
         ///     offset into the extra window memory.
         /// </summary>
-        /// <param name="hWnd">A handle to the window and, indirectly, the class to which the window belongs..</param>
+        /// <param name="hWindow">A handle to the window and, indirectly, the class to which the window belongs..</param>
         /// <param name="nIndex">
         ///     The zero-based offset to the value to be set. Valid values are in the range zero through the
         ///     number of bytes of extra window memory, minus the size of an integer. To set any other value, specify one of the
@@ -305,7 +303,7 @@ namespace YDock
         ///     If the function fails, the return value is zero. To get extended error information, call GetLastError.
         /// </returns>
         [DllImport("user32.dll")]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        private static extern int SetWindowLong(IntPtr hWindow, int nIndex, int dwNewLong);
 
         #endregion
 
@@ -502,7 +500,7 @@ namespace YDock
 
             /// <summary>
             ///     Does not activate the window. If this flag is not set, the window is activated and moved to the
-            ///     top of either the topmost or non-topmost group (depending on the setting of the hWndInsertAfter
+            ///     top of either the topmost or non-topmost group (depending on the setting of the hWindowInsertAfter
             ///     parameter).
             /// </summary>
             /// <remarks>SWP_NOACTIVATE</remarks>
@@ -545,7 +543,7 @@ namespace YDock
             /// <remarks>SWP_NOSIZE</remarks>
             IgnoreResize = 0x0001,
 
-            /// <summary>Retains the current Z order (ignores the hWndInsertAfter parameter).</summary>
+            /// <summary>Retains the current Z order (ignores the hWindowInsertAfter parameter).</summary>
             /// <remarks>SWP_NOZORDER</remarks>
             IgnoreZOrder = 0x0004,
 

@@ -118,7 +118,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="Window_Close"
+    <Style x:Key="WindowCloseStyle"
            BasedOn="{StaticResource WindowButtonStyle}"
            TargetType="{x:Type Button}">
         <Setter Property="Template">
@@ -140,7 +140,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="Window_Restore"
+    <Style x:Key="WindowRestoreStyle"
            BasedOn="{StaticResource WindowButtonStyle}"
            TargetType="{x:Type Button}">
         <Setter Property="Template">
@@ -162,7 +162,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="Window_Maximize"
+    <Style x:Key="WindowMaximizeStyle"
            BasedOn="{StaticResource WindowButtonStyle}"
            TargetType="{x:Type Button}">
         <Setter Property="Template">
@@ -184,7 +184,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="Window_Minimize"
+    <Style x:Key="WindowMinimizeStyle"
            BasedOn="{StaticResource WindowButtonStyle}"
            TargetType="{x:Type Button}">
         <Setter Property="Template">
@@ -206,7 +206,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="Header_Close" TargetType="{x:Type Button}">
+    <Style x:Key="HeaderCloseStyle" TargetType="{x:Type Button}">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
         <Setter Property="Background" Value="Transparent" />
@@ -302,7 +302,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="Header_TB_Style"
+    <Style x:Key="HeaderToggleButtonStyle"
            BasedOn="{StaticResource CustomToggleButtonStyle}"
            TargetType="{x:Type ToggleButton}">
         <Setter Property="Foreground" Value="Black" />
@@ -352,7 +352,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="Anchor_Btn" TargetType="{x:Type Button}">
+    <Style x:Key="AnchorButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
         <Setter Property="Background" Value="Transparent" />
@@ -388,8 +388,8 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="Anchor_Close"
-           BasedOn="{StaticResource Anchor_Btn}"
+    <Style x:Key="AnchorCloseButtonStyle"
+           BasedOn="{StaticResource AnchorButtonStyle}"
            TargetType="{x:Type Button}">
         <Setter Property="Template">
             <Setter.Value>
@@ -413,8 +413,8 @@
         </Setter>
     </Style>
 
-    <Style x:Key="Anchor_AutoHide"
-           BasedOn="{StaticResource Anchor_Btn}"
+    <Style x:Key="AnchorAutoHideButtonStyle"
+           BasedOn="{StaticResource AnchorButtonStyle}"
            TargetType="{x:Type Button}">
         <Setter Property="Template">
             <Setter.Value>
@@ -439,8 +439,8 @@
         </Setter>
     </Style>
 
-    <Style x:Key="Anchor_Maximize"
-           BasedOn="{StaticResource Anchor_Btn}"
+    <Style x:Key="AnchorMaximizeButtonStyle"
+           BasedOn="{StaticResource AnchorButtonStyle}"
            TargetType="{x:Type Button}">
         <Setter Property="Template">
             <Setter.Value>
@@ -463,8 +463,8 @@
         </Setter>
     </Style>
 
-    <Style x:Key="Anchor_Restore"
-           BasedOn="{StaticResource Anchor_Btn}"
+    <Style x:Key="AnchorRestoreButtonStyle"
+           BasedOn="{StaticResource AnchorButtonStyle}"
            TargetType="{x:Type Button}">
         <Setter Property="Template">
             <Setter.Value>
@@ -725,20 +725,20 @@
                                 <ToggleButton x:Name="PART_DropMenu"
                                               IsChecked="{Binding RelativeSource={RelativeSource Self}, Path=ContextMenu.IsOpen}"
                                               IsThreeState="False"
-                                              Style="{StaticResource Header_TB_Style}"
+                                              Style="{StaticResource HeaderToggleButtonStyle}"
                                               ToolTip="{extension:Resource Key=Window_Position}" />
                                 <Button x:Name="Maximize"
                                         Command="{x:Static command:GlobalCommands.MaximizeCommand}"
-                                        Style="{StaticResource Anchor_Maximize}"
+                                        Style="{StaticResource AnchorMaximizeButtonStyle}"
                                         Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
                                 <Button x:Name="Restore"
                                         Command="{x:Static command:GlobalCommands.RestoreCommand}"
-                                        Style="{StaticResource Anchor_Restore}"
+                                        Style="{StaticResource AnchorRestoreButtonStyle}"
                                         Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
                                 <Button Command="{x:Static command:GlobalCommands.SwitchAutoHideStatusCommand}"
-                                        Style="{StaticResource Anchor_AutoHide}"
+                                        Style="{StaticResource AnchorAutoHideButtonStyle}"
                                         Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=DataContext.Mode, Converter={StaticResource DockModeToVisibilityConverter}}" />
-                                <Button Command="{x:Static command:GlobalCommands.HideStatusCommand}" Style="{StaticResource Anchor_Close}" />
+                                <Button Command="{x:Static command:GlobalCommands.HideStatusCommand}" Style="{StaticResource AnchorCloseButtonStyle}" />
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -820,6 +820,7 @@
                                                    Fill="{StaticResource BorderBrush}"
                                                    SnapsToDevicePixels="True" />
                                         <TextBlock x:Name="Title"
+                                                   Grid.Row="0"
                                                    VerticalAlignment="Center"
                                                    Text="{Binding Path=Title}"
                                                    TextTrimming="CharacterEllipsis" />
@@ -873,7 +874,7 @@
                         Grid.Column="2"
                         Margin="8,0,0,0"
                         Command="{x:Static command:GlobalCommands.HideStatusCommand}"
-                        Style="{StaticResource Header_Close}"
+                        Style="{StaticResource HeaderCloseStyle}"
                         Visibility="Hidden" />
             </Grid>
         </Border>
@@ -907,7 +908,9 @@
                        Height="2"
                        Fill="{StaticResource BorderBrush}"
                        SnapsToDevicePixels="True" />
-            <Border x:Name="Border" SnapsToDevicePixels="True">
+            <Border x:Name="Border"
+                    Grid.Row="0"
+                    SnapsToDevicePixels="True">
                 <Grid SnapsToDevicePixels="True">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -989,6 +992,7 @@
                     Background="Transparent"
                     SnapsToDevicePixels="True" />
             <Border x:Name="ContentPanel"
+                    Grid.Row="0"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Background="{TemplateBinding Background}"
@@ -1140,7 +1144,7 @@
         </Style.Triggers>
     </Style>
 
-    <ControlTemplate x:Key="AnchorGroupWindow_Single" TargetType="{x:Type window:AnchorGroupWindow}">
+    <ControlTemplate x:Key="AnchorGroupWindowSingleTemplate" TargetType="{x:Type window:AnchorGroupWindow}">
         <Border Padding="{TemplateBinding Padding}"
                 Background="{TemplateBinding Background}"
                 BorderBrush="{TemplateBinding BorderBrush}"
@@ -1152,7 +1156,7 @@
         </Border>
     </ControlTemplate>
 
-    <ControlTemplate x:Key="AnchorGroupWindow_Multi" TargetType="{x:Type window:AnchorGroupWindow}">
+    <ControlTemplate x:Key="AnchorGroupWindowMultiTemplate" TargetType="{x:Type window:AnchorGroupWindow}">
         <Border Padding="{TemplateBinding Padding}"
                 Background="{TemplateBinding Background}"
                 BorderBrush="{TemplateBinding BorderBrush}"
@@ -1181,12 +1185,12 @@
                                 Orientation="Horizontal">
                         <Button x:Name="Restore_Btn"
                                 Command="{x:Static command:GlobalCommands.RestoreCommand}"
-                                Style="{StaticResource Window_Restore}"
+                                Style="{StaticResource WindowRestoreStyle}"
                                 Visibility="Collapsed" />
                         <Button x:Name="Maximize_Btn"
                                 Command="{x:Static command:GlobalCommands.MaximizeCommand}"
-                                Style="{StaticResource Window_Maximize}" />
-                        <Button Command="{x:Static command:GlobalCommands.CloseCommand}" Style="{StaticResource Window_Close}" />
+                                Style="{StaticResource WindowMaximizeStyle}" />
+                        <Button Command="{x:Static command:GlobalCommands.CloseCommand}" Style="{StaticResource WindowCloseStyle}" />
                     </StackPanel>
                 </DockPanel>
                 <AdornerDecorator Grid.Row="1">
@@ -1248,19 +1252,19 @@
                                             Orientation="Horizontal">
                                     <Button Height="24"
                                             Command="{x:Static command:GlobalCommands.MinimizeCommand}"
-                                            Style="{StaticResource Window_Minimize}" />
+                                            Style="{StaticResource WindowMinimizeStyle}" />
                                     <Button x:Name="Maximize_Btn"
                                             Height="24"
                                             Command="{x:Static command:GlobalCommands.MaximizeCommand}"
-                                            Style="{StaticResource Window_Maximize}" />
+                                            Style="{StaticResource WindowMaximizeStyle}" />
                                     <Button x:Name="Restore_Btn"
                                             Height="24"
                                             Command="{x:Static command:GlobalCommands.RestoreCommand}"
-                                            Style="{StaticResource Window_Restore}"
+                                            Style="{StaticResource WindowRestoreStyle}"
                                             Visibility="Collapsed" />
                                     <Button Height="24"
                                             Command="{x:Static command:GlobalCommands.CloseCommand}"
-                                            Style="{StaticResource Window_Close}" />
+                                            Style="{StaticResource WindowCloseStyle}" />
                                 </StackPanel>
                             </DockPanel>
                             <AdornerDecorator Grid.Row="1">
@@ -1298,13 +1302,13 @@
                               ResizeBorderThickness="6" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Template" Value="{StaticResource AnchorGroupWindow_Single}" />
+        <Setter Property="Template" Value="{StaticResource AnchorGroupWindowSingleTemplate}" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=NoBorder}" Value="True">
                 <Setter Property="BorderThickness" Value="0" />
             </DataTrigger>
             <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSingleMode}" Value="False">
-                <Setter Property="Template" Value="{StaticResource AnchorGroupWindow_Multi}" />
+                <Setter Property="Template" Value="{StaticResource AnchorGroupWindowMultiTemplate}" />
                 <Setter Property="WindowChrome.CaptionHeight" Value="28" />
             </DataTrigger>
             <Trigger Property="WindowState" Value="Maximized">

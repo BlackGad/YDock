@@ -164,21 +164,21 @@ namespace YDock.View.Control
         public virtual void OnDrop(DragItem source)
         {
             IDockView child;
-            if (source.RelativeObj is BaseFloatWindow window)
+            if (source.RelativeObject is BaseFloatWindow window)
             {
                 child = window.Child;
                 window.DetachChild(child);
             }
             else
             {
-                child = source.RelativeObj as IDockView;
+                child = source.RelativeObject as IDockView;
             }
 
             DockManager.FormatChildSize(child as ILayoutSize, new Size(ActualWidth, ActualHeight));
             DockManager.ChangeDockMode(child, ((ILayoutGroup)Model).Mode);
             DockManager.ChangeSide(child, Model.Side);
-            //取消AttachObj信息
-            DockManager.ClearAttachObj(child);
+            //取消AttachObject信息
+            DockManager.ClearAttachObject(child);
 
             var group = Model as LayoutGroup;
             switch (DropMode)
@@ -420,11 +420,12 @@ namespace YDock.View.Control
                     return false;
                 }
             }
-            
+
             if (parent is ILayoutViewParent layoutViewParent)
             {
                 layoutViewParent.DetachChild(this);
             }
+
             if (parent is System.Windows.Window window)
             {
                 window.Close();

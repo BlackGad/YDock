@@ -82,30 +82,6 @@ namespace YDock.View.Window
 
         #endregion
 
-        #region IDropWindow Members
-
-        public void Hide()
-        {
-            Child.Visibility = Visibility.Hidden;
-        }
-
-        public void Show()
-        {
-            Child.Visibility = Visibility.Visible;
-        }
-
-        public void Close()
-        {
-            IsOpen = false;
-        }
-
-        public void Update(Point position)
-        {
-            DropPanel.Update(position);
-        }
-
-        #endregion
-
         #region Event handlers
 
         //Popup is not fully displayed in full screen, here the height of PopupRoot is forced to ScreenHeight
@@ -123,6 +99,30 @@ namespace YDock.View.Window
                     break;
                 }
             } while (parent != null);
+        }
+
+        #endregion
+
+        #region Members
+
+        public void Close()
+        {
+            IsOpen = false;
+        }
+
+        public void Hide()
+        {
+            Child.Visibility = Visibility.Hidden;
+        }
+
+        public void Show()
+        {
+            Child.Visibility = Visibility.Visible;
+        }
+
+        public void Update(Point position)
+        {
+            DropPanel.Update(position);
         }
 
         #endregion

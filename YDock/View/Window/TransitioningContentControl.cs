@@ -56,9 +56,16 @@ namespace YDock.View.Window
 
         #region Constants
 
+        internal const string CurrentContentPresentationSitePartName = "CurrentContentPresentationSite";
+
         public const string DefaultTransitionState = "DefaultTransition";
 
         public const string DownTransitionState = "DownTransition";
+
+        private const string NormalState = "Normal";
+        private const string PresentationGroup = "PresentationStates";
+
+        internal const string PreviousContentPresentationSitePartName = "PreviousContentPresentationSite";
 
         /// <summary>
         ///     代表缩放状态转换
@@ -66,13 +73,6 @@ namespace YDock.View.Window
         public const string ScaleTransitionState = "ScaleTransition";
 
         public const string UpTransitionState = "UpTransition";
-
-        internal const string CurrentContentPresentationSitePartName = "CurrentContentPresentationSite";
-
-        internal const string PreviousContentPresentationSitePartName = "PreviousContentPresentationSite";
-
-        private const string NormalState = "Normal";
-        private const string PresentationGroup = "PresentationStates";
 
         #endregion
 
@@ -149,6 +149,8 @@ namespace YDock.View.Window
 
         #endregion
 
+        private readonly Random random = new Random();
+
         /// <summary>
         ///     Indicates whether the control allows writing IsTransitioning.
         /// </summary>
@@ -158,8 +160,6 @@ namespace YDock.View.Window
         ///     The storyboard that is used to transition old and new content.
         /// </summary>
         private Storyboard _currentTransition;
-
-        private readonly Random random = new Random();
 
         #region Constructors
 

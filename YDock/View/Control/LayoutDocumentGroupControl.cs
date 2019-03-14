@@ -46,14 +46,14 @@ namespace YDock.View.Control
             else
             {
                 IDockView child;
-                if (source.RelativeObj is BaseFloatWindow window)
+                if (source.RelativeObject is BaseFloatWindow window)
                 {
                     child = window.Child;
                     window.DetachChild(child);
                 }
                 else
                 {
-                    child = source.RelativeObj as IDockView;
+                    child = source.RelativeObject as IDockView;
                 }
 
                 DockManager.ChangeDockMode(child, ((ILayoutGroup)Model).Mode);
@@ -229,7 +229,7 @@ namespace YDock.View.Control
                 }
             }
 
-            if (source.RelativeObj is BaseFloatWindow floatWindow)
+            if (source.RelativeObject is BaseFloatWindow floatWindow)
             {
                 floatWindow.Close();
             }

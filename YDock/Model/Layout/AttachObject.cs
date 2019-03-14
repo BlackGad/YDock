@@ -45,7 +45,7 @@ namespace YDock.Model.Layout
 
             if (_relativeObj != null)
             {
-                _relativeObj.AttachObj = null;
+                _relativeObj.AttachObject = null;
             }
 
             _relativeObj = null;

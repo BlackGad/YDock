@@ -21,7 +21,7 @@ namespace YDock.View.Render
         {
             using (var ctx = RenderOpen())
             {
-                double hOffset = 0, vOffset = 0, sideLength = 0;
+                double hOffset, vOffset, sideLength;
                 if (DropPanel.Target.Mode == DragMode.Document
                     && DropPanel.Source.DragMode == DragMode.Anchor)
                 {
@@ -63,11 +63,11 @@ namespace YDock.View.Render
                 points.Add(new Point(currentX, currentY -= Constants.DropUnitLength));
 
                 var stream = new StreamGeometry();
-                using (var sctx = stream.Open())
+                using (var context = stream.Open())
                 {
-                    sctx.BeginFigure(new Point(currentX, currentY), true, true);
-                    sctx.PolyLineTo(points, true, true);
-                    sctx.Close();
+                    context.BeginFigure(new Point(currentX, currentY), true, true);
+                    context.PolyLineTo(points, true, true);
+                    context.Close();
                 }
 
                 ctx.DrawGeometry(Brushes.White, ResourceManager.BorderPen, stream);

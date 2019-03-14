@@ -327,7 +327,7 @@ namespace YDock.Model.Element
                 Mode = DockMode.Normal;
                 var dockManager = DockManager;
                 var group = Container as LayoutGroup;
-                if (group?.AttachObj == null || !group.AttachObj.AttachTo())
+                if (group?.AttachObject == null || !group.AttachObject.AttachTo())
                 {
                     //默认向下停靠
                     if (Side == DockSide.None)

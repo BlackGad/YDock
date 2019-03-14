@@ -2,7 +2,6 @@
 using System.Windows.Media;
 using YDock.Enum;
 using YDock.Interface;
-using YDock.Model;
 using YDock.Model.Element;
 
 namespace YDock

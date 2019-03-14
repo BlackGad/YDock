@@ -10,7 +10,7 @@ namespace YDock
 
         internal DragItem(object relativeObj, DockMode dockMode, DragMode dragMode, Point clickPos, Rect clickRect, Size size)
         {
-            RelativeObj = relativeObj;
+            RelativeObject = relativeObj;
             DockMode = dockMode;
             DragMode = dragMode;
             ClickPos = clickPos;
@@ -27,13 +27,13 @@ namespace YDock
         public Rect ClickRect { get; }
 
         /// <summary>
-        ///     拖动前的Mode
+        ///     Mode before dragging
         /// </summary>
         public DockMode DockMode { get; }
 
         public DragMode DragMode { get; }
 
-        public object RelativeObj { get; private set; }
+        public object RelativeObject { get; private set; }
 
         public Size Size { get; }
 
@@ -43,7 +43,7 @@ namespace YDock
 
         public void Dispose()
         {
-            RelativeObj = null;
+            RelativeObject = null;
         }
 
         #endregion

@@ -25,9 +25,9 @@ namespace YDock.View.Window
         private LayoutContentControl _layoutContent;
 
         private DockElement _model;
+        private Point _pToScreen;
 
         private LayoutDragSplitter _splitter;
-        private Point _pToScreen;
 
         #region Constructors
 

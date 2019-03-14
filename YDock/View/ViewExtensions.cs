@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+
 // ReSharper disable PossibleNullReferenceException
 
 namespace YDock.View
@@ -86,17 +87,6 @@ namespace YDock.View
             return element.PointToScreenDPI(point);
         }
 
-        public static GeneralTransform TransformToAncestor(this FrameworkElement element)
-        {
-            if (PresentationSource.FromVisual(element) == null)
-            {
-                return new MatrixTransform(Matrix.Identity);
-            }
-
-            var parentWindow = PresentationSource.FromVisual(element).RootVisual;
-            return element.TransformToAncestor(parentWindow);
-        }
-
         public static Size TransformActualSizeToAncestor(this FrameworkElement element)
         {
             if (PresentationSource.FromVisual(element) == null)
@@ -131,6 +121,17 @@ namespace YDock.View
             var parentWindow = PresentationSource.FromVisual(element).RootVisual;
             var transformToWindow = element.TransformToAncestor(parentWindow);
             return transformToWindow.TransformBounds(new Rect(0, 0, sizeToTransform.Width, sizeToTransform.Height)).Size;
+        }
+
+        public static GeneralTransform TransformToAncestor(this FrameworkElement element)
+        {
+            if (PresentationSource.FromVisual(element) == null)
+            {
+                return new MatrixTransform(Matrix.Identity);
+            }
+
+            var parentWindow = PresentationSource.FromVisual(element).RootVisual;
+            return element.TransformToAncestor(parentWindow);
         }
 
         public static Point TransformToDeviceDPI(this Visual visual, Point pt)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using YDock.Enum;
 using YDock.Interface;
 using YDock.Model.Layout;
@@ -40,7 +39,7 @@ namespace YDock.View.Layout
                 || mode == AttachMode.Right_WithSplit
                 || mode == AttachMode.Bottom_WithSplit)
             {
-                _AttachWithSplit(child, mode, index);
+                AttachWithSplit(child, mode, index);
             }
             else
             {
@@ -70,7 +69,7 @@ namespace YDock.View.Layout
                                 parent.InternalDetachChild(this);
                                 var parentParent = new LayoutGroupPanel
                                 {
-                                    Direction = Direction.Vertical 
+                                    Direction = Direction.Vertical
                                 };
                                 parent.AttachChild(parentParent, parent.IndexOf(this));
                                 parentParent.AttachChild(this, 0);
@@ -145,7 +144,7 @@ namespace YDock.View.Layout
 
         #region Members
 
-        private void _AttachWithSplit(IDockView child, AttachMode mode, int index)
+        private void AttachWithSplit(IDockView child, AttachMode mode, int index)
         {
             if (child is LayoutDocumentGroupControl)
             {
@@ -162,38 +161,28 @@ namespace YDock.View.Layout
                 }
             }
 
-            if (child is AnchorSideGroupControl)
+            if (child is AnchorSideGroupControl groupControl)
             {
-                var model = (child as AnchorSideGroupControl).Model as LayoutGroup;
-                var _children = new List<IDockElement>(model.Children);
+                var model = (LayoutGroup)groupControl.Model;
+                var children = new List<IDockElement>(model.Children);
                 model.Dispose();
                 var group = new LayoutDocumentGroup(DockViewParent == null ? DockMode.Float : DockMode.Normal, DockManager);
-                foreach (var _child in _children)
-                {
-                    group.Attach(_child);
-                }
+                children.ForEach(c => group.Attach(c));
 
                 var control = new LayoutDocumentGroupControl(group);
                 AttachChild(control, index);
-                child.Dispose();
+                groupControl.Dispose();
             }
 
             if (child is LayoutGroupDocumentPanel
                 || child is LayoutGroupPanel)
             {
-                var _children = new List<IDockView>((child as LayoutGroupPanel).Children.OfType<IDockView>());
-                _children.Reverse();
-                (child as LayoutGroupPanel).Children.Clear();
-                foreach (var _child in _children)
-                {
-                    _AttachWithSplit(_child, mode, index);
-                }
-
+                var children = new List<IDockView>(((LayoutGroupPanel)child).Children.OfType<IDockView>());
+                children.Reverse();
+                ((LayoutGroupPanel)child).Children.Clear();
+                children.ForEach(c => AttachWithSplit(c, mode, index));
                 child.Dispose();
             }
-
-            //if (child is IDisposable)
-            //    (child as IDisposable).Dispose();
         }
 
         #endregion

@@ -18,10 +18,6 @@ namespace YDock.Model
         private DockSideGroup _rightSide;
         private DockSideGroup _topSide;
 
-        #region Constructors
-
-        #endregion
-
         #region Properties
 
         public DockSideGroup BottomSide
