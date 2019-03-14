@@ -197,27 +197,28 @@ namespace YDock.Model
 
         public void LoadLayout(XElement root)
         {
+            // ReSharper disable once PossibleNullReferenceException
             foreach (var item in root.Element("LeftBar").Elements())
             {
                 var id = int.Parse(item.Value);
                 var element = _dockManager.GetDockControl(id);
                 element.Prototype.ToDockSide(DockSide.Left);
             }
-
+            // ReSharper disable once PossibleNullReferenceException
             foreach (var item in root.Element("TopBar").Elements())
             {
                 var id = int.Parse(item.Value);
                 var element = _dockManager.GetDockControl(id);
                 element.Prototype.ToDockSide(DockSide.Top);
             }
-
+            // ReSharper disable once PossibleNullReferenceException
             foreach (var item in root.Element("RightBar").Elements())
             {
                 var id = int.Parse(item.Value);
                 var element = _dockManager.GetDockControl(id);
                 element.Prototype.ToDockSide(DockSide.Right);
             }
-
+            // ReSharper disable once PossibleNullReferenceException
             foreach (var item in root.Element("BottomBar").Elements())
             {
                 var id = int.Parse(item.Value);

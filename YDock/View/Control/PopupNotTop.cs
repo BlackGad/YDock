@@ -12,7 +12,7 @@ namespace YDock.View.Control
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetWindowRect(IntPtr hWindow, out RECT lpRect);
+        private static extern bool GetWindowRect(IntPtr hWindow, out Rect lpRect);
 
         private static void OnTopmostChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
@@ -63,7 +63,7 @@ namespace YDock.View.Control
         #region Nested type: RECT
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
+        public struct Rect
         {
             public int Left;
             public int Top;

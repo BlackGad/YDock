@@ -36,6 +36,7 @@ namespace YDock.View.Window
             var root = GetImplementationRoot(dependencyObject);
             if (root == null) return null;
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             return VisualStateManager.GetVisualStateGroups(root)
                                      .OfType<VisualStateGroup>()
                                      .FirstOrDefault(group => string.CompareOrdinal(groupName, group.Name) == 0);

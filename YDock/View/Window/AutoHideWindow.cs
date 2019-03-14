@@ -33,7 +33,7 @@ namespace YDock.View.Window
 
         public AutoHideWindow()
         {
-            _InitChildren();
+            InitChildren();
         }
 
         #endregion
@@ -262,12 +262,12 @@ namespace YDock.View.Window
 
         public DockSide Side
         {
-            get { return _model == null ? DockSide.None : _model.Side; }
+            get { return _model?.Side ?? DockSide.None; }
         }
 
         public DockManager DockManager
         {
-            get { return _model == null ? null : _model.DockManager; }
+            get { return _model?.DockManager; }
         }
 
         #endregion
@@ -296,7 +296,7 @@ namespace YDock.View.Window
                 Model.DesiredHeight -= _dragPopup.VerticalOffset - _pToScreen.Y;
             }
 
-            (Parent as FrameworkElement).InvalidateMeasure();
+            ((FrameworkElement)Parent).InvalidateMeasure();
             InvalidateMeasure();
             _DisposeDragPopup();
         }
@@ -305,7 +305,7 @@ namespace YDock.View.Window
         {
             if (Side == DockSide.Left || Side == DockSide.Right)
             {
-                if (e.HorizontalChange != 0)
+                if (Math.Abs(e.HorizontalChange) > double.Epsilon)
                 {
                     var newPos = _pToScreen.X + e.HorizontalChange;
                     if (_dragBound1 + Constants.SideLength >= _dragBound2 - Constants.SideLength) return;
@@ -332,7 +332,7 @@ namespace YDock.View.Window
             }
             else
             {
-                if (e.VerticalChange != 0)
+                if (Math.Abs(e.VerticalChange) > double.Epsilon)
                 {
                     var newPos = _pToScreen.Y + e.VerticalChange;
                     if (_dragBound1 + Constants.SideLength >= _dragBound2 - Constants.SideLength) return;
@@ -361,37 +361,13 @@ namespace YDock.View.Window
 
         private void OnDragStarted(object sender, DragStartedEventArgs e)
         {
-            _ComputeDragBounds(sender as LayoutDragSplitter, ref _dragBound1, ref _dragBound2);
-            _CreateDragPopup(sender as LayoutDragSplitter);
+            ComputeDragBounds(sender as LayoutDragSplitter, ref _dragBound1, ref _dragBound2);
+            CreateDragPopup(sender as LayoutDragSplitter);
         }
 
         #endregion
 
         #region Members
-
-        /// <summary>
-        ///     计算拖动时的上下边界值
-        /// </summary>
-        /// <param name="splitter">拖动的对象</param>
-        /// <param name="x1">下界</param>
-        /// <param name="x2">上界</param>
-        private void _ComputeDragBounds(LayoutDragSplitter splitter, ref double x1, ref double x2)
-        {
-            var pToScreen = RootPanel.PointToScreenDPIWithoutFlowDirection(new Point());
-            switch (Side)
-            {
-                case DockSide.Left:
-                case DockSide.Right:
-                    _dragBound1 = pToScreen.X;
-                    _dragBound2 = pToScreen.X + RootPanel.ActualWidth - Constants.SplitterSpan / 2;
-                    break;
-                case DockSide.Top:
-                case DockSide.Bottom:
-                    _dragBound1 = pToScreen.Y;
-                    _dragBound2 = pToScreen.Y + RootPanel.ActualHeight - Constants.SplitterSpan / 2;
-                    break;
-            }
-        }
 
         private void _CreateContentForModel(DockElement model)
         {
@@ -412,13 +388,55 @@ namespace YDock.View.Window
             Children.Add(_splitter);
         }
 
-        private void _CreateDragPopup(LayoutDragSplitter splitter)
+        private void _DestroyContentForModel(DockElement model)
+        {
+            if (ActualWidth > 0)
+            {
+                model.DesiredWidth = ActualWidth - Constants.SplitterSpan / 2;
+                model.DesiredHeight = ActualHeight - Constants.SplitterSpan / 2;
+            }
+
+            _layoutContent.Model = null;
+            Children.Clear();
+        }
+
+        private void _DisposeDragPopup()
+        {
+            _dragPopup.IsOpen = false;
+            _dragPopup = null;
+        }
+
+        /// <summary>
+        ///     Calculate the upper and lower boundary values when dragging
+        /// </summary>
+        /// <param name="splitter">Dragged object</param>
+        /// <param name="x1">Lower bound</param>
+        /// <param name="x2">Upper Bound</param>
+        private void ComputeDragBounds(LayoutDragSplitter splitter, ref double x1, ref double x2)
+        {
+            var pToScreen = RootPanel.PointToScreenDPIWithoutFlowDirection(new Point());
+            switch (Side)
+            {
+                case DockSide.Left:
+                case DockSide.Right:
+                    _dragBound1 = pToScreen.X;
+                    _dragBound2 = pToScreen.X + RootPanel.ActualWidth - Constants.SplitterSpan / 2;
+                    break;
+                case DockSide.Top:
+                case DockSide.Bottom:
+                    _dragBound1 = pToScreen.Y;
+                    _dragBound2 = pToScreen.Y + RootPanel.ActualHeight - Constants.SplitterSpan / 2;
+                    break;
+            }
+        }
+
+        private void CreateDragPopup(LayoutDragSplitter splitter)
         {
             _pToScreen = this.PointToScreenDPIWithoutFlowDirection(new Point());
             var transform = splitter.TransformToAncestor(this);
-            var _pToInterPanel = transform.Transform(new Point(0, 0));
-            _pToScreen.X += _pToInterPanel.X;
-            _pToScreen.Y += _pToInterPanel.Y;
+            var pToInterPanel = transform.Transform(new Point(0, 0));
+            _pToScreen.X += pToInterPanel.X;
+            _pToScreen.Y += pToInterPanel.Y;
 
             //switch (Side)
             //{
@@ -452,31 +470,16 @@ namespace YDock.View.Window
             _dragPopup.IsOpen = true;
         }
 
-        private void _DestroyContentForModel(DockElement Model)
-        {
-            if (ActualWidth > 0)
-            {
-                Model.DesiredWidth = ActualWidth - Constants.SplitterSpan / 2;
-                Model.DesiredHeight = ActualHeight - Constants.SplitterSpan / 2;
-            }
-
-            _layoutContent.Model = null;
-            Children.Clear();
-        }
-
-        private void _DisposeDragPopup()
-        {
-            _dragPopup.IsOpen = false;
-            _dragPopup = null;
-        }
-
-        private void _InitChildren()
+        private void InitChildren()
         {
             _layoutContent = new LayoutContentControl
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, BorderThickness = new Thickness(1), BorderBrush =
                     new SolidColorBrush(new Color
-                                            { A = 0xFF, R = 0xCC, G = 0xCE, B = 0xDB })
+                    {
+                        A = 0xFF,
+                        R = 0xCC, G = 0xCE, B = 0xDB
+                    })
             };
             _splitter = new LayoutDragSplitter();
             _splitter.DragStarted += OnDragStarted;

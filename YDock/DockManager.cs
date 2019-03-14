@@ -371,20 +371,20 @@ namespace YDock
         /// </summary>
         internal IDockElement AutoHideElement
         {
-            get { return LayoutRootPanel?.AHWindow.Model; }
+            get { return LayoutRootPanel?.AutoHideWindow.Model; }
             set
             {
-                if (LayoutRootPanel.AHWindow.Model != value)
+                if (LayoutRootPanel.AutoHideWindow.Model != value)
                 {
-                    if (LayoutRootPanel.AHWindow.Model != null)
+                    if (LayoutRootPanel.AutoHideWindow.Model != null)
                     {
-                        LayoutRootPanel.AHWindow.Model.IsVisible = false;
+                        LayoutRootPanel.AutoHideWindow.Model.IsVisible = false;
                     }
 
-                    LayoutRootPanel.AHWindow.Model = value as DockElement;
-                    if (LayoutRootPanel.AHWindow.Model != null)
+                    LayoutRootPanel.AutoHideWindow.Model = value as DockElement;
+                    if (LayoutRootPanel.AutoHideWindow.Model != null)
                     {
-                        LayoutRootPanel.AHWindow.Model.IsVisible = true;
+                        LayoutRootPanel.AutoHideWindow.Model.IsVisible = true;
                     }
                 }
             }
@@ -954,6 +954,7 @@ namespace YDock
             HideAll();
 
             var rootNode = layout.Layout;
+            // ReSharper disable once PossibleNullReferenceException
             foreach (var item in rootNode.Element("Elements").Elements())
             {
                 int.TryParse(item.Attribute("ID")?.Value, out var id);

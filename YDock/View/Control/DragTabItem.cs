@@ -291,7 +291,7 @@ namespace YDock.View.Control
         private void OnCommandExecute(object sender, ExecutedRoutedEventArgs e)
         {
             var element = (DockElement)Content;
-            element.DockControl.Hide();
+            element.DockControl?.Hide();
         }
 
         #endregion

@@ -9,16 +9,14 @@ using YDock.View.Window;
 namespace YDock.View.Layout
 {
     /// <summary>
-    ///     用于容纳<see cref="LayoutGroupPanel" />,以及AutoHideWindow
+    ///     Used to hold <see cref="LayoutGroupPanel" />, as well as AutoHideWindow
     /// </summary>
     public class LayoutRootPanel : Panel,
                                    IDockView,
                                    ILayoutViewParent
     {
-        private Win32Window _ahWindow;
-
+        private Win32Window _autoHideWindow;
         private IDockModel _model;
-
         private LayoutGroupPanel _rootGroupPanel;
 
         #region Constructors
@@ -38,24 +36,24 @@ namespace YDock.View.Layout
 
         #region Properties
 
-        public Win32Window AHWindow
+        public Win32Window AutoHideWindow
         {
-            get { return _ahWindow; }
+            get { return _autoHideWindow; }
             set
             {
-                if (_ahWindow != value)
+                if (_autoHideWindow != value)
                 {
-                    if (_ahWindow != null)
+                    if (_autoHideWindow != null)
                     {
-                        Children.Remove(_ahWindow);
-                        _ahWindow.Dispose();
+                        Children.Remove(_autoHideWindow);
+                        _autoHideWindow.Dispose();
                     }
 
-                    _ahWindow = value;
-                    if (_ahWindow != null)
+                    _autoHideWindow = value;
+                    if (_autoHideWindow != null)
                     {
-                        Children.Add(_ahWindow);
-                        SetZIndex(_ahWindow, 2);
+                        Children.Add(_autoHideWindow);
+                        SetZIndex(_autoHideWindow, 2);
                     }
                 }
             }
@@ -90,18 +88,18 @@ namespace YDock.View.Layout
         protected override Size MeasureOverride(Size availableSize)
         {
             _rootGroupPanel.Measure(new Size(availableSize.Width - 10, availableSize.Height - 10));
-            switch (_ahWindow.Side)
+            switch (_autoHideWindow.Side)
             {
                 case DockSide.Right:
                 case DockSide.Left:
-                    _ahWindow.Measure(new Size(availableSize.Width, availableSize.Height - 10));
+                    _autoHideWindow.Measure(new Size(availableSize.Width, availableSize.Height - 10));
                     break;
                 case DockSide.Top:
                 case DockSide.Bottom:
-                    _ahWindow.Measure(new Size(availableSize.Width - 10, availableSize.Height));
+                    _autoHideWindow.Measure(new Size(availableSize.Width - 10, availableSize.Height));
                     break;
                 default:
-                    _ahWindow.Measure(availableSize);
+                    _autoHideWindow.Measure(availableSize);
                     break;
             }
 
@@ -111,22 +109,22 @@ namespace YDock.View.Layout
         protected override Size ArrangeOverride(Size finalSize)
         {
             _rootGroupPanel.Arrange(new Rect(new Point(5, 5), new Size(finalSize.Width - 10, finalSize.Height - 10)));
-            switch (_ahWindow.Side)
+            switch (_autoHideWindow.Side)
             {
                 case DockSide.Left:
-                    _ahWindow.Arrange(new Rect(new Point(2, 5), _ahWindow.DesiredSize));
+                    _autoHideWindow.Arrange(new Rect(new Point(2, 5), _autoHideWindow.DesiredSize));
                     break;
                 case DockSide.Right:
-                    _ahWindow.Arrange(new Rect(new Point(finalSize.Width - _ahWindow.DesiredSize.Width - 2, 5), _ahWindow.DesiredSize));
+                    _autoHideWindow.Arrange(new Rect(new Point(finalSize.Width - _autoHideWindow.DesiredSize.Width - 2, 5), _autoHideWindow.DesiredSize));
                     break;
                 case DockSide.Top:
-                    _ahWindow.Arrange(new Rect(new Point(5, 2), _ahWindow.DesiredSize));
+                    _autoHideWindow.Arrange(new Rect(new Point(5, 2), _autoHideWindow.DesiredSize));
                     break;
                 case DockSide.Bottom:
-                    _ahWindow.Arrange(new Rect(new Point(5, finalSize.Height - _ahWindow.DesiredSize.Height - 2), _ahWindow.DesiredSize));
+                    _autoHideWindow.Arrange(new Rect(new Point(5, finalSize.Height - _autoHideWindow.DesiredSize.Height - 2), _autoHideWindow.DesiredSize));
                     break;
                 case DockSide.None:
-                    _ahWindow.Arrange(new Rect());
+                    _autoHideWindow.Arrange(new Rect());
                     break;
             }
 
@@ -142,18 +140,16 @@ namespace YDock.View.Layout
             get { return _model; }
             internal set
             {
-                if (_model != value)
+                if (_model == value) return;
+                if (_model != null)
                 {
-                    if (_model != null)
-                    {
-                        (_model as DockRoot).View = null;
-                    }
+                    ((DockRoot)_model).View = null;
+                }
 
-                    _model = value;
-                    if (_model != null)
-                    {
-                        (_model as DockRoot).View = this;
-                    }
+                _model = value;
+                if (_model != null)
+                {
+                    ((DockRoot)_model).View = this;
                 }
             }
         }
@@ -168,7 +164,7 @@ namespace YDock.View.Layout
             Model = null;
             RootGroupPanel.Dispose();
             RootGroupPanel = null;
-            AHWindow = null;
+            AutoHideWindow = null;
             Children.Clear();
         }
 
@@ -178,15 +174,15 @@ namespace YDock.View.Layout
 
         public void AttachChild(IDockView child, AttachMode mode, int index)
         {
-            if (child is LayoutGroupPanel)
+            if (child is LayoutGroupPanel panel)
             {
-                RootGroupPanel = child as LayoutGroupPanel;
+                RootGroupPanel = panel;
             }
         }
 
         public void DetachChild(IDockView child, bool force = true)
         {
-            if (child == RootGroupPanel)
+            if (Equals(child, RootGroupPanel))
             {
                 RootGroupPanel = null;
             }
@@ -194,12 +190,7 @@ namespace YDock.View.Layout
 
         public int IndexOf(IDockView child)
         {
-            if (child == RootGroupPanel)
-            {
-                return 0;
-            }
-
-            return -1;
+            return Equals(child, RootGroupPanel) ? 0 : -1;
         }
 
         #endregion
@@ -217,13 +208,9 @@ namespace YDock.View.Layout
                     break;
                 }
 
-                if (view is LayoutGroupPanel)
+                if (view is LayoutGroupPanel panel)
                 {
-                    var panel = view as LayoutGroupPanel;
-                    if (panel.Direction == Direction.None)
-                    {
-                        break;
-                    }
+                    if (panel.Direction == Direction.None) break;
 
                     if (panel.Direction == Direction.Horizontal)
                     {
@@ -291,11 +278,11 @@ namespace YDock.View.Layout
 
         private void _InitContent()
         {
-            AHWindow = new Win32Window();
-            //先初始化Document区域
+            AutoHideWindow = new Win32Window();
+            //Initialize the Document area first
             RootGroupPanel = new LayoutGroupDocumentPanel();
-            var _documentControl = new LayoutDocumentGroupControl((_model as DockRoot).DocumentModels[0]);
-            RootGroupPanel.AttachChild(_documentControl, 0);
+            var documentControl = new LayoutDocumentGroupControl(((DockRoot)_model).DocumentModels[0]);
+            RootGroupPanel.AttachChild(documentControl, 0);
         }
 
         #endregion

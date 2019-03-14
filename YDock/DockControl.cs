@@ -128,7 +128,7 @@ namespace YDock
         }
 
         /// <summary>
-        ///     是否可以转为浮动模式
+        ///     Can switch to floating mode
         /// </summary>
         public bool CanFloat
         {
@@ -136,7 +136,7 @@ namespace YDock
         }
 
         /// <summary>
-        ///     是否可以转为Dock模式
+        ///     Can switch to Dock mode
         /// </summary>
         public bool CanDock
         {
@@ -144,7 +144,7 @@ namespace YDock
         }
 
         /// <summary>
-        ///     是否可以转为Document模式
+        ///     Can switch to Document mode
         /// </summary>
         public bool CanDockAsDocument
         {
@@ -152,7 +152,7 @@ namespace YDock
         }
 
         /// <summary>
-        ///     是否可以切换自动隐藏状态
+        ///     Is it possible to switch the auto hide state
         /// </summary>
         public bool CanSwitchAutoHideStatus
         {
@@ -160,7 +160,7 @@ namespace YDock
         }
 
         /// <summary>
-        ///     是否可以隐藏
+        ///     Can hide
         /// </summary>
         public bool CanHide
         {
@@ -170,8 +170,8 @@ namespace YDock
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         /// <summary>
-        ///     通用显示的方法。
-        ///     显示的模式（Dock，Float，AnchorSide）与当前Status有关
+        ///     The method of universal display.
+        ///     The displayed mode (Dock, Float, AnchorSide) is related to the current Status
         /// </summary>
         public void Show(bool activate = true)
         {
@@ -194,21 +194,16 @@ namespace YDock
         }
 
         /// <summary>
-        ///     此方法会直接从用户界面隐藏该项（CanSelect设为False）
+        ///     This method hides the item directly from the user interface (CanSelect is set to False)
         /// </summary>
         public void Hide()
         {
-            if (Content is IDockDocSource
-                && !(Content as IDockDocSource).AllowClose())
-            {
-                return;
-            }
-
+            if (Content is IDockDocSource source && !source.AllowClose()) return;
             Prototype?.Hide();
         }
 
         /// <summary>
-        ///     转为浮动窗口
+        ///     Turn to floating window
         /// </summary>
         public void ToFloat(bool isActive = true)
         {
@@ -216,7 +211,7 @@ namespace YDock
         }
 
         /// <summary>
-        ///     转为Dock模式
+        ///     Switch to Dock mode
         /// </summary>
         public void ToDock(bool isActive = true)
         {
@@ -224,7 +219,7 @@ namespace YDock
         }
 
         /// <summary>
-        ///     转为Document模式
+        ///     Switch to Document mode
         /// </summary>
         public void ToDockAsDocument(bool isActive = true)
         {
@@ -232,7 +227,7 @@ namespace YDock
         }
 
         /// <summary>
-        ///     转为Document模式
+        ///     Switch to Document mode
         /// </summary>
         public void ToDockAsDocument(int index, bool isActive = true)
         {
@@ -240,7 +235,7 @@ namespace YDock
         }
 
         /// <summary>
-        ///     在Normal和DockBar模式间切换
+        ///     Switch between Normal and DockBar modes
         /// </summary>
         public void SwitchAutoHideStatus()
         {
@@ -248,8 +243,8 @@ namespace YDock
         }
 
         /// <summary>
-        ///     将CanSelect设为False，并从界面移除此项
-        ///     对于Normal or Float模式，效果与Hide方法相同
+        ///     Set CanSelect to False and remove the item from the interface
+        ///     For Normal or Float mode, the effect is the same as the Hide method.
         /// </summary>
         public void Close()
         {

@@ -26,52 +26,44 @@ namespace YDock.View.Window
         ///     Identifies the IsTransitioning dependency property.
         /// </summary>
         public static readonly DependencyProperty IsTransitioningProperty =
-            DependencyProperty.Register(
-                "IsTransitioning",
-                typeof(bool),
-                typeof(TransitioningContentControl),
-                new PropertyMetadata(OnIsTransitioningPropertyChanged));
+            DependencyProperty.Register("IsTransitioning",
+                                        typeof(bool),
+                                        typeof(TransitioningContentControl),
+                                        new PropertyMetadata(OnIsTransitioningPropertyChanged));
 
         /// <summary>
         ///     Identifies the Transition dependency property.
         /// </summary>
         public static readonly DependencyProperty TransitionProperty =
-            DependencyProperty.Register(
-                "Transition",
-                typeof(string),
-                typeof(TransitioningContentControl),
-                new PropertyMetadata(ScaleTransitionState, OnTransitionPropertyChanged));
+            DependencyProperty.Register("Transition",
+                                        typeof(string),
+                                        typeof(TransitioningContentControl),
+                                        new PropertyMetadata(ScaleTransitionState, OnTransitionPropertyChanged));
 
         /// <summary>
         ///     Identifies the RestartTransitionOnContentChange dependency property.
         /// </summary>
         public static readonly DependencyProperty RestartTransitionOnContentChangeProperty =
-            DependencyProperty.Register(
-                "RestartTransitionOnContentChange",
-                typeof(bool),
-                typeof(TransitioningContentControl),
-                new PropertyMetadata(false, OnRestartTransitionOnContentChangePropertyChanged));
+            DependencyProperty.Register("RestartTransitionOnContentChange",
+                                        typeof(bool),
+                                        typeof(TransitioningContentControl),
+                                        new PropertyMetadata(false, OnRestartTransitionOnContentChangePropertyChanged));
 
         #endregion
 
         #region Constants
 
-        internal const string CurrentContentPresentationSitePartName = "CurrentContentPresentationSite";
-
+        public const string CurrentContentPresentationSitePartName = "CurrentContentPresentationSite";
         public const string DefaultTransitionState = "DefaultTransition";
-
         public const string DownTransitionState = "DownTransition";
-
-        private const string NormalState = "Normal";
-        private const string PresentationGroup = "PresentationStates";
-
-        internal const string PreviousContentPresentationSitePartName = "PreviousContentPresentationSite";
+        public const string NormalState = "Normal";
+        public const string PresentationGroup = "PresentationStates";
+        public const string PreviousContentPresentationSitePartName = "PreviousContentPresentationSite";
 
         /// <summary>
-        ///     代表缩放状态转换
+        ///     Representing zoom state transition
         /// </summary>
         public const string ScaleTransitionState = "ScaleTransition";
-
         public const string UpTransitionState = "UpTransition";
 
         #endregion
@@ -90,7 +82,7 @@ namespace YDock.View.Window
             if (!source._allowIsTransitioningWrite)
             {
                 source.IsTransitioning = (bool)e.OldValue;
-                throw new InvalidOperationException("TransitiotioningContentControl_IsTransitioningReadOnly");
+                throw new InvalidOperationException("Transitioning ContentControl_IsTransitioningReadOnly");
             }
         }
 
@@ -126,7 +118,7 @@ namespace YDock.View.Window
             // unable to find the transition.
             if (newStoryboard == null)
             {
-                // could be during initialization of xaml that presentationgroups was not yet defined
+                // could be during initialization of xaml that presentation groups was not yet defined
                 if (VisualStates.TryGetVisualStateGroup(source, PresentationGroup) == null)
                 {
                     // will delay check
@@ -149,7 +141,7 @@ namespace YDock.View.Window
 
         #endregion
 
-        private readonly Random random = new Random();
+        private readonly Random _random;
 
         /// <summary>
         ///     Indicates whether the control allows writing IsTransitioning.
@@ -169,6 +161,7 @@ namespace YDock.View.Window
         public TransitioningContentControl()
         {
             DefaultStyleKey = typeof(TransitioningContentControl);
+            _random = new Random();
         }
 
         #endregion
@@ -285,47 +278,44 @@ namespace YDock.View.Window
                 CurrentContentPresentationSite.Content = Content;
             }
 
-            var _transitionState = default(string);
+            var transitionState = default(string);
             if (!IsRandom)
             {
-                _transitionState = Transition;
+                transitionState = Transition;
             }
             else
             {
-                var value = random.Next() % 4;
+                var value = _random.Next() % 4;
                 switch (value)
                 {
                     case 0:
-                        _transitionState = DefaultTransitionState;
+                        transitionState = DefaultTransitionState;
                         break;
                     case 1:
-                        _transitionState = UpTransitionState;
+                        transitionState = UpTransitionState;
                         break;
                     case 2:
-                        _transitionState = DownTransitionState;
+                        transitionState = DownTransitionState;
                         break;
                     case 3:
-                        _transitionState = ScaleTransitionState;
+                        transitionState = ScaleTransitionState;
                         break;
                 }
             }
 
-            // hookup currenttransition
-            var transition = GetStoryboard(_transitionState);
+            // hookup current transition
+            var transition = GetStoryboard(transitionState);
 
             CurrentTransition = transition;
             if (transition == null)
             {
-                var invalidTransition = _transitionState;
                 // revert to default
                 Transition = DefaultTransitionState;
-
-                throw new ArgumentException(
-                    "TransitioningContentControl_TransitionNotFound");
+                throw new ArgumentException("TransitioningContentControl_TransitionNotFound");
             }
 
             VisualStateManager.GoToState(this, NormalState, false);
-            VisualStateManager.GoToState(this, _transitionState, true);
+            if (transitionState != null) VisualStateManager.GoToState(this, transitionState, true);
         }
 
         /// <summary>
@@ -337,7 +327,7 @@ namespace YDock.View.Window
         {
             base.OnContentChanged(oldContent, newContent);
 
-            //注意这里设置Content为null，断开逻辑父级保证YDock可以正常进行
+            //Note that the Content is set to null, and the logical parent is disconnected to ensure that YDock can work normally.
             if (oldContent != null && newContent == null)
             {
                 CurrentContentPresentationSite.Content = null;
@@ -360,12 +350,7 @@ namespace YDock.View.Window
         private void OnTransitionCompleted(object sender, EventArgs e)
         {
             AbortTransition();
-
-            var handler = TransitionCompleted;
-            if (handler != null)
-            {
-                handler(this, new RoutedEventArgs());
-            }
+            TransitionCompleted?.Invoke(this, new RoutedEventArgs());
         }
 
         #endregion
