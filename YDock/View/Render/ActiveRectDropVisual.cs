@@ -13,7 +13,7 @@ namespace YDock.View.Render
 
         #region Constructors
 
-        internal ActiveRectDropVisual(int flag) : base(flag)
+        internal ActiveRectDropVisual(DragManagerFlags flag) : base(flag)
         {
         }
 
@@ -25,7 +25,7 @@ namespace YDock.View.Render
         {
             using (var ctx = RenderOpen())
             {
-                if (Flag != DragManager.NONE)
+                if (Flag != DragManagerFlags.None)
                 {
                     ctx.PushOpacity(Constants.DragOpacity);
                     if (Rect.IsEmpty)
@@ -34,9 +34,9 @@ namespace YDock.View.Render
                         {
                             var innerLeft = DropPanel.InnerRect.Left + DropPanel.OuterRect.Left;
                             var innerTop = DropPanel.InnerRect.Top + DropPanel.OuterRect.Top;
-                            if ((Flag & DragManager.LEFT) != 0)
+                            if ((Flag & DragManagerFlags.Left) != 0)
                             {
-                                if ((Flag & DragManager.Split) != 0)
+                                if ((Flag & DragManagerFlags.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -53,9 +53,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.Top) != 0)
+                            if ((Flag & DragManagerFlags.Top) != 0)
                             {
-                                if ((Flag & DragManager.Split) != 0)
+                                if ((Flag & DragManagerFlags.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -72,9 +72,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.Right) != 0)
+                            if ((Flag & DragManagerFlags.Right) != 0)
                             {
-                                if ((Flag & DragManager.Split) != 0)
+                                if ((Flag & DragManagerFlags.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -95,9 +95,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.Bottom) != 0)
+                            if ((Flag & DragManagerFlags.Bottom) != 0)
                             {
-                                if ((Flag & DragManager.Split) != 0)
+                                if ((Flag & DragManagerFlags.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -120,9 +120,9 @@ namespace YDock.View.Render
                         }
                         else
                         {
-                            if ((Flag & DragManager.LEFT) != 0)
+                            if ((Flag & DragManagerFlags.Left) != 0)
                             {
-                                if ((Flag & DragManager.Split) != 0)
+                                if ((Flag & DragManagerFlags.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -142,9 +142,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.Top) != 0)
+                            if ((Flag & DragManagerFlags.Top) != 0)
                             {
-                                if ((Flag & DragManager.Split) != 0)
+                                if ((Flag & DragManagerFlags.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -164,9 +164,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.Right) != 0)
+                            if ((Flag & DragManagerFlags.Right) != 0)
                             {
-                                if ((Flag & DragManager.Split) != 0)
+                                if ((Flag & DragManagerFlags.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -187,9 +187,9 @@ namespace YDock.View.Render
                                 }
                             }
 
-                            if ((Flag & DragManager.Bottom) != 0)
+                            if ((Flag & DragManagerFlags.Bottom) != 0)
                             {
-                                if ((Flag & DragManager.Split) != 0)
+                                if ((Flag & DragManagerFlags.Split) != 0)
                                 {
                                     ctx.DrawRectangle(ResourceManager.RectBrush,
                                                       ResourceManager.RectBorderPen,
@@ -211,7 +211,7 @@ namespace YDock.View.Render
                             }
                         }
 
-                        if ((Flag & DragManager.Center) != 0)
+                        if ((Flag & DragManagerFlags.Center) != 0)
                         {
                             var stream = new StreamGeometry();
                             using (var context = stream.Open())

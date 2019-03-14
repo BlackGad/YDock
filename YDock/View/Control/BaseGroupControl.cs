@@ -505,7 +505,7 @@ namespace YDock.View.Control
         {
             _position = position;
             _activeRect = activeRect;
-            _activeRect.Flag = DragManager.NONE;
+            _activeRect.Flag = DragManagerFlags.None;
             var p = this.PointToScreenDPIWithoutFlowDirection(new Point());
             p = new Point(position.X - p.X, position.Y - p.Y);
             VisualTreeHelper.HitTest(this, _HitFilter, _HitResult, new PointHitTestParameters(p));
@@ -579,7 +579,7 @@ namespace YDock.View.Control
                     return HitTestFilterBehavior.Stop;
                 }
 
-                _activeRect.Flag = DragManager.Head;
+                _activeRect.Flag = DragManagerFlags.Head;
                 _activeRect.Rect = new Rect(0, 0, 60, 20);
                 _index = -1;
             }
@@ -622,7 +622,7 @@ namespace YDock.View.Control
                     _index = index;
                 }
 
-                _activeRect.Flag = DragManager.Head;
+                _activeRect.Flag = DragManagerFlags.Head;
                 _activeRect.Rect = new Rect(rect.X, 0, this is AnchorSideGroupControl ? 60 : 120, rect.Height);
 
                 return HitTestFilterBehavior.Stop;

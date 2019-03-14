@@ -80,6 +80,7 @@
     <Compile Include="Converters\DockModeToTransformConverter.cs" />
     <Compile Include="Converters\DockModeToVisibilityConverter.cs" />
     <Compile Include="DragItem.cs" />
+    <Compile Include="DragManagerFlags.cs" />
     <Compile Include="DragStatusChanged.cs" />
     <Compile Include="DragStatusChangedEventArgs.cs" />
     <Compile Include="ElementComparer.cs" />

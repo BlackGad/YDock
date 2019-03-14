@@ -19,14 +19,14 @@ namespace YDock.View.Render
                 {
                     if (_activeVisual != null)
                     {
-                        _activeVisual.Flag &= ~DragManager.Active;
+                        _activeVisual.Flag &= ~DragManagerFlags.Active;
                         _activeVisual.Update();
                     }
 
                     _activeVisual = value;
                     if (_activeVisual != null)
                     {
-                        _activeVisual.Flag |= DragManager.Active;
+                        _activeVisual.Flag |= DragManagerFlags.Active;
                         _activeVisual.Update();
                     }
                 }
@@ -43,7 +43,7 @@ namespace YDock.View.Render
                     if (_currentRect != null)
                     {
                         _currentRect.DropPanel._target.DropMode = DropMode.None;
-                        _currentRect.Flag = DragManager.NONE;
+                        _currentRect.Flag = DragManagerFlags.None;
                         _currentRect.Update();
                     }
 
@@ -73,7 +73,7 @@ namespace YDock.View.Render
             _target = target;
             _source = source;
             //Draw the docked area
-            ActiveRect = new ActiveRectDropVisual(DragManager.NONE);
+            ActiveRect = new ActiveRectDropVisual(DragManagerFlags.None);
             AddChild(ActiveRect);
         }
 
@@ -126,7 +126,7 @@ namespace YDock.View.Render
             if (result?.VisualHit is UnitDropVisual visual)
             {
                 ActiveVisual = visual;
-                var mode = _GetMode(visual.Flag);
+                var mode = GetMode(visual.Flag);
                 if (mode == _target.DropMode)
                 {
                     return;
@@ -145,12 +145,12 @@ namespace YDock.View.Render
                     control.HitTest(mouseP, ActiveRect);
                     if (!control.canUpdate) return;
 
-                    control.DropMode = _GetMode(ActiveRect.Flag);
+                    control.DropMode = GetMode(ActiveRect.Flag);
                 }
                 else
                 {
                     _target.DropMode = DropMode.None;
-                    ActiveRect.Flag = DragManager.NONE;
+                    ActiveRect.Flag = DragManagerFlags.None;
                 }
             }
 
@@ -159,7 +159,7 @@ namespace YDock.View.Render
                 _target.DockManager.DragManager.IsDragOverRoot = ActiveVisual != null;
                 if (_target.DropMode != DropMode.None && _currentRect != null)
                 {
-                    _currentRect.Flag = DragManager.NONE;
+                    _currentRect.Flag = DragManagerFlags.None;
                     _currentRect.DropPanel._target.DropMode = DropMode.None;
                     _currentRect.Update();
                 }
@@ -173,16 +173,16 @@ namespace YDock.View.Render
             }
         }
 
-        private DropMode _GetMode(int flag)
+        private DropMode GetMode(DragManagerFlags flag)
         {
-            if ((flag & DragManager.Head) != 0)
+            if ((flag & DragManagerFlags.Head) != 0)
             {
                 return DropMode.Header;
             }
 
-            if ((flag & DragManager.LEFT) != 0)
+            if ((flag & DragManagerFlags.Left) != 0)
             {
-                if ((flag & DragManager.Split) != 0)
+                if ((flag & DragManagerFlags.Split) != 0)
                 {
                     return DropMode.Left_WithSplit;
                 }
@@ -190,9 +190,9 @@ namespace YDock.View.Render
                 return DropMode.Left;
             }
 
-            if ((flag & DragManager.Right) != 0)
+            if ((flag & DragManagerFlags.Right) != 0)
             {
-                if ((flag & DragManager.Split) != 0)
+                if ((flag & DragManagerFlags.Split) != 0)
                 {
                     return DropMode.Right_WithSplit;
                 }
@@ -200,9 +200,9 @@ namespace YDock.View.Render
                 return DropMode.Right;
             }
 
-            if ((flag & DragManager.Top) != 0)
+            if ((flag & DragManagerFlags.Top) != 0)
             {
-                if ((flag & DragManager.Split) != 0)
+                if ((flag & DragManagerFlags.Split) != 0)
                 {
                     return DropMode.Top_WithSplit;
                 }
@@ -210,9 +210,9 @@ namespace YDock.View.Render
                 return DropMode.Top;
             }
 
-            if ((flag & DragManager.Bottom) != 0)
+            if ((flag & DragManagerFlags.Bottom) != 0)
             {
-                if ((flag & DragManager.Split) != 0)
+                if ((flag & DragManagerFlags.Split) != 0)
                 {
                     return DropMode.Bottom_WithSplit;
                 }
@@ -220,7 +220,7 @@ namespace YDock.View.Render
                 return DropMode.Bottom;
             }
 
-            if ((flag & DragManager.Center) != 0)
+            if ((flag & DragManagerFlags.Center) != 0)
             {
                 return DropMode.Center;
             }

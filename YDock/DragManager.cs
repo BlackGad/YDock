@@ -16,21 +16,6 @@ namespace YDock
 {
     public class DragManager
     {
-        #region Constants
-
-        internal const int Active = 0x2000;
-        internal const int Bottom = 0x0008;
-        internal const int Center = 0x0010;
-        internal const int Head = 0x0040;
-        internal const int LEFT = 0x0001;
-        internal const int NONE = 0x0000;
-        internal const int Right = 0x0004;
-        internal const int Split = 0x1000;
-        internal const int Tab = 0x0020;
-        internal const int Top = 0x0002;
-
-        #endregion
-
         internal BaseFloatWindow _dragWindow;
         private IDragTarget _dragTarget;
         private bool _isDragging;

@@ -9,13 +9,13 @@ namespace YDock.View.Render
         internal RootDropPanel(IDragTarget target, DragItem source) : base(target, source)
         {
             //Draw the drag area on the left
-            AddChild(new UnitDropVisual(DragManager.LEFT));
+            AddChild(new UnitDropVisual(DragManagerFlags.Left));
             //Draw the top drop zone
-            AddChild(new UnitDropVisual(DragManager.Top));
+            AddChild(new UnitDropVisual(DragManagerFlags.Top));
             //Draw the drag area on the right
-            AddChild(new UnitDropVisual(DragManager.Right));
+            AddChild(new UnitDropVisual(DragManagerFlags.Right));
             //Draw the bottom drop zone
-            AddChild(new UnitDropVisual(DragManager.Bottom));
+            AddChild(new UnitDropVisual(DragManagerFlags.Bottom));
         }
 
         #endregion

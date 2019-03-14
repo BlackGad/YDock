@@ -6,7 +6,7 @@ namespace YDock.View.Render
     {
         #region Constructors
 
-        protected BaseDropVisual(int flag)
+        internal BaseDropVisual(DragManagerFlags flag)
         {
             Flag = flag;
         }
@@ -20,7 +20,7 @@ namespace YDock.View.Render
             get { return VisualParent as BaseDropPanel; }
         }
 
-        internal int Flag { get; set; }
+        internal DragManagerFlags Flag { get; set; }
 
         #endregion
 

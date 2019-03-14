@@ -128,7 +128,7 @@ namespace YDock
         [DllImport("user32.dll", EntryPoint = "DestroyWindow", CharSet = CharSet.Unicode)]
         public static extern bool DestroyWindow(IntPtr hwnd);
 
-        public static RECT GetClientRect(IntPtr hWindow)
+        public static Rect GetClientRect(IntPtr hWindow)
         {
             GetClientRect(hWindow, out var result);
             return result;
@@ -182,9 +182,9 @@ namespace YDock
         public static extern IntPtr GetWindow(IntPtr hWindow, uint uCmd);
 
         [DllImport("user32.dll")]
-        public static extern bool GetWindowRect(IntPtr hWindow, out RECT lpRect);
+        public static extern bool GetWindowRect(IntPtr hWindow, out Rect lpRect);
 
-        public static RECT GetWindowRect(IntPtr hWindow)
+        public static Rect GetWindowRect(IntPtr hWindow)
         {
             GetWindowRect(hWindow, out var result);
             return result;
@@ -229,7 +229,7 @@ namespace YDock
         ///     If the rectangle does not intersect a display monitor, the return value depends on the value of dwFlags.
         /// </returns>
         [DllImport("user32.dll")]
-        public static extern IntPtr MonitorFromRect([In] ref RECT lprc, uint dwFlags);
+        public static extern IntPtr MonitorFromRect([In] ref Rect lprc, uint dwFlags);
 
         /// <summary>
         ///     The MonitorFromWindow function retrieves a handle to the display monitor that has the largest area of intersection
@@ -282,7 +282,7 @@ namespace YDock
         public static extern int UnhookWindowsHookEx(IntPtr hhook);
 
         [DllImport("user32.dll")]
-        private static extern bool GetClientRect(IntPtr hWindow, out RECT lpRect);
+        private static extern bool GetClientRect(IntPtr hWindow, out Rect lpRect);
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern int GetWindowLong(IntPtr hWindow, int nIndex);
@@ -373,14 +373,14 @@ namespace YDock
             ///     Note that if the monitor is not the primary display monitor,
             ///     some of the rectangle's coordinates may be negative values.
             /// </summary>
-            public RECT Monitor;
+            public Rect Monitor;
 
             /// <summary>
             ///     A RECT structure that specifies the work area rectangle of the display monitor,
             ///     expressed in virtual-screen coordinates. Note that if the monitor is not the primary
             ///     display monitor, some of the rectangle's coordinates may be negative values.
             /// </summary>
-            public RECT Work;
+            public Rect Work;
 
             /// <summary>
             ///     A set of flags that represent attributes of the display monitor.
@@ -390,18 +390,18 @@ namespace YDock
 
         #endregion
 
-        #region Nested type: RECT
+        #region Nested type: Rect
 
         [Serializable]
         [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
+        public struct Rect
         {
             public int Left;
             public int Top;
             public int Right;
             public int Bottom;
 
-            public RECT(int left_, int top_, int right_, int bottom_)
+            public Rect(int left_, int top_, int right_, int bottom_)
             {
                 Left = left_;
                 Top = top_;
@@ -430,29 +430,31 @@ namespace YDock
             }
 
             // Handy method for converting to a System.Drawing.Rectangle  
-            public Rect ToRectangle()
+            public System.Windows.Rect ToRectangle()
             {
-                return new Rect(Left, Top, Right, Bottom);
+                return new System.Windows.Rect(Left, Top, Right, Bottom);
             }
 
-            public static RECT FromRectangle(Rect rectangle)
+            public static Rect FromRectangle(System.Windows.Rect rectangle)
             {
-                return new Rect(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
+                return new System.Windows.Rect(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
             }
 
             public override int GetHashCode()
             {
+                // ReSharper disable NonReadonlyMemberInGetHashCode
                 return Left ^ ((Top << 13) | (Top >> 0x13)) ^ ((Width << 0x1a) | (Width >> 6)) ^ ((Height << 7) | (Height >> 0x19));
+                // ReSharper restore NonReadonlyMemberInGetHashCode
             }
 
             #region Operator overloads
 
-            public static implicit operator Rect(RECT rect)
+            public static implicit operator System.Windows.Rect(Rect rect)
             {
                 return rect.ToRectangle();
             }
 
-            public static implicit operator RECT(Rect rect)
+            public static implicit operator Rect(System.Windows.Rect rect)
             {
                 return FromRectangle(rect);
             }

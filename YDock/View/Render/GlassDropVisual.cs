@@ -9,7 +9,7 @@ namespace YDock.View.Render
     {
         #region Constructors
 
-        internal GlassDropVisual(int flag) : base(flag)
+        internal GlassDropVisual(DragManagerFlags flag) : base(flag)
         {
         }
 

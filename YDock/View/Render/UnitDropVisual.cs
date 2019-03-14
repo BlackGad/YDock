@@ -12,7 +12,7 @@ namespace YDock.View.Render
     {
         #region Constructors
 
-        internal UnitDropVisual(int flag) : base(flag)
+        internal UnitDropVisual(DragManagerFlags flag) : base(flag)
         {
         }
 
@@ -28,19 +28,19 @@ namespace YDock.View.Render
                 double hOffset = DropPanel.InnerRect.Left + DropPanel.OuterRect.Left, vOffset = DropPanel.InnerRect.Top + DropPanel.OuterRect.Top;
                 if (DropPanel is RootDropPanel)
                 {
-                    if ((Flag & DragManager.LEFT) != 0)
+                    if ((Flag & DragManagerFlags.Left) != 0)
                     {
                         DrawLeft(ctx, hOffset + Constants.DropGlassLength, vOffset + (size.Height - Constants.DropUnitLength) / 2);
                     }
-                    else if ((Flag & DragManager.Top) != 0)
+                    else if ((Flag & DragManagerFlags.Top) != 0)
                     {
                         DrawTop(ctx, hOffset + (size.Width - Constants.DropUnitLength) / 2, vOffset + Constants.DropGlassLength);
                     }
-                    else if ((Flag & DragManager.Right) != 0)
+                    else if ((Flag & DragManagerFlags.Right) != 0)
                     {
                         DrawRight(ctx, hOffset + size.Width - Constants.DropGlassLength, vOffset + (size.Height - Constants.DropUnitLength) / 2);
                     }
-                    else if ((Flag & DragManager.Bottom) != 0)
+                    else if ((Flag & DragManagerFlags.Bottom) != 0)
                     {
                         DrawBottom(ctx, hOffset + (size.Width - Constants.DropUnitLength) / 2, vOffset + size.Height - Constants.DropGlassLength);
                     }
@@ -48,7 +48,7 @@ namespace YDock.View.Render
                 else
                 {
                     var flag = false;
-                    if ((Flag & DragManager.Center) != 0)
+                    if ((Flag & DragManagerFlags.Center) != 0)
                     {
                         if (DropPanel.Target.Mode == DragMode.Document)
                         {
@@ -73,9 +73,9 @@ namespace YDock.View.Render
                     LayoutDocumentGroupControl layoutControl;
                     LayoutGroupPanel layoutPanel;
 
-                    if ((Flag & DragManager.LEFT) != 0)
+                    if ((Flag & DragManagerFlags.Left) != 0)
                     {
-                        if ((Flag & DragManager.Split) != 0)
+                        if ((Flag & DragManagerFlags.Split) != 0)
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
@@ -124,9 +124,9 @@ namespace YDock.View.Render
                         }
                     }
 
-                    if ((Flag & DragManager.Right) != 0)
+                    if ((Flag & DragManagerFlags.Right) != 0)
                     {
-                        if ((Flag & DragManager.Split) != 0)
+                        if ((Flag & DragManagerFlags.Split) != 0)
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
@@ -175,9 +175,9 @@ namespace YDock.View.Render
                         }
                     }
 
-                    if ((Flag & DragManager.Top) != 0)
+                    if ((Flag & DragManagerFlags.Top) != 0)
                     {
-                        if ((Flag & DragManager.Split) != 0)
+                        if ((Flag & DragManagerFlags.Split) != 0)
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
@@ -226,9 +226,9 @@ namespace YDock.View.Render
                         }
                     }
 
-                    if ((Flag & DragManager.Bottom) != 0)
+                    if ((Flag & DragManagerFlags.Bottom) != 0)
                     {
-                        if ((Flag & DragManager.Split) != 0)
+                        if ((Flag & DragManagerFlags.Split) != 0)
                         {
                             if (DropPanel.Target.Mode == DragMode.Document)
                             {
@@ -296,7 +296,7 @@ namespace YDock.View.Render
                 ctx.Pop();
             }
 
-            if ((Flag & DragManager.Active) == 0)
+            if ((Flag & DragManagerFlags.Active) == 0)
             {
                 ctx.PushOpacity(Constants.DragOpacity * 1.8);
             }
@@ -348,7 +348,7 @@ namespace YDock.View.Render
         {
             double currentX = hOffset, currentY = vOffset;
 
-            if ((Flag & DragManager.Active) == 0)
+            if ((Flag & DragManagerFlags.Active) == 0)
             {
                 ctx.PushOpacity(Constants.DragOpacity * 1.8);
             }
@@ -408,7 +408,7 @@ namespace YDock.View.Render
                 ctx.Pop();
             }
 
-            if ((Flag & DragManager.Active) == 0)
+            if ((Flag & DragManagerFlags.Active) == 0)
             {
                 ctx.PushOpacity(Constants.DragOpacity * 1.8);
             }
@@ -465,7 +465,7 @@ namespace YDock.View.Render
                 ctx.Pop();
             }
 
-            if ((Flag & DragManager.Active) == 0)
+            if ((Flag & DragManagerFlags.Active) == 0)
             {
                 ctx.PushOpacity(Constants.DragOpacity * 1.8);
             }
@@ -520,7 +520,7 @@ namespace YDock.View.Render
                 ctx.Pop();
             }
 
-            if ((Flag & DragManager.Active) == 0)
+            if ((Flag & DragManagerFlags.Active) == 0)
             {
                 ctx.PushOpacity(Constants.DragOpacity * 1.8);
             }
