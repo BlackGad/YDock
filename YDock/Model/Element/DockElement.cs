@@ -39,8 +39,6 @@ namespace YDock.Model.Element
 
         private object _content;
 
-        private DockControl _dockControl;
-
         private bool _isActive;
         private bool _isVisible;
         private DockMode _mode;
@@ -56,17 +54,7 @@ namespace YDock.Model.Element
 
         #region Properties
 
-        public DockControl DockControl
-        {
-            get { return _dockControl; }
-            internal set
-            {
-                if (_dockControl != null && _dockControl != value)
-                {
-                    _dockControl = value;
-                }
-            }
-        }
+        public DockControl DockControl { get; internal set; }
 
         public string ToolTip
         {
@@ -262,7 +250,7 @@ namespace YDock.Model.Element
         {
             if (!CanFloat && isActive)
             {
-                _dockControl.SetActive();
+                DockControl.SetActive();
                 return;
             }
 
@@ -308,7 +296,7 @@ namespace YDock.Model.Element
 
                 if (isActive)
                 {
-                    _dockControl.SetActive();
+                    DockControl.SetActive();
                 }
             }
         }
@@ -317,7 +305,7 @@ namespace YDock.Model.Element
         {
             if (!CanDock && isActive)
             {
-                _dockControl.SetActive();
+                DockControl.SetActive();
                 return;
             }
 
@@ -342,7 +330,7 @@ namespace YDock.Model.Element
 
                 if (isActive)
                 {
-                    _dockControl.SetActive();
+                    DockControl.SetActive();
                 }
             }
         }
@@ -356,7 +344,7 @@ namespace YDock.Model.Element
         {
             if (!CanDockAsDocument && isActive)
             {
-                _dockControl.SetActive();
+                DockControl.SetActive();
                 return;
             }
 
@@ -378,7 +366,7 @@ namespace YDock.Model.Element
 
                 if (isActive)
                 {
-                    _dockControl.SetActive();
+                    DockControl.SetActive();
                 }
             }
         }
@@ -422,7 +410,7 @@ namespace YDock.Model.Element
 
                 if (isActive)
                 {
-                    _dockControl.SetActive();
+                    DockControl.SetActive();
                 }
             }
         }
@@ -440,7 +428,7 @@ namespace YDock.Model.Element
 
             if (Equals(DockManager.AutoHideElement, this)) DockManager.AutoHideElement = null;
 
-            _dockControl.SetActive(false);
+            DockControl.SetActive(false);
             CanSelect = false;
         }
 
@@ -481,7 +469,7 @@ namespace YDock.Model.Element
             if (IsDisposed) return;
             IsDisposed = true;
             Container?.Detach(this);
-            _dockControl = null;
+            DockControl = null;
 
             if (_content is IDockSource source) source.DockControl = null;
 
